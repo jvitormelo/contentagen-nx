@@ -1,0 +1,39 @@
+{
+  "dependencies": {
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@tanstack/react-form": "^1.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.475.0",
+    "next-themes": "^0.4.4",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "tailwind-merge": "^3.0.1",
+    "tw-animate-css": "^1.2.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.8",
+    "@tooling/typescript": "workspace:*",
+    "@types/node": "^20",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "tailwindcss": "^4.0.8",
+    "typescript": "catalog:development"
+  },
+  "exports": {
+    "./components/*": "./src/components/*.tsx",
+    "./globals.css": "./src/styles/globals.css",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./postcss.config": "./postcss.config.mjs"
+  },
+  "name": "@packages/ui",
+  "private": true,
+  "scripts": {
+    "check": "biome check --write ./src"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

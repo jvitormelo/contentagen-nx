@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@packages/ui/*": ["../../packages/ui/src/*"]
+    }
+  },
+  "exclude": ["dist"],
+  "extends": "@tooling/typescript/astro.json",
+  "include": [".astro/types.d.ts", "**/*"]
+}
