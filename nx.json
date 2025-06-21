@@ -20,5 +20,8 @@
       "cache": true,
       "dependsOn": ["^lint"]
     }
+  },
+  "tui": {
+    "enabled": true
   }
 }
