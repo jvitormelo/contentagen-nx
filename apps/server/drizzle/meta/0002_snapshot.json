@@ -47,9 +47,9 @@
       "values": ["professional", "conversational", "educational", "creative"]
     }
   },
-  "id": "89fea240-f0a4-42f5-96dc-24e357010b09",
+  "id": "c9d86a6f-3fec-4d80-9079-e15538c55db9",
   "policies": {},
-  "prevId": "6d1e6cc5-14db-4ade-9e15-166113d07ac1",
+  "prevId": "89fea240-f0a4-42f5-96dc-24e357010b09",
   "roles": {},
   "schemas": {},
   "sequences": {},
@@ -949,6 +949,38 @@
       "indexes": {},
       "isRLSEnabled": false,
       "name": "verification",
+      "policies": {},
+      "schema": "",
+      "uniqueConstraints": {}
+    },
+    "public.waitlist": {
+      "checkConstraints": {},
+      "columns": {
+        "created_at": {
+          "default": "now()",
+          "name": "created_at",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "timestamp"
+        },
+        "email": {
+          "name": "email",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "text"
+        },
+        "id": {
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "text"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {},
+      "indexes": {},
+      "isRLSEnabled": false,
+      "name": "waitlist",
       "policies": {},
       "schema": "",
       "uniqueConstraints": {}
