@@ -1,6 +1,7 @@
 import { useAppForm } from "@packages/ui/components/form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { z } from "zod";
 
 interface AgentFormData {
   name: string;
@@ -21,6 +22,37 @@ interface AgentFormData {
   topics: string[];
   seoKeywords: string[];
 }
+
+const agentFormSchema = z.object({
+  name: z.string().min(1, "Agent name is required"),
+  description: z.string(),
+  project: z.string().optional(),
+  contentType: z.enum([
+    "blog_posts",
+    "social_media",
+    "marketing_copy",
+    "technical_docs",
+  ], { required_error: "Content type is required" }),
+  voiceTone: z.enum([
+    "professional",
+    "conversational",
+    "educational",
+    "creative",
+  ], { required_error: "Voice tone is required" }),
+  targetAudience: z.enum([
+    "general_public",
+    "professionals",
+    "beginners",
+    "customers",
+  ], { required_error: "Target audience is required" }),
+  formattingStyle: z.enum([
+    "structured",
+    "narrative",
+    "list_based",
+  ]).optional(),
+  topics: z.array(z.string()),
+  seoKeywords: z.array(z.string()),
+});
 
 export function useCreateAgent() {
   const navigate = useNavigate();
@@ -46,28 +78,30 @@ export function useCreateAgent() {
       voiceTone: "professional",
     } as AgentFormData,
     onSubmit: async ({ value }) => {
+      const result = agentFormSchema.safeParse(value);
+      if (!result.success) {
+        const firstError = Object.values(result.error.flatten().fieldErrors)
+          .flat()
+          .find(Boolean);
+        return firstError || "Invalid form data";
+      }
       await createAgentMutation.mutateAsync({
-        ...value,
-        // Convert display names to enum values
-        contentType: value.contentType,
-        formattingStyle: value.formattingStyle,
-        targetAudience: value.targetAudience,
-        voiceTone: value.voiceTone,
+        ...result.data,
+        contentType: result.data.contentType,
+        formattingStyle: result.data.formattingStyle,
+        targetAudience: result.data.targetAudience,
+        voiceTone: result.data.voiceTone,
       });
     },
     validators: {
       onChange: ({ value }) => {
-        if (!value.name) {
-          return "Agent name is required";
-        }
-        if (!value.contentType) {
-          return "Content type is required";
-        }
-        if (!value.voiceTone) {
-          return "Voice tone is required";
-        }
-        if (!value.targetAudience) {
-          return "Target audience is required";
+        const result = agentFormSchema.safeParse(value);
+        if (!result.success) {
+
+          const firstError = Object.values(result.error.flatten().fieldErrors)
+            .flat()
+            .find(Boolean);
+          return firstError;
         }
         return undefined;
       },

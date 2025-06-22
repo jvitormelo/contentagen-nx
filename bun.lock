@@ -32,8 +32,8 @@
         "@tooling/typescript": "workspace:*",
         "@types/react": "catalog:react",
         "@types/react-dom": "catalog:react",
-        "typescript": "^5.8.3",
-      },
+        "typescript": "catalog:development"
+      }
     },
     "apps/dashboard": {
       "name": "dashboard",

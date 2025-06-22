@@ -13,37 +13,40 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Save, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import { useCreateAgent } from "./lib/use-create-agent";
+import type { ContentType, FormattingStyle, TargetAudience, VoiceTone } from "@api/schemas/content-schema";
 
 export const Route = createFileRoute("/agents/create")({
   component: CreateAgent,
 });
 
-const CONTENT_TYPES = [
+type LabeledValue<T> = { label: string; value: T };
+
+const CONTENT_TYPES: readonly LabeledValue<ContentType>[] = [
   { label: "Blog Posts", value: "blog_posts" },
   { label: "Social Media", value: "social_media" },
   { label: "Marketing Copy", value: "marketing_copy" },
   { label: "Technical Docs", value: "technical_docs" },
-] as const;
+];
 
-const VOICE_TONES = [
+const VOICE_TONES: readonly LabeledValue<VoiceTone>[] = [
   { label: "Professional", value: "professional" },
   { label: "Conversational", value: "conversational" },
   { label: "Educational", value: "educational" },
   { label: "Creative", value: "creative" },
-] as const;
+];
 
-const TARGET_AUDIENCES = [
+const TARGET_AUDIENCES: readonly LabeledValue<TargetAudience>[] = [
   { label: "General Public", value: "general_public" },
   { label: "Professionals", value: "professionals" },
   { label: "Beginners", value: "beginners" },
   { label: "Customers", value: "customers" },
-] as const;
+];
 
-const FORMATTING_STYLES = [
+const FORMATTING_STYLES: readonly LabeledValue<FormattingStyle>[] = [
   { label: "Structured (H1, H2, bullets)", value: "structured" },
   { label: "Narrative (flowing text)", value: "narrative" },
   { label: "List-based (numbered/bulleted)", value: "list_based" },
-] as const;
+];
 
 function CreateAgent() {
   const { form, handleSubmit, isLoading } = useCreateAgent();

@@ -17,6 +17,7 @@ export const contentTypeEnum = pgEnum("content_type", [
   "marketing_copy",
   "technical_docs",
 ]);
+export type ContentType = typeof contentTypeEnum.enumValues[number];
 
 export const voiceToneEnum = pgEnum("voice_tone", [
   "professional",
@@ -24,6 +25,7 @@ export const voiceToneEnum = pgEnum("voice_tone", [
   "educational",
   "creative",
 ]);
+export type VoiceTone = typeof voiceToneEnum.enumValues[number];
 
 export const targetAudienceEnum = pgEnum("target_audience", [
   "general_public",
@@ -31,12 +33,14 @@ export const targetAudienceEnum = pgEnum("target_audience", [
   "beginners",
   "customers",
 ]);
+export type TargetAudience = typeof targetAudienceEnum.enumValues[number];
 
 export const formattingStyleEnum = pgEnum("formatting_style", [
   "structured",
   "narrative",
   "list_based",
 ]);
+export type FormattingStyle = typeof formattingStyleEnum.enumValues[number];
 
 export const contentStatusEnum = pgEnum("content_status", [
   "draft",
@@ -44,12 +48,14 @@ export const contentStatusEnum = pgEnum("content_status", [
   "published",
   "archived",
 ]);
+export type ContentStatus = typeof contentStatusEnum.enumValues[number];
 
 export const contentLengthEnum = pgEnum("content_length", [
   "short",
   "medium",
   "long",
 ]);
+export type ContentLength = typeof contentLengthEnum.enumValues[number];
 
 export const priorityEnum = pgEnum("priority", [
   "low",
@@ -57,6 +63,7 @@ export const priorityEnum = pgEnum("priority", [
   "high",
   "urgent",
 ]);
+export type Priority = typeof priorityEnum.enumValues[number];
 
 export const project = pgTable("project", {
   createdAt: timestamp("created_at")
