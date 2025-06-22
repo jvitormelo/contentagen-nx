@@ -15,14 +15,14 @@
     "@tooling/typescript": "workspace:*",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "typescript": "^5.8.3"
+    "typescript": "catalog:development"
   },
   "name": "blog",
   "scripts": {
     "astro": "bunx --bun astro",
     "build": "bunx --bun astro build",
     "check": "bunx --bun biome check --write ./src ",
-    "dev": "bunx --bun astro dev",
+    "dev": "bunx  astro dev",
     "preview": "bunx --bun astro preview",
     "typecheck": "bunx --bun astro check"
   },
