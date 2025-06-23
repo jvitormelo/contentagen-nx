@@ -16,19 +16,12 @@ export const app = new Elysia({ aot: false })
       origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
     }),
   )
-  .use(
-    swagger({
-      documentation: {
-        components: await OpenAPI.components,
-        paths: await OpenAPI.getPaths(),
-      },
-    }),
-  )
   .use(agentRoutes)
   .use(waitlistRoutes)
   .get("/works", () => {
     return { message: "Eden WORKS!" };
-  });
+  })
+  .listen(9876);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
