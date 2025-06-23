@@ -1,3 +1,4 @@
+import { createEdenAdapter, type EdenClientType } from "@packages/eden";
 import { Button } from "@packages/ui/components/button";
 import { useAppForm } from "@packages/ui/components/form";
 import { Input } from "@packages/ui/components/input";
@@ -9,11 +10,19 @@ import {
   SelectValue,
 } from "@packages/ui/components/select";
 import type React from "react";
-import { useCallback } from "react";
-import { createEdenAdapter } from "@packages/eden";
+import { useCallback, useState } from "react";
 
+type LeadType = Parameters<EdenClientType["waitlist"]["post"]>["0"]["leadType"];
 export const WaitlistForm = () => {
   const eden = createEdenAdapter(import.meta.env.VITE_SERVER_URL);
+
+  const [leadTypes] = useState([
+    "individual blogger",
+    "marketing team",
+    "freelance writer",
+    "business owner",
+    "other",
+  ]);
 
   const form = useAppForm({
     defaultState: {
@@ -21,10 +30,13 @@ export const WaitlistForm = () => {
     },
     defaultValues: {
       email: "",
-      role: "user",
+      leadType: "",
     },
-    onSubmit: (data) => {
-      console.log("Form submitted with data:", data);
+    onSubmit: async (data) => {
+      await eden.waitlist.post({
+        email: data.value.email,
+        leadType: data.value.leadType as LeadType,
+      });
     },
   });
   const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
@@ -65,7 +77,7 @@ export const WaitlistForm = () => {
             )}
           </form.Subscribe>
         </div>
-        <form.AppField name="role">
+        <form.AppField name="leadType">
           {(field) => (
             <field.FieldContainer className="w-full">
               <Select
@@ -77,11 +89,14 @@ export const WaitlistForm = () => {
                   id={field.name}
                   name={field.name}
                 >
-                  <SelectValue placeholder="Select Role" />
+                  <SelectValue placeholder="Select an option" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
+                  {leadTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.replace(/\b\w/g, (char) => char.toUpperCase())}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <field.FieldMessage />
