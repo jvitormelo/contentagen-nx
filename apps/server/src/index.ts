@@ -29,7 +29,7 @@ const app = new Elysia()
   .get("/works", () => {
     return { message: "Eden WORKS!" };
   })
-  .listen(9876);
+  .listen(process.env.PORT ?? 9876);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
