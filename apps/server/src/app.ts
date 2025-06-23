@@ -6,7 +6,7 @@ import { authMiddleware, OpenAPI } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
 import { waitlistRoutes } from "./routes/waitlist-routes";
 
-export const app = new Elysia()
+export const app = new Elysia({ aot: false })
   .use(authMiddleware)
   .use(
     cors({
