@@ -2,7 +2,7 @@
   "name": "conentagen-landing-page",
   "main": "./dist/_worker.js/index.js",
   // Update to today's date
-  "compatibility_date": "2025-03-25",
+  "compatibility_date": "2025-05-23",
   "compatibility_flags": [
     "nodejs_compat"
   ],
@@ -10,7 +10,6 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
-  
   "observability": {
     "enabled": true
   }
