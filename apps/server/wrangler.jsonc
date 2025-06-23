@@ -2,6 +2,7 @@
   "compatibility_date": "2025-03-25",
   "compatibility_flags": [
     "nodejs_compat-imports",
+    "hybrid-nodejs_compat",
     "nodejs_compat",
     "nodejs_compat_populate_process_env"
   ],
