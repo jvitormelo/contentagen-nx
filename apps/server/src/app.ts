@@ -19,7 +19,7 @@ export const app = new Elysia({ aot: false })
   .use(agentRoutes)
   .use(waitlistRoutes)
   .get("/works", () => {
-    return { message: "Eden WORKS!" };
+    return { message: "Eden WORKS!!" };
   });
 
 console.log(
