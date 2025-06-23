@@ -1,0 +1,20 @@
+name = "elysia-bun-updated"
+compatibility_date = "2025-06-08"
+compatibility_flags = [ "nodejs_compat", "nodejs_compat_populate_process_env" ]
+
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-database"
+# database_id = ""
+
+# [ai]
+# binding = "AI"
