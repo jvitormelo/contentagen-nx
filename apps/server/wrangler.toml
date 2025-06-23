@@ -1,7 +1,0 @@
-name = "contentagen-server"
-compatibility_date = "2025-05-16"
-compatibility_flags = ["nodejs_compat"]
-main = "./src/index.ts"
-[observability]
-enabled = true
-head_sampling_rate = 1 # optional. default = 1.
