@@ -10,8 +10,11 @@ import {
 } from "@packages/ui/components/select";
 import type React from "react";
 import { useCallback } from "react";
+import { createEdenAdapter } from "@packages/eden";
 
 export const WaitlistForm = () => {
+  const eden = createEdenAdapter(import.meta.env.VITE_SERVER_URL);
+
   const form = useAppForm({
     defaultState: {
       isValid: false,
