@@ -11,11 +11,10 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     resolve: {
-      alias: import.meta.env.PROD
-        ? {
-          "react-dom/server": "react-dom/server.edge",
-        }
-        : {},
+      alias: {
+        "react-dom/server": "react-dom/server.edge",
+        "react-dom/server.browser": "react-dom/server.edge",
+      },
     },
   },
 });
