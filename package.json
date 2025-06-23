@@ -22,6 +22,11 @@
     "format": "biome check --write .",
     "typecheck": "nx run-many -t typecheck --parallel=5"
   },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@tailwindcss/oxide",
+    "protobufjs"
+  ],
   "version": "0.0.1",
   "workspaces": {
     "catalogs": {
@@ -49,10 +54,5 @@
       "packages/*",
       "apps/*"
     ]
-  },
-  "trustedDependencies": [
-    "@parcel/watcher",
-    "@tailwindcss/oxide",
-    "protobufjs"
-  ]
+  }
 }
