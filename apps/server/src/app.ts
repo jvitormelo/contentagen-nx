@@ -28,8 +28,7 @@ export const app = new Elysia({ aot: false })
   .use(waitlistRoutes)
   .get("/works", () => {
     return { message: "Eden WORKS!" };
-  })
-  .listen(9876);
+  });
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
