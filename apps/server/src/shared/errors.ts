@@ -1,5 +1,6 @@
 import type { Static, TSchema } from "@sinclair/typebox";
-import { TypeCompiler } from "@sinclair/typebox/compiler";
+import { Value } from "@sinclair/typebox/value";
+
 export class AppError extends Error {
   public errorCode: string;
   public status: number;
@@ -63,10 +64,10 @@ export function validateInput<T extends TSchema>(
   value: unknown,
   errorCode = "INVALID_INPUT",
 ): asserts value is Static<T> {
-  const C = TypeCompiler.Compile(schema);
-  const result = C.Check(value);
-  if (!result) {
-    const errors = [...C.Errors(value)].map((e) => e.message).join("; ");
+  if (!Value.Check(schema, value)) {
+    const errors = [...Value.Errors(schema, value)]
+      .map((e) => `${e.path}: ${e.message}`)
+      .join("; ");
     throw new InvalidInputError(
       `Input validation failed: ${errors}`,
       errorCode,
