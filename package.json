@@ -49,5 +49,10 @@
       "packages/*",
       "apps/*"
     ]
-  }
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@tailwindcss/oxide",
+    "protobufjs"
+  ]
 }
