@@ -12,7 +12,7 @@ export default defineConfig({
       VITE_SERVER_URL: envField.string({
         context: "client",
         access: "public",
-        default: "https://api.contentagen.com",
+        default: "https://content-writer-b9gq.onrender.com",
       }),
     },
   },
