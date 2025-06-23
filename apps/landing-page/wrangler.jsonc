@@ -10,8 +10,8 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
-    "vars" : {
-    "VITE_SERVER_URL": "https://conentagen-server.manoel-netocarvalho03.workers.dev"
+  "vars": {
+    "VITE_SERVER_URL": "https://api.contentagen.com"
   },
   "observability": {
     "enabled": true

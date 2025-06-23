@@ -12,7 +12,7 @@ export default defineConfig({
       VITE_SERVER_URL: envField.string({
         context: "client",
         access: "public",
-        default: "https://conentagen-server.manoel-netocarvalho03.workers.dev",
+        default: "https://api.contentagen.com",
       }),
     },
   },
