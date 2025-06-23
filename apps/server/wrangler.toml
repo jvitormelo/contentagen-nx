@@ -1,7 +1,6 @@
 name = "elysia-cf-worker"
 compatibility_date = "2025-05-16"
 compatibility_flags = ["nodejs_compat"]
-node_compat = true
 main = "./src/index.ts"
 [observability]
 enabled = true
