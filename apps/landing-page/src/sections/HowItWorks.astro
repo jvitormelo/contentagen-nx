@@ -1,0 +1,149 @@
+---
+import { Badge } from "@packages/ui/components/badge";
+import {
+  Card,
+  CardTitle,
+  CardDescription,
+  CardHeader,
+  CardContent,
+} from "@packages/ui/components/card";
+import { UserPlus, Settings, Sparkles, Rocket } from "@lucide/astro";
+
+interface FeatureStep {
+  title: string;
+  description: string;
+  details: string[];
+  icon: any;
+}
+
+const steps: FeatureStep[] = [
+  {
+    title: "Quick Onboarding",
+    description:
+      "Sign up and complete our 2-minute setup wizard. Connect your existing tools and platforms for seamless integration.",
+    details: [
+      "Account setup in under 2 minutes",
+      "Platform integrations (WordPress, Medium, etc.)",
+      "Team member invitations",
+      "Initial preferences configuration",
+    ],
+    icon: UserPlus,
+  },
+  {
+    title: "Configure AI Agents",
+    description:
+      "Create custom content agents tailored to your brand voice, audience, and content goals.",
+    details: [
+      "Define brand voice and tone",
+      "Set target audience parameters",
+      "Configure SEO keywords and topics",
+      "Establish content guidelines and rules",
+    ],
+    icon: Settings,
+  },
+  {
+    title: "Generate & Review Drafts",
+    description:
+      "Input your content brief and watch as your AI agent creates comprehensive, SEO-optimized blog posts.",
+    details: [
+      "Simple brief input (topic + requirements)",
+      "AI generates full blog post draft",
+      "Built-in editing and refinement tools",
+      "SEO optimization suggestions",
+    ],
+    icon: Sparkles,
+  },
+  {
+    title: "Publish & Scale",
+    description:
+      "Export your content in multiple formats or publish directly to your platforms. Scale your content production effortlessly.",
+    details: [
+      "Multi-format export (MD, HTML, DOCX)",
+      "Direct publishing to platforms",
+      "Automated scheduling options",
+      "Performance tracking and analytics",
+    ],
+    icon: Rocket,
+  },
+];
+---
+
+<section id="how-it-works" class="container mx-auto min-h-screen grid items-center ">
+  <div class="flex flex-col items-center justify-center text-center gap-4">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
+      From Setup to Published Post
+      <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        in 4 Simple Steps
+      </span>
+    </h2>
+    <p class="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl">
+      Our streamlined workflow takes you from idea to published blog post faster than you ever thought possible
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <Card className="bg-accent/30 text-foreground border-0 flex flex-col h-full col-span-full">
+      <CardHeader>
+        <div class="flex items-center gap-4 mb-2">
+          <UserPlus class="text-primary size-7" />
+          <CardTitle>{steps[0]?.title}</CardTitle>
+        </div>
+        <CardDescription>{steps[0]?.description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle>
+              {steps[0]?.title}
+            </CardTitle>
+            <CardDescription>
+              {steps[0]?.description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul class="list-disc list-inside space-y-1 text-left mt-2">
+              {steps[0]?.details?.map((detail) => (
+                <li>{detail}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </CardContent>
+    </Card>
+    <>
+      {steps.slice(1).map((step) => {
+        const Icon = step.icon;
+        return (
+          <Card className="bg-accent/30 text-foreground border-0 flex flex-col h-full">
+            <CardHeader>
+              <div class="flex items-center gap-4 mb-2">
+                <Icon class="text-primary size-7" />
+                <CardTitle>{step.title}</CardTitle>
+              </div>
+              <CardDescription>{step.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader>
+                  <CardTitle>
+                    {step.title}
+                  </CardTitle>
+                  <CardDescription>
+                    {step.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul class="list-disc list-inside space-y-1 text-left mt-2">
+                    {step.details.map((detail) => (
+                      <li>{detail}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </>
+  </div>
+</section>
