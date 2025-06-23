@@ -9,7 +9,11 @@ export default defineConfig({
   output: "server",
   env: {
     schema: {
-      VITE_SERVER_URL: envField.string({ context: "client", access: "public" }),
+      VITE_SERVER_URL: envField.string({
+        context: "client",
+        access: "public",
+        default: "https://conentagen-server.manoel-netocarvalho03.workers.dev",
+      }),
     },
   },
   vite: {
