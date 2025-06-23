@@ -11,7 +11,14 @@ export const app = new Elysia({ aot: false })
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-      origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
+      origin: (request): boolean => {
+        const origin = request.headers.get("origin");
+        if (!origin) {
+          return false;
+        }
+        const trustedOrigins = env.BETTER_AUTH_TRUSTED_ORIGINS.split(","); // Allow if the origin is in our trusted list
+        return trustedOrigins.includes(origin);
+      },
       preflight: true,
     }),
   )
