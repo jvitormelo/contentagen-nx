@@ -8,7 +8,6 @@ import { waitlistRoutes } from "./routes/waitlist-routes";
 export const app = new Elysia({ aot: false })
   .use(
     cors({
-      allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       origin: (request): boolean => {
@@ -16,6 +15,7 @@ export const app = new Elysia({ aot: false })
         if (!origin) {
           return false;
         }
+        console.log(origin);
         const trustedOrigins = env.BETTER_AUTH_TRUSTED_ORIGINS.split(","); // Allow if the origin is in our trusted list
         return trustedOrigins.includes(origin);
       },
