@@ -9,7 +9,7 @@ export default defineConfig({
   output: "server",
   env: {
     schema: {
-      VITE_SERVER_URL: envField.string(),
+      VITE_SERVER_URL: envField.string({ context: "client", access: "public" }),
     },
   },
   vite: {
