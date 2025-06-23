@@ -34,6 +34,7 @@
   "name": "dashboard",
   "private": true,
   "scripts": {
+    "deploy": "wrangler deploy --minify src/index.ts",
     "typecheck": "bunx --bun tsc --noEmit ",
     "build": "bunx --bun vite build",
     "check": "bunx --bun biome check --write .",
