@@ -13,8 +13,8 @@ import type React from "react";
 import { useCallback, useState } from "react";
 
 type LeadType = Parameters<EdenClientType["waitlist"]["post"]>["0"]["leadType"];
-export const WaitlistForm = () => {
-  const eden = createEdenAdapter(import.meta.env.VITE_SERVER_URL);
+export const WaitlistForm = ({ apiUrl }: { apiUrl: string }) => {
+  const eden = createEdenAdapter(apiUrl);
 
   const [leadTypes] = useState([
     "individual blogger",
