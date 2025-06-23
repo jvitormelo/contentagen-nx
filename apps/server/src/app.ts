@@ -1,21 +1,21 @@
 import cors from "@elysiajs/cors";
-import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { env } from "./config/env";
-import { authMiddleware, OpenAPI } from "./integrations/auth";
+import { authMiddleware } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
 import { waitlistRoutes } from "./routes/waitlist-routes";
 
 export const app = new Elysia({ aot: false })
-  .use(authMiddleware)
   .use(
     cors({
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
+      preflight: true,
     }),
   )
+  .use(authMiddleware)
   .use(agentRoutes)
   .use(waitlistRoutes)
   .get("/works", () => {
