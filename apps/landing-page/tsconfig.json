@@ -4,11 +4,26 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "paths": {
-      "@/*": ["./src/*"],
-      "@packages/ui/*": ["../../packages/ui/src/*"]
+      "@api": [
+        "../../apps/server/src/index"
+      ],
+      "@/*": [
+        "./src/*"
+      ],
+      "@api/*": [
+        "../../apps/server/src/*"
+      ],
+      "@packages/ui/*": [
+        "../../packages/ui/src/*"
+      ]
     }
   },
-  "exclude": ["dist"],
+  "exclude": [
+    "dist"
+  ],
   "extends": "@tooling/typescript/astro.json",
-  "include": [".astro/types.d.ts", "**/*"]
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ]
 }
