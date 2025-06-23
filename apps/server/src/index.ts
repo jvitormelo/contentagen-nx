@@ -4,6 +4,7 @@ import { Elysia } from "elysia";
 import { env } from "./config/env";
 import { authMiddleware, OpenAPI } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
+import { waitlistRoutes } from "./routes/waitlist-routes";
 
 const app = new Elysia()
   .use(authMiddleware)
@@ -24,6 +25,7 @@ const app = new Elysia()
     }),
   )
   .use(agentRoutes)
+  .use(waitlistRoutes)
   .get("/works", () => {
     return { message: "Eden WORKS!" };
   })
