@@ -10,6 +10,9 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
+    "vars" : {
+    "VITE_SERVER_URL": "https://conentagen-server.manoel-netocarvalho03.workers.dev"
+  },
   "observability": {
     "enabled": true
   }

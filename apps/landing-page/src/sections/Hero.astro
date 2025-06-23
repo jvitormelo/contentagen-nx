@@ -2,7 +2,6 @@
 import { Badge } from "@packages/ui/components/badge";
 import { WaitlistForm } from "../components/waitlist-form";
 
-const { env } = Astro.locals.runtime;
 const socialProofStats = [
   { value: "2,847", description: "creators on waitlist" },
   { value: "15+ hours", description: "saved per week" },
@@ -43,7 +42,7 @@ const socialProofStats = [
   <div>
 
 
-    <WaitlistForm client:load apiUrl={env.VITE_SERVER_URL} /> 
+    <WaitlistForm client:load /> 
   </div>
     </div>
 </section>

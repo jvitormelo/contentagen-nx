@@ -11,10 +11,10 @@ import {
 } from "@packages/ui/components/select";
 import type React from "react";
 import { useCallback, useState } from "react";
-
+import { VITE_SERVER_URL } from "astro:env/client";
 type LeadType = Parameters<EdenClientType["waitlist"]["post"]>["0"]["leadType"];
-export const WaitlistForm = ({ apiUrl }: { apiUrl: string }) => {
-  const eden = createEdenAdapter(apiUrl);
+export const WaitlistForm = () => {
+  const eden = createEdenAdapter(VITE_SERVER_URL);
 
   const [leadTypes] = useState([
     "individual blogger",
