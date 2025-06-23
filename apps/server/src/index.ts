@@ -2,7 +2,7 @@ import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { env } from "./config/env";
-import { authMiddleware, OpenAPI } from "./integrations/auth";
+import { authMiddleware } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
 import { waitlistRoutes } from "./routes/waitlist-routes";
 
@@ -16,14 +16,7 @@ const app = new Elysia()
       origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
     }),
   )
-  .use(
-    swagger({
-      documentation: {
-        components: await OpenAPI.components,
-        paths: await OpenAPI.getPaths(),
-      },
-    }),
-  )
+  .use(swagger())
   .use(agentRoutes)
   .use(waitlistRoutes)
   .get("/works", () => {
