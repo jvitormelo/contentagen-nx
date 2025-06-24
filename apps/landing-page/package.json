@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@astrojs/cloudflare": "catalog:astro",
     "@astrojs/node": "^9.2.2",
     "@astrojs/react": "catalog:astro",
     "@lucide/astro": "catalog:astro",
