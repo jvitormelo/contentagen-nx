@@ -17,7 +17,7 @@
     "astro": "bunx --bun astro",
     "build": "bunx --bun astro build",
     "check": "bunx --bun biome check --write ./src",
-    "dev": "bunx  astro dev",
+    "dev": "bunx astro dev --port 4323",
     "preview": "bunx --bun astro preview",
     "start": "bunx --bun astro dev",
     "typecheck": "bunx --bun astro check"
