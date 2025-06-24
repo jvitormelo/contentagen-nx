@@ -24,6 +24,7 @@ COPY . .
 # Build the landing page application.
 # The build output will be in /app/apps/landing-page/dist
 ENV NODE_ENV=production
+ARG VITE_SERVER_URL
 RUN bun run --filter=landing-page build
 
 # ---
