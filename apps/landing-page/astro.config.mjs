@@ -1,10 +1,11 @@
-import cloudflare from "@astrojs/cloudflare";
+import node from "@astrojs/node";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
-// https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare({}),
+  adapter: node({
+    mode: "standalone",
+  }),
   env: {
     schema: {
       VITE_SERVER_URL: envField.string({
@@ -13,7 +14,12 @@ export default defineConfig({
       }),
     },
   },
+  server: {
+    host: "0.0.0.0",
+  },
   integrations: [react()],
+  output: "server",
+
   vite: {
     plugins: [tailwindcss()],
     resolve:

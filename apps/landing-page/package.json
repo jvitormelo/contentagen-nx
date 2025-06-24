@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@astrojs/cloudflare": "catalog:astro",
+    "@astrojs/node": "^9.2.2",
     "@astrojs/react": "catalog:astro",
     "@lucide/astro": "catalog:astro",
     "@packages/brand": "workspace:*",
@@ -20,7 +21,7 @@
   "name": "landing-page",
   "scripts": {
     "astro": "bunx --bun astro",
-    "build": "wrangler types && bunx --bun astro build",
+    "build": "bunx --bun astro build",
     "check": "bunx --bun biome check --write ./src",
     "dev": "bunx astro dev ",
     "preview": "bunx --bun astro preview",

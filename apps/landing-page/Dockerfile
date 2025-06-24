@@ -26,17 +26,18 @@ COPY /tooling/typescript/package.json ./tooling/typescript
 
 ENV NODE_ENV=production
 
+WORKDIR /app/apps/landing-page
 RUN bunx --bun astro build
 
 FROM gcr.io/distroless/base
 
 WORKDIR /app
 
-COPY --from=build /app/apps/landing-page/dist ./
+COPY --from=build /app/apps/landing-page/dist ./dist
 
 ENV NODE_ENV=production
 
 ARG PORT
 
-CMD ["bunx --run",  "astro"]
+CMD ["node", "./dist/server/entry.mjs"]
 EXPOSE ${PORT}
