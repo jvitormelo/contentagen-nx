@@ -1,4 +1,4 @@
-import brandConfig from "@packages/brand";
+import brandConfig from "@packages/brand/index.json";
 export interface Testimonial {
   name: string;
   role: string;

@@ -1,6 +1,5 @@
 {
   "license": "PROPRIETARY",
-  "main": "./index.json",
   "name": "@packages/brand",
   "private": true,
   "publishConfig": {

@@ -14,11 +14,11 @@ export default defineConfig({
       }),
     },
   },
+  integrations: [react()],
+  output: "server",
   server: {
     host: "0.0.0.0",
   },
-  integrations: [react()],
-  output: "server",
   vite: {
     plugins: [tailwindcss()],
   },

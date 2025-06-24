@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@astrojs/node": "^9.2.2",
-    "sonner": "catalog:ui",
     "@astrojs/react": "catalog:astro",
     "@lucide/astro": "catalog:astro",
     "@packages/brand": "workspace:*",
@@ -11,6 +10,7 @@
     "astro": "catalog:astro",
     "react": "catalog:react",
     "react-dom": "catalog:react",
+    "sonner": "catalog:ui",
     "zod": "^3.25.67"
   },
   "devDependencies": {

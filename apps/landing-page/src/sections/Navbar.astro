@@ -1,5 +1,5 @@
 ---
-import brandConfig from "@packages/brand";
+import Logo from "../components/Logo.astro";
 import { Button } from "@packages/ui/components/button";
 
 const menuItems = [
@@ -11,10 +11,7 @@ const menuItems = [
   <nav id="navbar" class=" bg-muted">
       <div id="navbar-inner" class="container mx-auto relative flex flex-wrap items-center justify-between gap-6 py-6 transition-all duration-200 lg:gap-0">
         <div class="flex w-full justify-between gap-4 lg:w-auto">
-          <a href="/" aria-label="home" class="flex items-center space-x-2">
-            <!-- Swap for your logo component if available -->
-            <span class="">{brandConfig.name}</span>
-          </a>
+    <Logo class="size-12 text-primary" />
           <button id="menu-toggle" aria-label="Open Menu" class="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
             <!-- Menu icon -->
             <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" class="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,3 +48,4 @@ const menuItems = [
         </div>
       </div>
   </nav>
+  
