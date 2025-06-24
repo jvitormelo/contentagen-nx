@@ -1,20 +1,23 @@
-FROM oven/bun:1 AS build
+FROM oven/bun AS build
 
 WORKDIR /app
 
-# Cache packages
+# Cache packages installation
 COPY package.json package.json
-COPY bun.lock bun.lock
-
-COPY /apps/server/package.json ./apps/server/package.json
 
 RUN bun install
 
-COPY /apps/server ./apps/server
+COPY ./src ./src
 
 ENV NODE_ENV=production
 
-RUN bun run build 
+RUN bun build \
+	--compile \
+	--minify-whitespace \
+	--minify-syntax \
+	--target bun \
+	--outfile server \
+	./src/index.ts
 
 FROM gcr.io/distroless/base
 
