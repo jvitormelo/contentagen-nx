@@ -21,7 +21,7 @@ COPY /apps/landing-page ./apps/landing-page
 COPY /packages/eden/package.json ./packages/eden
 COPY /packages/ui/package.json ./packages/ui
 COPY /packages/brand/package.json ./packages/brand
-COPY /tooling/typescript/package.json ./tooling/typescript
+COPY /tooling/typescript ./tooling/typescript
 
 
 ENV NODE_ENV=production
