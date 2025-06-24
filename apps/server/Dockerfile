@@ -21,14 +21,13 @@ COPY /tooling/typescript ./tooling/typescript
 
 ENV NODE_ENV=production
 
-# Build the server binary
 RUN bun build \
-    --compile \
-    --minify-whitespace \
-    --minify-syntax \
-    --target bun \
-    --outfile server \
-    ./src/index.ts
+	--compile \
+	--minify-whitespace \
+	--minify-syntax \
+	--target bun \
+	--outfile server \
+./apps/server/src/index.ts
 
 FROM gcr.io/distroless/base
 
