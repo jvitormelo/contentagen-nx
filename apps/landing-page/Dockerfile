@@ -29,7 +29,7 @@ ENV NODE_ENV=production
 WORKDIR /app/apps/landing-page
 RUN bunx --bun astro build
 
-FROM gcr.io/distroless/base
+FROM oven/bun:latest AS runner
 
 WORKDIR /app
 
