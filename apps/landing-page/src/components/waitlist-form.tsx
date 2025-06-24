@@ -59,66 +59,67 @@ export const WaitlistForm = () => {
     form.handleSubmit();
   }, []);
   return (
-    <form className="w-full max-w-xl" onSubmit={(e) => handleSubmit(e)}>
+    <form
+      className="w-full max-w-xl flex flex-col space-y-4"
+      onSubmit={(e) => handleSubmit(e)}
+    >
       <Toaster />
 
-      <div className="w-full flex flex-col space-y-4">
-        <form.AppField name="email">
-          {(field) => (
-            <field.FieldContainer className="w-full">
-              <Input
-                autoComplete="email"
+      <form.AppField name="email">
+        {(field) => (
+          <field.FieldContainer className="w-full">
+            <Input
+              autoComplete="email"
+              id={field.name}
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              placeholder="Enter your email"
+              type="email"
+              value={field.state.value}
+            />
+            <field.FieldMessage />
+          </field.FieldContainer>
+        )}
+      </form.AppField>
+      <form.AppField name="leadType">
+        {(field) => (
+          <field.FieldContainer className="w-full">
+            <Select
+              onValueChange={(value) => field.handleChange(value)}
+              value={field.state.value}
+            >
+              <SelectTrigger
+                className="w-full mt-2"
                 id={field.name}
                 name={field.name}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-                placeholder="Enter your email"
-                type="email"
-                value={field.state.value}
-              />
-              <field.FieldMessage />
-            </field.FieldContainer>
-          )}
-        </form.AppField>
-        <form.AppField name="leadType">
-          {(field) => (
-            <field.FieldContainer className="w-full">
-              <Select
-                onValueChange={(value) => field.handleChange(value)}
-                value={field.state.value}
               >
-                <SelectTrigger
-                  className="w-full mt-2"
-                  id={field.name}
-                  name={field.name}
-                >
-                  <SelectValue placeholder="Select an option" />
-                </SelectTrigger>
-                <SelectContent>
-                  {leadTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type.replace(/\b\w/g, (char) => char.toUpperCase())}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <field.FieldMessage />
-            </field.FieldContainer>
-          )}
-        </form.AppField>
-        <form.Subscribe>
-          {(formState) => (
-            <Button
-              className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
-              disabled={!formState.canSubmit || formState.isSubmitting}
-              type="submit"
-              variant="default"
-            >
-              Send
-            </Button>
-          )}
-        </form.Subscribe>
-      </div>
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent>
+                {leadTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.replace(/\b\w/g, (char) => char.toUpperCase())}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <field.FieldMessage />
+          </field.FieldContainer>
+        )}
+      </form.AppField>
+      <form.Subscribe>
+        {(formState) => (
+          <Button
+            className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
+            disabled={!formState.canSubmit || formState.isSubmitting}
+            type="submit"
+            variant="default"
+          >
+            Join Waitlist
+          </Button>
+        )}
+      </form.Subscribe>
     </form>
   );
 };
