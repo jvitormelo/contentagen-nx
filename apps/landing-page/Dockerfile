@@ -15,7 +15,7 @@ COPY packages/brand/package.json ./packages/brand/
 COPY tooling/typescript/package.json ./tooling/typescript/
 
 # Install all dependencies (including devDependencies needed for the build step)
-RUN bun install --frozen-lockfile
+RUN bun install 
 
 # Copy the rest of the source code for all workspaces.
 # A .dockerignore file in your monorepo root is crucial for this step.
@@ -43,7 +43,7 @@ COPY packages/brand/package.json ./packages/brand/
 COPY tooling/typescript/package.json ./tooling/typescript/
 
 # Install only production dependencies. This creates a lean, clean node_modules folder.
-RUN bun install --production --frozen-lockfile
+RUN bun install --production 
 
 # ---
 
