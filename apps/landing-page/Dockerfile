@@ -29,7 +29,7 @@ ENV NODE_ENV=production
 WORKDIR /app/apps/landing-page
 RUN bunx --bun astro build
 
-FROM oven/bun:latest AS runner
+FROM node:lts-alpine AS runner
 
 WORKDIR /app
 
@@ -39,5 +39,6 @@ ENV NODE_ENV=production
 
 ARG PORT
 
-CMD ["bun", "run", "./dist/server/entry.mjs"]
+CMD ["node", "./dist/server/entry.mjs"]
+
 EXPOSE ${PORT}
