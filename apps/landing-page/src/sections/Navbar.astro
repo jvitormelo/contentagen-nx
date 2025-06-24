@@ -2,51 +2,50 @@
 import Logo from "../components/Logo.astro";
 import { Button } from "@packages/ui/components/button";
 import ThemeToggler from "../components/ThemeToggler.astro";
-const menuItems = [
-  { name: "Features", href: "#features" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "About", href: "#about" },
-];
+import MobileMenu from "../components/mobile-menu";
+import { menuItems } from "../data/menu-items";
 ---
-  <nav id="navbar" class=" bg-muted">
-      <div id="navbar-inner" class="container mx-auto relative flex flex-wrap items-center justify-between gap-6 py-6 transition-all duration-200 lg:gap-0">
-        <div class="flex w-full justify-between gap-4 lg:w-auto">
-    <Logo class="size-12 text-primary" />
-          <button id="menu-toggle" aria-label="Open Menu" class="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
-            <!-- Menu icon -->
-            <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" class="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            <!-- Close icon -->
-            <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" class="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          <div class="m-auto hidden size-fit lg:block">
-            <ul class="flex gap-1">
-              {menuItems.map((item) => (
-                <li>
-                  <a href={item.href} class="text-muted-foreground hover:text-accent-foreground block duration-150 px-3 py-2 rounded text-base transition-colors">
-                    <span>{item.name}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div id="navbar-buttons" class="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
-          <div class="lg:hidden">
-            <ul class="space-y-6 text-base">
-              <li><a href="#features" class="text-muted-foreground hover:text-accent-foreground block duration-150"><span>Features</span></a></li>
-              <li><a href="#pricing" class="text-muted-foreground hover:text-accent-foreground block duration-150"><span>Pricing</span></a></li>
-              <li><a href="#about" class="text-muted-foreground hover:text-accent-foreground block duration-150"><span>About</span></a></li>
-            </ul>
-          </div>
-          <div class="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-            <ThemeToggler />
-            <Button id="get-started-btn">Get Started</Button>
-          </div>
-        </div>
-      </div>
-  </nav>
+  <nav id="navbar" class="bg-muted">
+    <div id="navbar-inner" class="container mx-auto  flex  items-center justify-between gap-4 p-4 ">
+     
+        <Logo class="size-12 text-primary" />
+      
+   
+     
+      
+     
+          
+          <ul class="flex-row  gap-4 items-center justify-center hidden md:flex mr-auto">
+            {menuItems.map((item) => (
+              <li class="text-muted-foreground hover:text-primary transition-colors duration-150">
+                <a href={item.href} class="hover:text-primary transition-colors duration-150">
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+     
+        
   
+      <div class="flex items-center gap-4">
+          <ThemeToggler />
+          <MobileMenu client:load />
+          <Button id="get-started-btn" className="hidden md:inline">Get Started</Button>
+        </div>
+    </div>
+  </nav>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const navbarBtn = document.getElementById('get-started-btn');
+      if (navbarBtn) {
+        navbarBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.getElementById('cta-section');
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+    });
+  </script>
+

@@ -1,14 +1,7 @@
 ---
 import brandConfig from "@packages/brand/index.json";
 import Logo from "../components/Logo.astro";
-const links = [
-  { title: "Features", href: "#" },
-  { title: "Solution", href: "#" },
-  { title: "Customers", href: "#" },
-  { title: "Pricing", href: "#" },
-  { title: "Help", href: "#" },
-  { title: "About", href: "#" },
-];
+import {menuItems} from "../data/menu-items";
 
 const socialLinks = [
   {
@@ -31,9 +24,9 @@ const year = new Date().getFullYear();
     <Logo class="size-12 text-primary" />
       
     <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">
-      {links.map(link => (
+      {menuItems.map(link => (
         <a href={link.href} class="text-muted-foreground hover:text-primary block duration-150">
-          <span>{link.title}</span>
+          <span>{link.name}</span>
         </a>
       ))}
     </div>
