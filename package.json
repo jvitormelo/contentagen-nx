@@ -15,13 +15,11 @@
   "private": true,
   "scripts": {
     "build:all": "nx run-many -t build --parallel=5",
-    "buld:api": "docker build -f apps/server/Dockerfile -t server-image .",
     "check": "nx run-many -t check --parallel=5",
     "dev:all": "nx run-many -t dev --parallel=5",
     "dev:content-apps": "nx run-many -t dev --parallel=5 -p  landing-page blog docs",
     "dev:dashboard": "nx run-many -t dev --parallel=5 -p server dashboard",
     "format": "biome check --write .",
-    "start:api": "docker run -p 9876:9876 server-image",
     "typecheck": "nx run-many -t typecheck --parallel=5"
   },
   "trustedDependencies": [

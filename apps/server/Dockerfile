@@ -1,4 +1,7 @@
 FROM oven/bun:latest AS build
+ARG DATABASE_URL
+ARG BETTER_AUTH_SECRET
+ARG BETTER_AUTH_TRUSTED_ORIGINS
 
 WORKDIR /app
 
@@ -6,33 +9,35 @@ WORKDIR /app
 COPY package.json bun.lock ./
 
 # Copy server package files
-COPY apps/server/package.json ./apps/server/package.json
-
+COPY /apps/server/package.json ./apps/server/package.json
+COPY /tooling/typescript/package.json ./tooling/typescript/package.json
 # Install all dependencies (monorepo-aware)
 RUN bun install
 
+
 # Copy server source code
-COPY apps/server/src ./apps/server/src
+COPY /apps/server ./apps/server
+COPY /tooling/typescript ./tooling/typescript
 
-WORKDIR /app/apps/server
+ENV NODE_ENV=production
 
-# Build the server binary
 RUN bun build \
-    --compile \
-    --minify-whitespace \
-    --minify-syntax \
-    --target bun \
-    --outfile server \
-    ./src/index.ts
+	--compile \
+	--minify-whitespace \
+	--minify-syntax \
+	--target bun \
+	--outfile server \
+./apps/server/src/index.ts
 
 FROM gcr.io/distroless/base
 
 WORKDIR /app
 
-COPY --from=build /app/apps/server/server server
+COPY --from=build /app/server server
 
 ENV NODE_ENV=production
 
-EXPOSE 9876
+ARG PORT
 
 CMD ["./server"]
+EXPOSE ${PORT}
