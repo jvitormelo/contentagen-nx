@@ -14,6 +14,8 @@ import type React from "react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
+import { Toaster } from "@packages/ui/components/sonner";
+
 type LeadType = Parameters<EdenClientType["waitlist"]["post"]>["0"]["leadType"];
 export const WaitlistForm = () => {
   const eden = createEdenAdapter(VITE_SERVER_URL);
@@ -38,11 +40,11 @@ export const WaitlistForm = () => {
       leadType: "",
     },
     onSubmit: async (data) => {
+      toast.success("Thank you for joining the waitlist!");
       await eden.waitlist.post({
         email: data.value.email,
         leadType: data.value.leadType as LeadType,
       });
-      toast.success("Thank you for joining the waitlist!");
     },
     validators: {
       onChange: schema,
@@ -57,6 +59,8 @@ export const WaitlistForm = () => {
   }, []);
   return (
     <form className="w-full max-w-xl" onSubmit={(e) => handleSubmit(e)}>
+      <Toaster client:load />
+
       <div className="w-full space-y-4">
         <div className="flex gap-4">
           <form.AppField name="email">
