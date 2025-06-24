@@ -4,15 +4,24 @@ import Features from "../sections/Features.astro";
 import TrustSection from "../sections/TrustSection.astro";
 import HowItWorks from "../sections/HowItWorks.astro";
 import Layout from "../layouts/Landing.astro";
-import Navbar from "../sections/Navbar.astro";
 import Footer from "../sections/Footer.astro";
+import Integration from "../sections/Integrations.astro";
+import BuildYourTeamFeature from "../sections/BuildYourTeamFeature.astro";
+import FAQ from "../sections/FAQ.astro";
+import CTA from "../sections/CTA.astro";
+import StatsSection from "../sections/StatsSection.astro";
+import ContentSection from "../sections/ContentSection.astro";
+import Navbar from "../sections/Navbar.astro";
 ---
-  <Layout>
+<Layout>
+  <div class="flex flex-col space-y-4">
     <Navbar />
     <Hero />
-    <TrustSection />
+    <Integration />
     <Features />
-    <HowItWorks />
+    <StatsSection />
+<CTA />
     <Footer />
+  </div>
   </Layout>
 
