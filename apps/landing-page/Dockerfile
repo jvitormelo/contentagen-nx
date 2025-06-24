@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy all package manifests and the lockfile first.
 # This takes advantage of Docker's layer caching, speeding up subsequent builds.
-COPY bun.lockb ./
+COPY bun.lock ./
 COPY package.json ./
 COPY apps/landing-page/package.json ./apps/landing-page/
 COPY packages/eden/package.json ./packages/eden/
@@ -34,7 +34,7 @@ FROM oven/bun:latest AS deps
 WORKDIR /app
 
 # Copy all package manifests and lockfile again
-COPY bun.lockb ./
+COPY bun.lock ./
 COPY package.json ./
 COPY apps/landing-page/package.json ./apps/landing-page/
 COPY packages/eden/package.json ./packages/eden/
@@ -54,7 +54,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy the pruned, production-only node_modules from the 'deps' stage.
-# This is the key fix for the ERR_MODULE_NOT_FOUND error.
+# This will solve the original 'module not found' error.
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy the built application from the 'builder' stage
