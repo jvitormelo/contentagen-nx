@@ -1,7 +1,7 @@
 ---
 import brandConfig from "@packages/brand/index.json";
 import Logo from "../components/Logo.astro";
-import {menuItems} from "../data/menu-items";
+import { menuItems } from "../data/menu-items";
 
 const socialLinks = [
   {
@@ -20,17 +20,17 @@ const year = new Date().getFullYear();
 ---
 
 <footer class=" bg-muted">
-  <div class="container mx-auto p-4 flex flex-col justify-center items-center">
+  <div class="container mx-auto p-4 flex flex-col justify-center items-center space-y-4">
     <Logo class="size-12 text-primary" />
       
-    <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">
+    <div class="flex flex-wrap justify-center gap-4 text-sm">
       {menuItems.map(link => (
         <a href={link.href} class="text-muted-foreground hover:text-primary block duration-150">
           <span>{link.name}</span>
         </a>
       ))}
     </div>
-    <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">
+    <div class=" flex flex-wrap justify-center gap-4 text-sm">
       {socialLinks.map(social => (
         <a
           href={social.href}
