@@ -40,11 +40,12 @@ export const WaitlistForm = () => {
       leadType: "",
     },
     onSubmit: async (data) => {
-      toast.success("Thank you for joining the waitlist!");
       await eden.waitlist.post({
         email: data.value.email,
         leadType: data.value.leadType as LeadType,
       });
+      toast.success("Thank you for joining the waitlist!");
+      data.formApi.reset();
     },
     validators: {
       onChange: schema,
