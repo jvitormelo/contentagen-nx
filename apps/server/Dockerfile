@@ -11,10 +11,15 @@ COPY apps/server/package.json ./apps/server/package.json
 # Install all dependencies (monorepo-aware)
 RUN bun install
 
+
 # Copy server source code
 COPY apps/server/src ./apps/server/src
 
 WORKDIR /app/apps/server
+
+ARG DATABASE_URL
+ARG BETTER_AUTH_SECRET
+ARG BETTER_AUTH_TRUSTED_ORIGINS
 
 # Build the server binary
 RUN bun build \
