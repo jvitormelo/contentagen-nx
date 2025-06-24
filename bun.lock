@@ -63,7 +63,6 @@
         "recharts": "^3.0.0",
         "sonner": "catalog:ui",
         "tailwindcss": "^4.0.6",
-        "vaul": "^1.1.2",
         "vinxi": "^0.5.3",
         "vite-tsconfig-paths": "^5.1.4",
         "zod": "^3.25.67",
@@ -189,6 +188,7 @@
         "react-dom": "catalog:react",
         "tailwind-merge": "^3.0.1",
         "tw-animate-css": "^1.2.4",
+        "vaul": "^1.1.2",
         "zod": "^3.24.2",
       },
       "devDependencies": {
