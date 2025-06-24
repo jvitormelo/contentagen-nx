@@ -43,7 +43,7 @@ COPY packages/brand/package.json ./packages/brand/
 COPY tooling/typescript/package.json ./tooling/typescript/
 
 # Install only production dependencies. This creates a lean, clean node_modules folder.
-RUN bun install --production 
+RUN bun install 
 
 # ---
 
