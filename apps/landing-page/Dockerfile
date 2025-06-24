@@ -18,9 +18,9 @@ RUN bun install
 
 # Copy server source code
 COPY /apps/landing-page ./apps/landing-page
-COPY /packages/eden/package.json ./packages/eden
-COPY /packages/ui/package.json ./packages/ui
-COPY /packages/brand/package.json ./packages/brand
+COPY /packages/eden ./packages/eden
+COPY /packages/ui ./packages/ui
+COPY /packages/brand ./packages/brand
 COPY /tooling/typescript ./tooling/typescript
 
 
