@@ -4,9 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
 // https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare({
-    imageService: "passthrough",
-  }),
+  adapter: cloudflare({}),
   env: {
     schema: {
       VITE_SERVER_URL: envField.string({
