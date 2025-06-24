@@ -10,11 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@packages/ui/components/select";
+import { Toaster } from "@packages/ui/components/sonner";
 import type React from "react";
 import { useCallback, useState } from "react";
-import { z } from "zod";
 import { toast } from "sonner";
-import { Toaster } from "@packages/ui/components/sonner";
+import { z } from "zod";
 
 type LeadType = Parameters<EdenClientType["waitlist"]["post"]>["0"]["leadType"];
 export const WaitlistForm = () => {
@@ -62,38 +62,24 @@ export const WaitlistForm = () => {
     <form className="w-full max-w-xl" onSubmit={(e) => handleSubmit(e)}>
       <Toaster />
 
-      <div className="w-full space-y-4">
-        <div className="flex gap-4">
-          <form.AppField name="email">
-            {(field) => (
-              <field.FieldContainer className="w-full">
-                <Input
-                  autoComplete="email"
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Enter your email"
-                  type="email"
-                  value={field.state.value}
-                />
-                <field.FieldMessage />
-              </field.FieldContainer>
-            )}
-          </form.AppField>
-          <form.Subscribe>
-            {(formState) => (
-              <Button
-                className="  shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
-                disabled={!formState.canSubmit || formState.isSubmitting}
-                type="submit"
-                variant="default"
-              >
-                Send
-              </Button>
-            )}
-          </form.Subscribe>
-        </div>
+      <div className="w-full flex flex-col space-y-4">
+        <form.AppField name="email">
+          {(field) => (
+            <field.FieldContainer className="w-full">
+              <Input
+                autoComplete="email"
+                id={field.name}
+                name={field.name}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="Enter your email"
+                type="email"
+                value={field.state.value}
+              />
+              <field.FieldMessage />
+            </field.FieldContainer>
+          )}
+        </form.AppField>
         <form.AppField name="leadType">
           {(field) => (
             <field.FieldContainer className="w-full">
@@ -120,6 +106,18 @@ export const WaitlistForm = () => {
             </field.FieldContainer>
           )}
         </form.AppField>
+        <form.Subscribe>
+          {(formState) => (
+            <Button
+              className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
+              disabled={!formState.canSubmit || formState.isSubmitting}
+              type="submit"
+              variant="default"
+            >
+              Send
+            </Button>
+          )}
+        </form.Subscribe>
       </div>
     </form>
   );
