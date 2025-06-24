@@ -33,6 +33,6 @@ COPY --from=build /app/apps/server/server server
 
 ENV NODE_ENV=production
 
-EXPOSE 3000
+EXPOSE 9876
 
 CMD ["./server"]
