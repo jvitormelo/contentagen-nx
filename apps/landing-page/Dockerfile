@@ -39,5 +39,5 @@ ENV NODE_ENV=production
 
 ARG PORT
 
-CMD ["node", "./dist/server/entry.mjs"]
+CMD ["bun", "./dist/server/entry.mjs"]
 EXPOSE ${PORT}
