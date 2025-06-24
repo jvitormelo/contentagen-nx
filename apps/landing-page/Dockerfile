@@ -32,7 +32,7 @@ FROM gcr.io/distroless/base
 
 WORKDIR /app
 
-COPY --from=build /app/landing-page server
+COPY --from=build /app/apps/landing-page/dist ./
 
 ENV NODE_ENV=production
 
