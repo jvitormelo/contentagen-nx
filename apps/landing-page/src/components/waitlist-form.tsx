@@ -1,3 +1,4 @@
+import { VITE_SERVER_URL } from "astro:env/client";
 import { createEdenAdapter, type EdenClientType } from "@packages/eden";
 import { Button } from "@packages/ui/components/button";
 import { useAppForm } from "@packages/ui/components/form";
@@ -11,7 +12,8 @@ import {
 } from "@packages/ui/components/select";
 import type React from "react";
 import { useCallback, useState } from "react";
-import { VITE_SERVER_URL } from "astro:env/client";
+import { z } from "zod";
+import { toast } from "sonner";
 type LeadType = Parameters<EdenClientType["waitlist"]["post"]>["0"]["leadType"];
 export const WaitlistForm = () => {
   const eden = createEdenAdapter(VITE_SERVER_URL);
@@ -23,11 +25,14 @@ export const WaitlistForm = () => {
     "business owner",
     "other",
   ]);
-
+  const schema = z.object({
+    email: z.string().email("Please enter a valid email address"),
+    leadType: z.enum(leadTypes as [LeadType, ...LeadType[]], {
+      errorMap: () => ({ message: "Please select a lead type" }),
+    }),
+  });
   const form = useAppForm({
-    defaultState: {
-      canSubmit: false,
-    },
+    defaultState: {},
     defaultValues: {
       email: "",
       leadType: "",
@@ -37,6 +42,13 @@ export const WaitlistForm = () => {
         email: data.value.email,
         leadType: data.value.leadType as LeadType,
       });
+      toast.success("Thank you for joining the waitlist!");
+    },
+    validators: {
+      onChange: schema,
+      onMount: (state) => {
+        return schema.safeParse(state.value);
+      },
     },
   });
   const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
@@ -44,12 +56,12 @@ export const WaitlistForm = () => {
     form.handleSubmit();
   }, []);
   return (
-    <form className="" onSubmit={(e) => handleSubmit(e)}>
-      <div className="w-full">
+    <form className="w-full max-w-xl" onSubmit={(e) => handleSubmit(e)}>
+      <div className="w-full space-y-4">
         <div className="flex gap-4">
           <form.AppField name="email">
             {(field) => (
-              <field.FieldContainer>
+              <field.FieldContainer className="w-full">
                 <Input
                   autoComplete="email"
                   id={field.name}

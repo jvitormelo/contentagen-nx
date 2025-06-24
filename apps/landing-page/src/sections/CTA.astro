@@ -1,14 +1,15 @@
 ---
 import { WaitlistForm } from "../components/waitlist-form";
 ---
-<section class="container mx-auto p-4 flex flex-col items-center justify-center space-y-8 text-center">
-  <div class="space-y-4">
+<section id="cta-section" class="container mx-auto p-4 flex flex-col items-center justify-center space-y-8 text-center">
+  <div class="space-y-4 flex flex-col items-center justify-center">
     <h2 class="text-foreground text-balance text-3xl font-semibold lg:text-4xl">
       Unlock Effortless Blog Creation with AI
     </h2>
-    <p class="">
-      Get early access to the all-in-one platform for agencies and bloggers: generate long-form, SEO-optimized posts in minutes, personalize your content, and streamline your production workflow. Sign up to revolutionize how you create and manage blog content!
+    <p class="text-muted-foreground max-w-xl text-lg">
+      Get early access to our all-in-one platform: generate SEO-optimized posts in minutes, personalize content, and streamline your workflow. Sign up to transform your blog creation process!
     </p>
   </div>
-        <WaitlistForm client:load />
+
+    <WaitlistForm client:load />
 </section>
