@@ -59,7 +59,7 @@ export const WaitlistForm = () => {
   }, []);
   return (
     <form className="w-full max-w-xl" onSubmit={(e) => handleSubmit(e)}>
-      <Toaster client:load />
+      <Toaster />
 
       <div className="w-full space-y-4">
         <div className="flex gap-4">
