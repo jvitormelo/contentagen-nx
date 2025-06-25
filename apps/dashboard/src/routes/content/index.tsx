@@ -79,7 +79,7 @@ function Content() {
               </div>
             </div>
             <div className="flex items-center">
-              <Link search={{ agentId: 1 }} to="/content/generate">
+              <Link search={{ agentId: "1" }} to="/content/generate">
                 <Button className="ml-3">
                   <Plus className="w-4 h-4 mr-2" />
                   Generate Content

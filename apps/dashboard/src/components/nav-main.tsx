@@ -7,7 +7,7 @@ import {
   SidebarMenuItem,
 } from "@packages/ui/components/sidebar";
 import { type Icon, IconBell, IconCirclePlusFilled } from "@tabler/icons-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 
 export function NavMain({
   items,
@@ -18,6 +18,8 @@ export function NavMain({
     icon?: Icon;
   }[];
 }) {
+  const { pathname } = useLocation();
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -43,7 +45,11 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith(item.url)}
+                tooltip={item.title}
+              >
                 <Link to={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>

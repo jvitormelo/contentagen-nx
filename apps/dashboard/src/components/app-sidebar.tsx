@@ -1,3 +1,7 @@
+import { NavDocuments } from "@/components/nav-documents";
+import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -22,10 +26,6 @@ import {
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import type * as React from "react";
-import { NavDocuments } from "@/components/nav-documents";
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
 
 const data = {
   documents: [
@@ -102,7 +102,7 @@ const data = {
     {
       icon: IconArticle,
       title: "Content",
-      url: "#",
+      url: "/content",
     },
     {
       icon: IconFolder,
