@@ -1,21 +1,20 @@
 ---
-import { Image } from "astro:assets";
+import { Image, Picture } from "astro:assets";
 import duomeLogo from "../assets/teams/duome-logo.png";
 import enduroLogo from "../assets/teams/enduro-logo.png";
 const partners = [
-    {
-        logo: enduroLogo,
-        alt: "Enduro for Tri Logo",
-   
-      url:"https://www.endurofortri.com/en"
-    },
-	{
-		logo: duomeLogo,
-		url: "https://www.duome.app/",
-		alt: "Duome Logo",
-	
-	},
-	// Add more partners as needed
+  {
+    logo: enduroLogo,
+    alt: "Enduro for Tri Logo",
+
+    url: "https://www.endurofortri.com/en",
+  },
+  {
+    logo: duomeLogo,
+    url: "https://www.duome.app/",
+    alt: "Duome Logo",
+  },
+  // Add more partners as needed
 ];
 ---
 
@@ -31,7 +30,9 @@ const partners = [
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							<Image
+				<Picture
+          formats={['webp']}
+          loading={"lazy"}
 								class="h-10 w-10"
 								src={partner.logo}
 								alt={partner.alt}

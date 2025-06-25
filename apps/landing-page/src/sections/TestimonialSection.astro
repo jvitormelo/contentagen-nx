@@ -1,6 +1,6 @@
 ---
 import brandConfig from "@packages/brand/index.json";
-import { Image } from "astro:assets";
+import { Picture } from "astro:assets";
 import hugoImg from "../assets/testimonials/hugo.png";
 ---
 
@@ -12,11 +12,13 @@ import hugoImg from "../assets/testimonials/hugo.png";
           Using {brandConfig.name} has been a game-changer for me. With its AI-driven automation for SEO and content optimization, I've reached more people than I ever thought possible, effortlessly expanding the visibility of my business.
         </p>
         <footer class=" flex items-center gap-4">
-            <Image
+      <Picture
+
+          formats={['webp']}
+          loading={"lazy"}
               src={hugoImg}
               alt="Hugo Bernardo"
               class="w-12 h-12 object-cover rounded-full ring-foreground/10 border-transparent shadow ring-1 overflow-hidden"
-              loading="lazy"
             />
           <cite>Hugo Bernardo</cite>
           <span aria-hidden class="bg-foreground/15 size-1 rounded-full"></span>

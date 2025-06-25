@@ -1,7 +1,7 @@
 ---
 import "@packages/ui/globals.css";
-import PostHog from "../components/posthog.astro";
 import brandConfig from "@packages/brand/index.json";
+import PostHog from "../components/posthog.astro";
 ---
 <!doctype html>
 <html lang="en" class="scrolsmooth">
@@ -13,6 +13,7 @@ import brandConfig from "@packages/brand/index.json";
 		<meta name="author" content={`${brandConfig.author}`} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href="https://contentagen.com/" />
 		
 		<!-- Open Graph Metadata -->
 		<meta property="og:title" content={`${brandConfig.name}`} />
