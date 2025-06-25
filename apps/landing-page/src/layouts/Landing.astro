@@ -8,14 +8,26 @@ import brandConfig from "@packages/brand/index.json";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content={`Discover ${brandConfig.name}, a modern solution for all your needs. Join us to explore innovative features, seamless integrations, and unparalleled support.`} />
+		<meta name="keywords" content={`${brandConfig.name}, modern solutions, integrations, support`} />
+		<meta name="author" content={`${brandConfig.author}`} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
+		
+		<!-- Open Graph Metadata -->
+		<meta property="og:title" content={`${brandConfig.name}`} />
+		<meta property="og:description" content={`Discover ${brandConfig.name}, a modern solution for all your needs. Join us to explore innovative features, seamless integrations, and unparalleled support.`} />
+		<meta property="og:image" content="/og-image.png" />
+		<meta property="og:url" content="https://contentagen.com" />
+		<meta property="og:type" content="website" />
 		    <PostHog />
 
-		<title>{brandConfig.name}</title>
+		<title>{brandConfig.name} - Modern Solutions for Your Needs</title>
 	</head>
-	<body  >
-	  <slot />
+	<body>
+	  <main role="main">
+	    <slot />
+	  </main>
 	</body>
 </html>
 
