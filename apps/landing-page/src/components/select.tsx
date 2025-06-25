@@ -6,7 +6,6 @@ import {
   SelectTrigger,
 } from "@packages/ui/components/select";
 
-
 interface Props {
   data: {
     label: string;
@@ -18,7 +17,7 @@ interface Props {
 
 export function AstroSelect({ data, value, onChange }: Props) {
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select onValueChange={onChange} value={value}>
       <SelectTrigger className="w-full space-y-4" />
       <SelectContent>
         <SelectGroup>

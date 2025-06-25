@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const leadTypeEnum = pgEnum("lead_type", [
   "individual blogger",

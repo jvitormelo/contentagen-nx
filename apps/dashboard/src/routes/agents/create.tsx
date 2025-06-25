@@ -104,10 +104,11 @@ function CreateAgent() {
           <nav className="flex space-x-4 mb-6">
             {steps.map((label, i) => (
               <button
-                className={`px-3 py-1 rounded ${i + 1 === currentStep
+                className={`px-3 py-1 rounded ${
+                  i + 1 === currentStep
                     ? "bg-primary text-primary-foreground font-bold"
                     : "bg-muted text-muted-foreground"
-                  }`}
+                }`}
                 disabled={isLoading}
                 key={`step-${i + 1}`}
                 onClick={() => setCurrentStep(i + 1)}
@@ -247,10 +248,11 @@ function CreateAgent() {
                         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
                           {CONTENT_TYPES.map((type) => (
                             <button
-                              className={`group relative rounded-lg border-2 p-4 text-sm font-medium transition-all hover:shadow-sm ${field.state.value === type.value
+                              className={`group relative rounded-lg border-2 p-4 text-sm font-medium transition-all hover:shadow-sm ${
+                                field.state.value === type.value
                                   ? "border-primary bg-primary/5 text-primary shadow-sm"
                                   : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                                }`}
+                              }`}
                               key={type.value}
                               onClick={() => field.handleChange(type.value)}
                               type="button"
@@ -278,10 +280,11 @@ function CreateAgent() {
                         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
                           {VOICE_TONES.map((tone) => (
                             <button
-                              className={`group relative rounded-lg border-2 p-4 text-sm font-medium transition-all hover:shadow-sm ${field.state.value === tone.value
+                              className={`group relative rounded-lg border-2 p-4 text-sm font-medium transition-all hover:shadow-sm ${
+                                field.state.value === tone.value
                                   ? "border-primary bg-primary/5 text-primary shadow-sm"
                                   : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                                }`}
+                              }`}
                               key={tone.value}
                               onClick={() => field.handleChange(tone.value)}
                               type="button"
@@ -309,10 +312,11 @@ function CreateAgent() {
                         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
                           {TARGET_AUDIENCES.map((audience) => (
                             <button
-                              className={`group relative rounded-lg border-2 p-4 text-sm font-medium transition-all hover:shadow-sm ${field.state.value === audience.value
+                              className={`group relative rounded-lg border-2 p-4 text-sm font-medium transition-all hover:shadow-sm ${
+                                field.state.value === audience.value
                                   ? "border-primary bg-primary/5 text-primary shadow-sm"
                                   : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                                }`}
+                              }`}
                               key={audience.value}
                               onClick={() => field.handleChange(audience.value)}
                               type="button"
@@ -334,10 +338,11 @@ function CreateAgent() {
                         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
                           {FORMATTING_STYLES.map((style) => (
                             <button
-                              className={`group relative rounded-lg border-2 p-4 text-left text-sm font-medium transition-all hover:shadow-sm ${field.state.value === style.value
+                              className={`group relative rounded-lg border-2 p-4 text-left text-sm font-medium transition-all hover:shadow-sm ${
+                                field.state.value === style.value
                                   ? "border-primary bg-primary/5 text-primary shadow-sm"
                                   : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                                }`}
+                              }`}
                               key={style.value}
                               onClick={() => field.handleChange(style.value)}
                               type="button"

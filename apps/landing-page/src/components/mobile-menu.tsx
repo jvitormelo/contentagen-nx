@@ -27,7 +27,7 @@ export default function MobileMenu() {
         <SheetContent side="right">
           <SheetHeader>
             <SheetTitle>Menu</SheetTitle>
-            <SheetDescription> 
+            <SheetDescription>
               Explore our features and services
             </SheetDescription>
           </SheetHeader>

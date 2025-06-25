@@ -1,5 +1,4 @@
 export const menuItems = [
-  { name: "Features", href: "#features" },
-  { name: "Integrations", href: "#integrations" },
-
+  { href: "#features", name: "Features" },
+  { href: "#integrations", name: "Integrations" },
 ];
