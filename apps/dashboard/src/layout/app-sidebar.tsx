@@ -1,4 +1,5 @@
 import {
+  Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
@@ -21,7 +22,6 @@ import {
   ListIcon,
   SearchIcon,
   SettingsIcon,
-  Sidebar,
   UsersIcon,
 } from "lucide-react";
 import type * as React from "react";
