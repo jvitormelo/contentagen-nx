@@ -1,3 +1,4 @@
+import brandConfig from "@packages/brand/index.json";
 import logo from "@packages/brand/logo.svg";
 import {
   Sidebar,
@@ -5,14 +6,13 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@packages/ui/components/sidebar";
-import { ArrowUpCircleIcon, LayoutDashboardIcon } from "lucide-react";
+import { LayoutDashboardIcon } from "lucide-react";
 import type * as React from "react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import brandConfig from "@packages/brand/index.json";
+
 const data = {
   navMain: [
     {
