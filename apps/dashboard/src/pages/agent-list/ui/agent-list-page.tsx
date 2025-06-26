@@ -109,7 +109,7 @@ export function AgentListPage() {
           </div>
         ))}
         <Link to="/agents/create">
-          <div className="p-4 bg-card border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center hover:border-accent transition-colors cursor-pointer h-full hover:bg-accent/5 gap-4">
+          <div className="p-4 bg-card border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center  gap-4">
             <Plus className="w-12 h-12 text-muted-foreground" />
             <h3 className="text-lg font-medium text-foreground">
               Create New Agent
