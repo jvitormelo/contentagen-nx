@@ -1,4 +1,4 @@
-# apps/landing-page/Dockerfile
+# apps/dashboard/Dockerfile
 # Stage 1: Install all dependencies and build the application
 FROM oven/bun:latest AS builder
 
@@ -21,11 +21,11 @@ RUN bun install
 # A .dockerignore file in your monorepo root is crucial for this step.
 COPY . .
 
-# Build the landing page application.
-# The build output will be in /app/apps/landing-page/dist
+# Build the dashboard application.
+# The build output will be in /app/apps/dashboard/dist
 ENV NODE_ENV=production
 ARG VITE_SERVER_URL
-RUN bun run --filter=landing-page build
+RUN bun run --filter=dashboard build
 
 # ---
 
@@ -59,7 +59,7 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy the built application from the 'builder' stage
-COPY --from=builder /app/apps/landing-page/dist ./dist
+COPY --from=builder /app/apps/dashboard/dist ./dist
 
 # Also copy the final package.json to the root of the app directory.
 # This is good practice and helps with Node's module resolution.
