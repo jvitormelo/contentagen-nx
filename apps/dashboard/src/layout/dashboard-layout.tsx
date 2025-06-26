@@ -1,13 +1,7 @@
-"use client";
-
-import * as React from "react";
-import { ThemeProvider } from "./theme-provider";
-import { SiteHeader } from "./site-header";
+import { SidebarInset, SidebarProvider } from "@packages/ui/components/sidebar";
+import type * as React from "react";
 import { AppSidebar } from "./app-sidebar";
-import { SidebarProvider, SidebarInset } from "@packages/ui/components/sidebar";
-import { ChartAreaInteractive } from "./chart-area-interactive";
-import { DataTable } from "./data-table";
-import { SectionCards } from "./section-cards";
+import { SiteHeader } from "./site-header";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -20,4 +14,3 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-
