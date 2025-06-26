@@ -9,9 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContentIndexRouteImport } from './routes/content/index'
 import { Route as AgentsIndexRouteImport } from './routes/agents/index'
 import { Route as ContentReviewRouteImport } from './routes/content/review'
@@ -24,19 +22,9 @@ import { Route as AuthEmailVerificationRouteImport } from './routes/auth/email-v
 import { Route as AgentsEditRouteImport } from './routes/agents/edit'
 import { Route as AgentsCreateRouteImport } from './routes/agents/create'
 
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContentIndexRoute = ContentIndexRouteImport.update({
@@ -96,9 +84,7 @@ const AgentsCreateRoute = AgentsCreateRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/onboarding': typeof OnboardingRoute
   '/agents/create': typeof AgentsCreateRoute
   '/agents/edit': typeof AgentsEditRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
@@ -112,9 +98,7 @@ export interface FileRoutesByFullPath {
   '/content': typeof ContentIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/onboarding': typeof OnboardingRoute
   '/agents/create': typeof AgentsCreateRoute
   '/agents/edit': typeof AgentsEditRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
@@ -129,9 +113,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/onboarding': typeof OnboardingRoute
   '/agents/create': typeof AgentsCreateRoute
   '/agents/edit': typeof AgentsEditRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
@@ -147,9 +129,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/auth'
-    | '/onboarding'
     | '/agents/create'
     | '/agents/edit'
     | '/auth/email-verification'
@@ -163,9 +143,7 @@ export interface FileRouteTypes {
     | '/content'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/auth'
-    | '/onboarding'
     | '/agents/create'
     | '/agents/edit'
     | '/auth/email-verification'
@@ -179,9 +157,7 @@ export interface FileRouteTypes {
     | '/content'
   id:
     | '__root__'
-    | '/'
     | '/auth'
-    | '/onboarding'
     | '/agents/create'
     | '/agents/edit'
     | '/auth/email-verification'
@@ -196,9 +172,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
-  OnboardingRoute: typeof OnboardingRoute
   AgentsCreateRoute: typeof AgentsCreateRoute
   AgentsEditRoute: typeof AgentsEditRoute
   ContentExportRoute: typeof ContentExportRoute
@@ -210,25 +184,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/content/': {
@@ -328,9 +288,7 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
-  OnboardingRoute: OnboardingRoute,
   AgentsCreateRoute: AgentsCreateRoute,
   AgentsEditRoute: AgentsEditRoute,
   ContentExportRoute: ContentExportRoute,
