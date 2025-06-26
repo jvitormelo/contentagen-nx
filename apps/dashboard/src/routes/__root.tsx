@@ -1,5 +1,5 @@
-import type { EdenClientType } from "@packages/eden";
 import brandConfig from "@packages/brand/index.json";
+import type { EdenClientType } from "@packages/eden";
 import { SidebarInset, SidebarProvider } from "@packages/ui/components/sidebar";
 import appCss from "@packages/ui/globals.css?url";
 import type { QueryClient } from "@tanstack/react-query";
