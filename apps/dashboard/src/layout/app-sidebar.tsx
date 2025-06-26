@@ -1,3 +1,4 @@
+import logo from "@packages/brand/logo.svg";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +12,7 @@ import { ArrowUpCircleIcon, LayoutDashboardIcon } from "lucide-react";
 import type * as React from "react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-
+import brandConfig from "@packages/brand/index.json";
 const data = {
   navMain: [
     {
@@ -33,15 +34,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <div>
-                <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
-              </div>
-            </SidebarMenuButton>
+            <div className="flex items-center gap-2">
+              <figure className="text-primary">
+                <img alt="Project logo" className="w-8 h-8" src={logo} />
+              </figure>
+
+              <span className="text-lg font-semibold">{brandConfig.name}</span>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
