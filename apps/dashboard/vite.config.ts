@@ -8,24 +8,12 @@ export default defineConfig({
     tsConfigPaths({
       projects: ["./tsconfig.json"],
     }),
-    tanstackStart(),
+    tanstackStart({
+      target: "node-server"
+    }),
   ],
-  ssr: {
-    // Explicitly list packages that should NOT be externalized (i.e., should be bundled)
-    // for the SSR build. This ensures Node.js built-ins within them are handled correctly
-    // for the server environment, preventing "browser compatibility" issues during build.
-    noExternal: [
-      "@tanstack/react-start",
-      // If other TanStack or server-related packages also cause similar issues,
-      // you might need to add them here.
-    ],
-    external: [
-      "node:stream",
-      "node:stream/web",
-      "node:async_hooks",
-    ]
-  },
   server: {
+    host: "0.0.0.0",
     port: 3000,
   },
 });

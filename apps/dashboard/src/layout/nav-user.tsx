@@ -1,4 +1,5 @@
-import { betterAuthClient } from "@/integrations/better-auth";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import {
   Avatar,
   AvatarFallback,
@@ -26,11 +27,44 @@ import {
   MoreVerticalIcon,
   UserCircleIcon,
 } from "lucide-react";
+import { betterAuthClient } from "@/integrations/better-auth";
+import { Skeleton } from "@packages/ui/components/skeleton";
 
-export function NavUser() {
+// Simple ErrorBoundary implementation
+function NavUserErrorFallback() {
+  return (
+    <div className="p-4 text-center text-destructive">
+      Failed to load user info.
+    </div>
+  );
+}
+
+// Skeleton for loading state
+function NavUserSkeleton() {
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton size="lg" className="pointer-events-none">
+          <Skeleton className="h-8 w-8 rounded-lg mr-3" />
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <Skeleton className="h-4 w-24 mb-1" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+          <Skeleton className="ml-auto size-4" />
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}
+
+// Extracted content with Suspense logic
+function NavUserContent() {
   const { isMobile } = useSidebar();
+  const { data: session, isPending, error } = betterAuthClient.useSession();
 
-  const { data: session } = betterAuthClient.useSession();
+  if (error) throw error;
+  if (isPending) return <NavUserSkeleton />;
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -43,7 +77,7 @@ export function NavUser() {
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage
                   alt={session?.user.name}
-                  src={session?.user.image}
+                  src={session?.user.image ?? undefined}
                 />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
@@ -69,7 +103,7 @@ export function NavUser() {
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
                     alt={session?.user?.name}
-                    src={session?.user?.image}
+                    src={session?.user?.image ?? undefined}
                   />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
@@ -109,3 +143,15 @@ export function NavUser() {
     </SidebarMenu>
   );
 }
+
+// Export with Suspense and ErrorBoundary
+export function NavUser() {
+  return (
+    <ErrorBoundary FallbackComponent={NavUserErrorFallback}>
+      <Suspense fallback={<NavUserSkeleton />}>
+        <NavUserContent />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
