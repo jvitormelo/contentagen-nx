@@ -59,7 +59,7 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy the built application from the 'builder' stage
-COPY --from=builder /app/apps/dashboard/dist ./dist
+COPY --from=builder /app/apps/dashboard/.output ./.output
 
 # Also copy the final package.json to the root of the app directory.
 # This is good practice and helps with Node's module resolution.
