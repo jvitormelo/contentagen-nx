@@ -1,4 +1,5 @@
 import type { EdenClientType } from "@packages/eden";
+import brandConfig from "@packages/brand/index.json";
 import { SidebarInset, SidebarProvider } from "@packages/ui/components/sidebar";
 import appCss from "@packages/ui/globals.css?url";
 import type { QueryClient } from "@tanstack/react-query";
@@ -56,7 +57,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         name: "viewport",
       },
       {
-        title: "TanStack Start Starter",
+        title: brandConfig.name,
       },
     ],
   }),
