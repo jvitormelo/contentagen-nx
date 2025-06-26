@@ -1,5 +1,4 @@
-"use client";
-
+import { betterAuthClient } from "@/integrations/better-auth";
 import {
   Avatar,
   AvatarFallback,
@@ -28,17 +27,10 @@ import {
   UserCircleIcon,
 } from "lucide-react";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
 
+  const { data: session } = betterAuthClient.useSession();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -49,13 +41,18 @@ export function NavUser({
               size="lg"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage alt={user.name} src={user.avatar} />
+                <AvatarImage
+                  alt={session?.user.name}
+                  src={session?.user.image}
+                />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">
+                  {session?.user.name}
+                </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
+                  {session?.user.email}
                 </span>
               </div>
               <MoreVerticalIcon className="ml-auto size-4" />
@@ -70,13 +67,18 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage alt={user.name} src={user.avatar} />
+                  <AvatarImage
+                    alt={session?.user?.name}
+                    src={session?.user?.image}
+                  />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">
+                    {session?.user.name}
+                  </span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {user.email}
+                    {session?.user.email}
                   </span>
                 </div>
               </div>
