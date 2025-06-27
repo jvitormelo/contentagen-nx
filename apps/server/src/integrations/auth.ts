@@ -49,7 +49,6 @@ export const authMiddleware = new Elysia({ name: "better-auth-middleware" })
         const session = await auth.api.getSession({
           headers,
         });
-        console.log("Session:", session);
         if (!session)
           return status(401, {
             message:
