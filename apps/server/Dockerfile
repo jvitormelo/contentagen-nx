@@ -23,14 +23,16 @@ COPY /tooling/typescript ./tooling/typescript
 COPY /packages/brand ./packages/brand
 ENV NODE_ENV=production
 
-# Simplify bun build command: removed --minify-whitespace and --minify-syntax
+# Bun build command (minify flags removed as per previous suggestion)
 RUN bun build \
   --compile \
   --target bun \
   --outfile server \
   ./apps/server/src/index.ts
 
-FROM gcr.io/distroless/base
+# --- Stage 2: Create the final production image
+# Changed the base image from gcr.io/distroless/base to oven/bun:latest
+FROM oven/bun:latest AS runner 
 
 WORKDIR /app
 
@@ -41,4 +43,5 @@ ENV NODE_ENV=production
 ARG PORT
 EXPOSE ${PORT}
 
+# The compiled Bun binary is directly executable
 CMD ["./server"]
