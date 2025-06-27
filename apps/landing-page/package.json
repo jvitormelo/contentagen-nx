@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@astrojs/check": "catalog:astro",
     "@astrojs/node": "catalog:astro",
     "@astrojs/react": "catalog:astro",
     "@astrojs/sitemap": "catalog:astro",

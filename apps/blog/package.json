@@ -1,10 +1,11 @@
 {
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/node": "catalog:astro",
+    "@astrojs/check": "catalog:astro",
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/react": "catalog:astro",
     "@astrojs/rss": "^4.0.11",
-    "@astrojs/sitemap": "^3.4.0",
+    "@astrojs/sitemap": "catalog:astro",
     "@packages/ui": "workspace:*",
     "@tailwindcss/vite": "^4.1.8",
     "astro": "catalog:astro",
