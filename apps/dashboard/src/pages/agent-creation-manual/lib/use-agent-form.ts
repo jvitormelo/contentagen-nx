@@ -1,9 +1,4 @@
-import type {
-  ContentType,
-  FormattingStyle,
-  TargetAudience,
-  VoiceTone,
-} from "@api/schemas/content-schema";
+
 import {
   contentTypeEnum,
   formattingStyleEnum,
@@ -16,18 +11,6 @@ import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { useCallback } from "react";
 import { z } from "zod";
 
-interface AgentFormData {
-  name: string;
-  description: string;
-  projectId?: string;
-  contentType: ContentType;
-  voiceTone: VoiceTone;
-  targetAudience: TargetAudience;
-  formattingStyle?: FormattingStyle;
-  topics: string[];
-  seoKeywords: string[];
-}
-
 const agentFormSchema = z.object({
   contentType: z.enum(contentTypeEnum.enumValues, {
     required_error: "Content type is required",
@@ -35,7 +18,7 @@ const agentFormSchema = z.object({
   description: z.string().min(1, "Description is required"),
   formattingStyle: z.enum(formattingStyleEnum.enumValues).optional(),
   name: z.string().min(1, "Agent name is required"),
-  projectId: z.string().optional(),
+
   seoKeywords: z.array(z.string()),
   targetAudience: z.enum(targetAudienceEnum.enumValues, {
     required_error: "Target audience is required",
@@ -45,7 +28,7 @@ const agentFormSchema = z.object({
     required_error: "Voice tone is required",
   }),
 });
-
+export type AgentFormData = z.infer<typeof agentFormSchema>;
 export function useAgentForm() {
   const navigate = useNavigate();
   const { eden } = useRouteContext({ from: "/_dashboard/agents/_flow/manual" });
@@ -63,13 +46,13 @@ export function useAgentForm() {
       description: "",
       formattingStyle: "structured",
       name: "",
-      projectId: "",
       seoKeywords: [],
       targetAudience: "general_public",
       topics: [],
       voiceTone: "professional",
     } as AgentFormData,
-    onSubmit: async ({ value, formApi }) => {   
+    onSubmit: async ({ value, formApi }) => {
+      console.log("Submitting agent form", value);
       await agentMutation.mutateAsync(value);
       formApi.reset();
     },
@@ -93,4 +76,5 @@ export function useAgentForm() {
     isLoading: agentMutation.isPending,
   };
 }
-export type AgentForm = ReturnType<typeof useAgentForm>['form']
+export type AgentForm = ReturnType<typeof useAgentForm>["form"];
+

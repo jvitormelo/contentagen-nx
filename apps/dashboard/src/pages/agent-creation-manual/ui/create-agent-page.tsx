@@ -90,18 +90,17 @@ export function CreateAgentPage() {
             </div>
           </div>
 
-          <form  onSubmit={handleSubmit}>
-             <Stepper.Panel className="h-full ">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                className="h-full space-y-4"
-                key={methods.current.id}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.3 }}
-              >
-               
+          <form onSubmit={handleSubmit}>
+            <Stepper.Panel className="h-full ">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  className="h-full space-y-4"
+                  key={methods.current.id}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {methods.switch({
                     "step-content-type": () => <ContentTypeStep form={form} />,
                     "step-voice-tone": () => <VoiceToneStep form={form} />,
@@ -117,10 +116,9 @@ export function CreateAgentPage() {
                       <ReviewSubmitStep form={form} />
                     ),
                   })}
-              
-              </motion.div>
-            </AnimatePresence>
-              </Stepper.Panel>
+                </motion.div>
+              </AnimatePresence>
+            </Stepper.Panel>
             <Stepper.Controls
               className="flex justify-between gap-4 "
               id="navigation-controls"
@@ -317,28 +315,21 @@ export function CreateAgentPage() {
                     </form.Subscribe>
                   ),
                   "step-review-submit": () => (
-                    <form.Subscribe
-                      selector={(state) => ({
-                        canSubmit: state.canSubmit,
-                        isSubmitting: state.isSubmitting,
-                      })}
-                    >
-                      {({ canSubmit, isSubmitting }) => (
-                        <Button
-                          className="gap-4"
-                          disabled={!canSubmit || isSubmitting || isLoading}
-                          type="submit"
-                        >
-                          {isLoading || isSubmitting ? (
-                            <>
-                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              Creating...
-                            </>
-                          ) : (
-                            <>Create Agent</>
-                          )}
-                        </Button>
-                      )}
+                    <form.Subscribe>
+                      {(formState) => {
+                        return (
+                          <Button
+                            disabled={
+                              !formState.canSubmit || formState.isSubmitting
+                            }
+                            variant="default"
+                            className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
+                            type="submit"
+                          >
+                            Create Agent
+                          </Button>
+                        );
+                      }}
                     </form.Subscribe>
                   ),
                 })}

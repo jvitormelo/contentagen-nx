@@ -1,10 +1,8 @@
-import { useAgentForm } from "../lib/use-agent-form";
 import { Input } from "@packages/ui/components/input";
 import { Textarea } from "@packages/ui/components/textarea";
+import type { AgentForm } from "../lib/use-agent-form";
 
-
-export function BasicInfoStep({form}:{form:AgentForm}) {
- 
+export function BasicInfoStep({ form }: { form: AgentForm }) {
   return (
     <>
       <form.AppField name="name">
@@ -18,23 +16,6 @@ export function BasicInfoStep({form}:{form:AgentForm}) {
               onBlur={field.handleBlur}
               onChange={(e) => field.handleChange(e.target.value)}
               placeholder="e.g., Tech News Agent"
-              value={field.state.value}
-            />
-            <field.FieldMessage />
-          </field.FieldContainer>
-        )}
-      </form.AppField>
-      <form.AppField name="projectId">
-        {(field) => (
-          <field.FieldContainer>
-            <field.FieldLabel>Project ID</field.FieldLabel>
-            <Input
-              autoComplete="off"
-              id={field.name}
-              name={field.name}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              placeholder="e.g., Tech Blog"
               value={field.state.value}
             />
             <field.FieldMessage />

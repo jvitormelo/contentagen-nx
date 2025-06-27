@@ -6,15 +6,14 @@ import {
   FORMATTING_STYLES,
   TARGET_AUDIENCES,
 } from "../lib/agent-form-constants.js";
-import { useAgentForm } from "../lib/use-agent-form";
+import type { AgentForm } from "../lib/use-agent-form";
 
-export function TargetAudienceStep({form}:{form:AgentForm}) {
-  
+export function TargetAudienceStep({ form }: { form: AgentForm }) {
   return (
     <form.AppField name="targetAudience">
       {(field) => (
         <field.FieldContainer id="target-audience-field">
-          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 max-w-sm mx-auto">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4  mx-auto">
             {TARGET_AUDIENCES.map((audience) => (
               <button
                 className={`group relative rounded-lg border-2 p-4 text-sm font-medium transition-all hover:shadow-sm ${field.state.value === audience.value
@@ -38,13 +37,12 @@ export function TargetAudienceStep({form}:{form:AgentForm}) {
   );
 }
 
-export function FormattingStyleStep({form}:{form:AgentForm}) {
-
+export function FormattingStyleStep({ form }: { form: AgentForm }) {
   return (
     <form.AppField name="formattingStyle">
       {(field) => (
         <field.FieldContainer id="formatting-style-field">
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 max-w-sm mx-auto">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3  mx-auto">
             {FORMATTING_STYLES.map((style) => (
               <button
                 className={`group relative rounded-lg border-2 p-4 text-left text-sm font-medium transition-all hover:shadow-sm ${field.state.value === style.value

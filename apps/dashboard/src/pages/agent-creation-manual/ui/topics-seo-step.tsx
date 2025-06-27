@@ -1,12 +1,11 @@
-import { useAgentForm } from "../lib/use-agent-form";
 import { Badge } from "@packages/ui/components/badge";
-import { Button } from "@packages/ui/components/button";
+
 import { Input } from "@packages/ui/components/input";
 import { X } from "lucide-react";
 import { useState } from "react";
+import type { AgentForm } from "../lib/use-agent-form";
 
-export default function TopicsSeoStep({form}:{form:AgentForm}) {
- 
+export default function TopicsSeoStep({ form }: { form: AgentForm }) {
   const [currentTopic, setCurrentTopic] = useState("");
   const [currentKeyword, setCurrentKeyword] = useState("");
 
@@ -41,12 +40,12 @@ export default function TopicsSeoStep({form}:{form:AgentForm}) {
   return (
     <>
       <form.AppField name="topics">
-        {(field: { state: { value: string[] }; FieldContainer: any; FieldLabel: any; FieldMessage: any; name: string }) => (
-          <field.FieldContainer>
+        {(field) => (
+          <field.FieldContainer className="space-y-4">
             <field.FieldLabel className="text-sm font-medium text-foreground">
               Preferred Topics
             </field.FieldLabel>
-            <div className="mt-3 flex gap-3">
+            
               <Input
                 className="flex-1"
                 onChange={(e) => setCurrentTopic(e.target.value)}
@@ -55,21 +54,21 @@ export default function TopicsSeoStep({form}:{form:AgentForm}) {
                     e.preventDefault();
                     addTopic(field.state.value);
                   }
+                  if (
+                    e.key === " " &&
+                    currentTopic.trim() &&
+                    !field.state.value.includes(currentTopic.trim())
+                  ) {
+                    e.preventDefault();
+                    addTopic(field.state.value);
+                  }
                 }}
                 placeholder="Add a topic..."
                 value={currentTopic}
               />
-              <Button
-                onClick={() => addTopic(field.state.value)}
-                size="sm"
-                type="button"
-                variant="outline"
-              >
-                Add
-              </Button>
-            </div>
+        
             {field.state.value.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                 {field.state.value.map((topic: string) => (
                   <Badge
                     className="flex items-center gap-1.5 bg-secondary/50 text-secondary-foreground hover:bg-secondary/70"
@@ -86,19 +85,19 @@ export default function TopicsSeoStep({form}:{form:AgentForm}) {
                     </button>
                   </Badge>
                 ))}
-              </div>
+          </div>
             )}
             <field.FieldMessage />
           </field.FieldContainer>
         )}
       </form.AppField>
       <form.AppField name="seoKeywords">
-        {(field: { state: { value: string[] }; FieldContainer: any; FieldLabel: any; FieldMessage: any; name: string }) => (
-          <field.FieldContainer>
+        {(field) => (
+          <field.FieldContainer className="space-y-4">
             <field.FieldLabel className="text-sm font-medium text-foreground">
               SEO Keywords
             </field.FieldLabel>
-            <div className="mt-3 flex gap-3">
+          
               <Input
                 className="flex-1"
                 onChange={(e) => setCurrentKeyword(e.target.value)}
@@ -107,21 +106,21 @@ export default function TopicsSeoStep({form}:{form:AgentForm}) {
                     e.preventDefault();
                     addKeyword(field.state.value);
                   }
+                  if (
+                    e.key === " " &&
+                    currentKeyword.trim() &&
+                    !field.state.value.includes(currentKeyword.trim())
+                  ) {
+                    e.preventDefault();
+                    addKeyword(field.state.value);
+                  }
                 }}
                 placeholder="Add a keyword..."
                 value={currentKeyword}
               />
-              <Button
-                onClick={() => addKeyword(field.state.value)}
-                size="sm"
-                type="button"
-                variant="outline"
-              >
-                Add
-              </Button>
-            </div>
+          
             {field.state.value.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                 {field.state.value.map((keyword: string) => (
                   <Badge
                     className="flex items-center gap-1.5 border-border bg-background text-foreground hover:bg-accent/50"
