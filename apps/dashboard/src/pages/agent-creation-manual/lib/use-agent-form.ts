@@ -13,6 +13,7 @@ import {
 import { useAppForm } from "@packages/ui/components/form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
+import { useCallback } from "react";
 import { z } from "zod";
 
 interface AgentFormData {
@@ -31,7 +32,7 @@ const agentFormSchema = z.object({
   contentType: z.enum(contentTypeEnum.enumValues, {
     required_error: "Content type is required",
   }),
-  description: z.string(),
+  description: z.string().min(1, "Description is required"),
   formattingStyle: z.enum(formattingStyleEnum.enumValues).optional(),
   name: z.string().min(1, "Agent name is required"),
   projectId: z.string().optional(),
@@ -47,7 +48,7 @@ const agentFormSchema = z.object({
 
 export function useAgentForm() {
   const navigate = useNavigate();
-  const { eden } = useRouteContext({ from: "/_dashboard/agents/create" });
+  const { eden } = useRouteContext({ from: "/_dashboard/agents/_flow/manual" });
 
   const agentMutation = useMutation({
     mutationFn: eden.api.v1.agents.post,
@@ -68,37 +69,23 @@ export function useAgentForm() {
       topics: [],
       voiceTone: "professional",
     } as AgentFormData,
-    onSubmit: async ({ value }) => {
-      const result = agentFormSchema.safeParse(value);
-      if (!result.success) {
-        const firstError = Object.values(result.error.flatten().fieldErrors)
-          .flat()
-          .find(Boolean);
-        return firstError || "Invalid form data";
-      }
-      await agentMutation.mutateAsync({
-        ...result.data,
-      });
+    onSubmit: async ({ value, formApi }) => {   
+      await agentMutation.mutateAsync(value);
+      formApi.reset();
     },
     validators: {
-      onChange: ({ value }) => {
-        const result = agentFormSchema.safeParse(value);
-        if (!result.success) {
-          const firstError = Object.values(result.error.flatten().fieldErrors)
-            .flat()
-            .find(Boolean);
-          return firstError;
-        }
-        return undefined;
-      },
+      onBlur: agentFormSchema,
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    form.handleSubmit();
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      form.handleSubmit();
+    },
+    [form],
+  );
 
   return {
     form,
@@ -106,3 +93,4 @@ export function useAgentForm() {
     isLoading: agentMutation.isPending,
   };
 }
+export type AgentForm = ReturnType<typeof useAgentForm>['form']
