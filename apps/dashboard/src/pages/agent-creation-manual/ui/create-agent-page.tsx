@@ -27,7 +27,7 @@ const steps = [
 const { Stepper } = defineStepper(...steps);
 
 export function CreateAgentPage() {
-  const { handleSubmit, form, isLoading } = useAgentForm();
+  const { handleSubmit, form } = useAgentForm();
 
   const getMascotMessage = (step: string) => {
     switch (step) {
@@ -61,6 +61,7 @@ export function CreateAgentPage() {
           <Stepper.Navigation>
             {steps.map((step) => (
               <Stepper.Step
+                className="bg-accent!important text-accent"
                 key={step.id}
                 of={step.id}
                 onClick={() => methods.goTo(step.id)}
@@ -73,16 +74,12 @@ export function CreateAgentPage() {
               <div className="relative">
                 <img
                   alt="Content Agent Mascot"
-                  className="w-10 h-10 rounded-full shadow-lg border-white border-2"
+                  className="w-10 h-10 rounded-full shadow-lg "
                   src={mascot}
                 />
-                <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-4 h-4 rounded-full bg-green-400 border-2 border-white">
-                  <span className="w-1 h-1 rounded-full bg-white" />
-                </span>
               </div>
             </div>
-            <div className="relative flex-1 px-4 py-2 bg-white rounded-2xl shadow-lg border border-slate-200 transition-all duration-300 ease-in-out">
-              <span className="absolute left-[-8px] top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-12 border-r-white" />
+            <div className=" flex-1 px-4 py-2 text-foreground bg-accent  rounded-2xl shadow-lg border border-primary transition-all duration-300 ease-in-out">
               <Typewriter
                 key={methods.current.id}
                 message={getMascotMessage(methods.current.id)}
@@ -156,7 +153,9 @@ export function CreateAgentPage() {
                     transition={{ duration: 0.3 }}
                   >
                     {methods.switch({
-                      "step-content-type": () => <ContentTypeStep form={form} />,
+                      "step-content-type": () => (
+                        <ContentTypeStep form={form} />
+                      ),
                       "step-voice-tone": () => <VoiceToneStep form={form} />,
                       "step-target-audience": () => (
                         <TargetAudienceStep form={form} />
@@ -225,7 +224,8 @@ export function CreateAgentPage() {
                       <form.Subscribe
                         selector={(state) => ({
                           contentType: state.values.contentType,
-                          contentTypeErrors: state.fieldMeta?.contentType?.errors,
+                          contentTypeErrors:
+                            state.fieldMeta?.contentType?.errors,
                         })}
                       >
                         {({ contentType, contentTypeErrors }) => {
@@ -332,7 +332,8 @@ export function CreateAgentPage() {
                           topics: state.values.topics,
                           seoKeywords: state.values.seoKeywords,
                           topicsErrors: state.fieldMeta?.topics?.errors,
-                          seoKeywordsErrors: state.fieldMeta?.seoKeywords?.errors,
+                          seoKeywordsErrors:
+                            state.fieldMeta?.seoKeywords?.errors,
                         })}
                       >
                         {({

@@ -24,11 +24,11 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 function ThemeProvider({
   children,
-  defaultTheme = "system",
-  storageKey = "enduro-turbo-dashboard-theme",
+  defaultTheme = "light",
+  storageKey = "nx-contenta-gen-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>("system");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useIsomorphicLayoutEffect(() => {
     const root = window.document.documentElement;
