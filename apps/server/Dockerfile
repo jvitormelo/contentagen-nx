@@ -1,3 +1,4 @@
+# apps/server/Dockerfile
 FROM oven/bun:latest AS build
 ARG DATABASE_URL
 ARG BETTER_AUTH_SECRET
@@ -22,10 +23,9 @@ COPY /tooling/typescript ./tooling/typescript
 COPY /packages/brand ./packages/brand
 ENV NODE_ENV=production
 
+# Simplify bun build command: removed --minify-whitespace and --minify-syntax
 RUN bun build \
   --compile \
-  --minify-whitespace \
-  --minify-syntax \
   --target bun \
   --outfile server \
   ./apps/server/src/index.ts
