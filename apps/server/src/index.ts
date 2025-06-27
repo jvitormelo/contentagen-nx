@@ -9,7 +9,6 @@ import { waitlistRoutes } from "./routes/waitlist-routes";
 const app = new Elysia({
   prefix: "/api/v1",
 })
-  .use(authMiddleware)
   .use(
     cors({
       allowedHeaders: ["Content-Type", "Authorization"],
@@ -18,6 +17,7 @@ const app = new Elysia({
       origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
     }),
   )
+  .use(authMiddleware)
   .use(
     swagger({
       documentation: {
