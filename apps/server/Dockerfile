@@ -39,6 +39,6 @@ COPY --from=build /app/server server
 ENV NODE_ENV=production
 
 ARG PORT
+EXPOSE ${PORT}
 
 CMD ["./server"]
-EXPOSE ${PORT}
