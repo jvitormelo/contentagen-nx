@@ -24,7 +24,6 @@ COPY . .
 # Build the blog application.
 # The build output will be in /app/apps/blog/dist
 ENV NODE_ENV=production
-ARG VITE_SERVER_URL
 RUN bun run --filter=blog build
 
 # ---
@@ -66,7 +65,7 @@ COPY --from=builder /app/apps/blog/dist ./dist
 COPY --from=deps /app/package.json ./package.json
 
 # Set and expose the port. Default to 4321 if not provided.
-ARG PORT=4321
+ARG PORT=4322
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
