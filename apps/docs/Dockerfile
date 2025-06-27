@@ -1,4 +1,4 @@
-# apps/landing-page/Dockerfile
+# apps/docs/Dockerfile
 # Stage 1: Install all dependencies and build the application
 FROM oven/bun:latest AS builder
 
@@ -8,7 +8,7 @@ WORKDIR /app
 # This takes advantage of Docker's layer caching, speeding up subsequent builds.
 COPY bun.lock ./
 COPY package.json ./
-COPY apps/landing-page/package.json ./apps/landing-page/
+COPY apps/docs/package.json ./apps/docs/
 COPY packages/eden/package.json ./packages/eden/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/brand/package.json ./packages/brand/
@@ -21,11 +21,10 @@ RUN bun install
 # A .dockerignore file in your monorepo root is crucial for this step.
 COPY . .
 
-# Build the landing page application.
-# The build output will be in /app/apps/landing-page/dist
+# Build the docs application.
+# The build output will be in /app/apps/docs/dist
 ENV NODE_ENV=production
-ARG VITE_SERVER_URL
-RUN bun run --filter=landing-page build
+RUN bun run --filter=docs build
 
 # ---
 
@@ -37,7 +36,7 @@ WORKDIR /app
 # Copy all package manifests and lockfile again
 COPY bun.lock ./
 COPY package.json ./
-COPY apps/landing-page/package.json ./apps/landing-page/
+COPY apps/docs/package.json ./apps/docs/
 COPY packages/eden/package.json ./packages/eden/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/brand/package.json ./packages/brand/
@@ -59,16 +58,18 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy the built application from the 'builder' stage
-COPY --from=builder /app/apps/landing-page/dist ./dist
+COPY --from=builder /app/apps/docs/dist ./dist
 
 # Also copy the final package.json to the root of the app directory.
 # This is good practice and helps with Node's module resolution.
 COPY --from=deps /app/package.json ./package.json
 
 # Set and expose the port. Default to 4321 if not provided.
-ARG PORT=4321
+ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Start the server using the entrypoint from the build output
 CMD ["node", "./dist/server/entry.mjs"]
+
+

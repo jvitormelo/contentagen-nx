@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@astrojs/node": "catalog:astro",
     "@astrojs/check": "catalog:astro",
     "@astrojs/starlight": "^0.34.3",
     "@astrojs/starlight-tailwind": "^4.0.1",

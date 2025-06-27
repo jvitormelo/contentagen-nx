@@ -1,5 +1,7 @@
+import node from "@astrojs/node";
 import starlight from "@astrojs/starlight";
 import tailwindcss from "@tailwindcss/vite";
+
 import { defineConfig, passthroughImageService } from "astro/config";
 
 // https://astro.build/config
@@ -35,6 +37,15 @@ export default defineConfig({
     }),
   ],
 
+  site: "https://docs.contentagen.com",
+
+  output: "server",
+  server: {
+    host: "0.0.0.0",
+  },
+  adapter: node({
+    mode: "standalone",
+  }),
   vite: {
     plugins: [tailwindcss()],
   },
