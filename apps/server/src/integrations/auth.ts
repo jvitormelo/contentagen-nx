@@ -10,14 +10,6 @@ import { db } from "./database";
 export const auth = betterAuth({
   basePath: "/api/v1/auth",
   appName: "ContentaGen-Auth",
-  baseURL: "https://contentagen.com",
-  advanced: {
-    crossSubDomainCookies: {
-      enabled: true,
-
-      cookieDomain: ".contentagen.com",
-    },
-  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -57,7 +49,7 @@ export const authMiddleware = new Elysia({ name: "better-auth-middleware" })
         const session = await auth.api.getSession({
           headers,
         });
-
+        console.log("Session:", session);
         if (!session)
           return status(401, {
             message:
