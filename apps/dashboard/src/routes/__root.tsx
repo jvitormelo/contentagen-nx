@@ -9,6 +9,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { QueryProvider } from "@/integrations/tanstack-query";
+import { ThemeProvider } from "@/layout/theme-provider";
 
 export interface MyRouterContext {
   eden: EdenClientType;
@@ -19,7 +20,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <RootDocument>
       <QueryProvider>
-        <Outlet />
+        <ThemeProvider>
+          <Outlet />
+        </ThemeProvider>
       </QueryProvider>
     </RootDocument>
   ),
