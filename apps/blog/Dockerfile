@@ -65,7 +65,7 @@ COPY --from=builder /app/apps/blog/dist ./dist
 COPY --from=deps /app/package.json ./package.json
 
 # Set and expose the port. Default to 4321 if not provided.
-ARG PORT=4322
+ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
