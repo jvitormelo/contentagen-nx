@@ -8,7 +8,7 @@ import {
 import { useAppForm } from "@packages/ui/components/form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
-import { useCallback } from "react";
+import { FormEvent, useCallback } from "react";
 import { z } from "zod";
 
 const agentFormSchema = z.object({
@@ -62,13 +62,13 @@ export function useAgentForm() {
   });
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      form.handleSubmit();
-    },
-    [form],
-  );
+      (e: FormEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      },
+      [form],
+    );
 
   return {
     form,
