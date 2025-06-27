@@ -1,4 +1,3 @@
-# apps/server/Dockerfile
 FROM oven/bun:latest AS build
 ARG DATABASE_URL
 ARG BETTER_AUTH_SECRET
@@ -23,16 +22,15 @@ COPY /tooling/typescript ./tooling/typescript
 COPY /packages/brand ./packages/brand
 ENV NODE_ENV=production
 
-# Bun build command (minify flags removed as per previous suggestion)
 RUN bun build \
   --compile \
+  --minify-whitespace \
+  --minify-syntax \
   --target bun \
   --outfile server \
   ./apps/server/src/index.ts
 
-# --- Stage 2: Create the final production image
-# Changed the base image from gcr.io/distroless/base to oven/bun:latest
-FROM oven/bun:latest AS runner 
+FROM gcr.io/distroless/base
 
 WORKDIR /app
 
@@ -42,6 +40,4 @@ ENV NODE_ENV=production
 
 ARG PORT
 EXPOSE ${PORT}
-
-# The compiled Bun binary is directly executable
 CMD ["./server"]
