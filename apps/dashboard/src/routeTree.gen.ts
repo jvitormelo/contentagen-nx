@@ -18,6 +18,7 @@ import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthEmailVerificationRouteImport } from './routes/auth/email-verification'
+import { Route as DashboardHomeRouteImport } from './routes/_dashboard/home'
 import { Route as DashboardProfileIndexRouteImport } from './routes/_dashboard/profile/index'
 import { Route as DashboardContentIndexRouteImport } from './routes/_dashboard/content/index'
 import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
@@ -71,6 +72,11 @@ const AuthEmailVerificationRoute = AuthEmailVerificationRouteImport.update({
   id: '/email-verification',
   path: '/email-verification',
   getParentRoute: () => AuthRoute,
+} as any)
+const DashboardHomeRoute = DashboardHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProfileIndexRoute = DashboardProfileIndexRouteImport.update({
   id: '/profile/',
@@ -140,6 +146,7 @@ const DashboardAgentsFlowChoiceRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/home': typeof DashboardHomeRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/home': typeof DashboardHomeRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/_dashboard/home': typeof DashboardHomeRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/home'
     | '/auth/email-verification'
     | '/auth/forgot-password'
     | '/auth/sign-in'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/home'
     | '/auth/email-verification'
     | '/auth/forgot-password'
     | '/auth/sign-in'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_dashboard'
     | '/auth'
+    | '/_dashboard/home'
     | '/auth/email-verification'
     | '/auth/forgot-password'
     | '/auth/sign-in'
@@ -326,6 +338,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/email-verification'
       preLoaderRoute: typeof AuthEmailVerificationRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_dashboard/home': {
+      id: '/_dashboard/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof DashboardHomeRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/_dashboard/profile/': {
       id: '/_dashboard/profile/'
@@ -444,6 +463,7 @@ const DashboardAgentsRouteWithChildren = DashboardAgentsRoute._addFileChildren(
 )
 
 interface DashboardRouteChildren {
+  DashboardHomeRoute: typeof DashboardHomeRoute
   DashboardAgentsRoute: typeof DashboardAgentsRouteWithChildren
   DashboardContentExportRoute: typeof DashboardContentExportRoute
   DashboardContentGenerateRoute: typeof DashboardContentGenerateRoute
@@ -455,6 +475,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardHomeRoute: DashboardHomeRoute,
   DashboardAgentsRoute: DashboardAgentsRouteWithChildren,
   DashboardContentExportRoute: DashboardContentExportRoute,
   DashboardContentGenerateRoute: DashboardContentGenerateRoute,

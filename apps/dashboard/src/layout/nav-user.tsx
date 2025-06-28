@@ -1,4 +1,3 @@
-import { useBetterAuthSession } from "@/integrations/better-auth";
 import {
    Avatar,
    AvatarFallback,
@@ -30,6 +29,7 @@ import {
 } from "lucide-react";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { betterAuthClient } from "@/integrations/better-auth";
 
 // Simple ErrorBoundary implementation
 function NavUserErrorFallback() {
@@ -61,10 +61,9 @@ function NavUserSkeleton() {
 // Extracted content with Suspense logic
 function NavUserContent() {
    const { isMobile } = useSidebar();
-   const { session, isLoading, error } = useBetterAuthSession();
-
+   const { data: session, error, isPending } = betterAuthClient.useSession();
    if (error) throw error;
-   if (isLoading) return <NavUserSkeleton />;
+   if (isPending) return <NavUserSkeleton />;
 
    return (
       <SidebarMenu>
