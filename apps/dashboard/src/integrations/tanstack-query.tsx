@@ -13,7 +13,7 @@ export function getContext() {
 export function QueryProvider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools buttonPosition="bottom-right" />
+      {/* <ReactQueryDevtools buttonPosition="bottom-right" /> */}
       {children}
     </QueryClientProvider>
   );

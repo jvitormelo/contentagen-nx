@@ -42,7 +42,7 @@ export function FormattingStyleStep({ form }: { form: AgentForm }) {
     <form.AppField name="formattingStyle">
       {(field) => (
         <field.FieldContainer id="formatting-style-field">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3  mx-auto">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3  mx-auto">
             {FORMATTING_STYLES.map((style) => (
               <button
                 className={`group relative rounded-lg border-2 p-4 text-left text-sm font-medium transition-all hover:shadow-sm ${field.state.value === style.value
@@ -59,9 +59,9 @@ export function FormattingStyleStep({ form }: { form: AgentForm }) {
                 <div className="text-xs text-muted-foreground mt-1">
                   {style.value === "structured" &&
                     "Organized with clear headings and sections"}
-                  {style.value === "casual" &&
+                  {style.value === "narrative" &&
                     "Conversational and free-flowing"}
-                  {style.value === "technical" &&
+                  {style.value === "list_based" &&
                     "Detailed with specifications and data"}
                 </div>
               </button>
