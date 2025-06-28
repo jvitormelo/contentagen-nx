@@ -39,7 +39,8 @@
         "astro": "5.10.0"
       },
       "auth": {
-        "better-auth": "^1.2.8"
+        "better-auth": "^1.2.8",
+        "@polar-sh/better-auth": "^1.0.3"
       },
       "development": {
         "typescript": "5.8.3"
