@@ -25,7 +25,7 @@ export const sendEmailOTP = async (
 		}
 	};
 	await resendClient.emails.send({
-		from: `${brandConfig.name} <suport@contentagen.com>`,
+		from: `${brandConfig.name} <support@contentagen.com>`,
 		react: <OTPEmail otp={otp} type={type} />,
 		subject: getSubject(),
 		to: email,
