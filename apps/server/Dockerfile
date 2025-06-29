@@ -23,14 +23,13 @@ COPY /packages/brand ./packages/brand
 ENV NODE_ENV=production
 
 RUN bun build \
-  --compile \
   --minify-whitespace \
   --minify-syntax \
   --target bun \
-  --outfile server \
+  --outfile ./dist \
   ./apps/server/src/index.ts --sourcemap=linked
 
-FROM gcr.io/distroless/base
+FROM oven/bun:latest AS runner
 
 WORKDIR /app
 
@@ -40,4 +39,4 @@ ENV NODE_ENV=production
 
 ARG PORT
 EXPOSE ${PORT}
-CMD ["./server"]
+CMD ["bun", "./dist/index.js"]
