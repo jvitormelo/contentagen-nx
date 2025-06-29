@@ -34,11 +34,33 @@ RUN bun build \
   --outfile ./dist/index.js \
   ./apps/server/src/index.ts
 
+# Stage 2: Create a clean, production-only node_modules folder
+FROM oven/bun:latest AS deps
+WORKDIR /app
+
+# Copy all package manifests and lockfile again
+COPY bun.lock ./
+COPY package.json ./
+COPY apps/server/package.json ./apps/server/
+COPY packages/eden/package.json ./packages/eden/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/brand/package.json ./packages/brand/
+COPY tooling/typescript/package.json ./tooling/typescript/
+
+# Install only production dependencies. This creates a lean, clean node_modules folder.
+RUN bun install --production
+
 FROM oven/bun:latest AS runner
 
 WORKDIR /app
 
-COPY --from=build /app/dist ./dist
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy the built application from the 'builder' stage
+COPY --from=builder /app/dist ./dist
+
+# Also copy the final package.json to the root of the app directory.
+COPY --from=deps /app/package.json ./package.json
 
 ENV NODE_ENV=production
 
