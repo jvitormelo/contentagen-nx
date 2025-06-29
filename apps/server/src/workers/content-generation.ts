@@ -12,6 +12,7 @@ export type ContentRequestWithAgent = typeof contentRequest.$inferSelect & {
 
 export const contentGenerationQueue = new Queue("content-generation", {
    connection: redis,
+   
 });
 
 contentGenerationQueue.on("error", (err) => {
