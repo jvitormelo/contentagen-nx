@@ -33,7 +33,7 @@ FROM oven/bun:latest AS runner
 
 WORKDIR /app
 
-COPY --from=build /app/server server
+COPY --from=build /app/dist ./dist
 
 ENV NODE_ENV=production
 
