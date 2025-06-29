@@ -37,7 +37,7 @@ RUN bun build \
 FROM oven/bun:latest AS runner
 
 WORKDIR /app
-
+COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
 ENV NODE_ENV=production
