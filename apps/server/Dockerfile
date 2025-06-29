@@ -1,5 +1,10 @@
 FROM oven/bun:latest AS build
 ARG DATABASE_URL
+ARG REDIS_URL
+ARG RESEND_API_KEY
+ARG POLAR_ACCESS_TOKEN
+ARG POLAR_SUCCESS_URL
+ARG OPENROUTER_API_KEY
 ARG BETTER_AUTH_SECRET
 ARG BETTER_AUTH_TRUSTED_ORIGINS
 
@@ -27,7 +32,7 @@ RUN bun build \
   --minify-syntax \
   --target bun \
   --outfile ./dist/index.js \
-  ./apps/server/src/index.ts --sourcemap=linked
+  ./apps/server/src/index.ts
 
 FROM oven/bun:latest AS runner
 
