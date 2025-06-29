@@ -26,7 +26,7 @@ RUN bun build \
   --minify-whitespace \
   --minify-syntax \
   --target bun \
-  --outfile ./dist \
+  --outfile ./dist/index.js \
   ./apps/server/src/index.ts --sourcemap=linked
 
 FROM oven/bun:latest AS runner
