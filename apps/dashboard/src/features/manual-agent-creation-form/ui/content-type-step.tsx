@@ -1,6 +1,6 @@
 import type { ContentType } from "@api/schemas/content-schema";
 import { CONTENT_TYPES } from "../lib/agent-form-constants.js";
-import type { AgentForm } from "../lib/use-agent-form";
+import type { AgentForm } from "../lib/use-agent-form.js";
 import { Button } from "@packages/ui/components/button";
 
 export function ContentTypeStep({ form }: { form: AgentForm }) {

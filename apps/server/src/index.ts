@@ -1,14 +1,24 @@
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { ElysiaAdapter } from "@bull-board/elysia";
 import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { env } from "./config/env";
 import { authMiddleware, OpenAPI } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
+import { contentRoutes } from "./routes/content-routes";
 import { waitlistRoutes } from "./routes/waitlist-routes";
+import { contentGenerationQueue } from "./workers/content-generation";
 
-const app = new Elysia({
-   prefix: "/api/v1",
-})
+const serverAdapter = new ElysiaAdapter("/ui");
+
+createBullBoard({
+   queues: [new BullMQAdapter(contentGenerationQueue)],
+   serverAdapter,
+});
+
+const app = new Elysia()
    .use(
       cors({
          allowedHeaders: ["Content-Type", "Authorization"],
@@ -17,20 +27,30 @@ const app = new Elysia({
          origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
       }),
    )
-   .use(authMiddleware)
+   .use(serverAdapter.registerPlugin())
    .use(
       swagger({
+         path: "/docs", // Swagger UI will be at /docs, JSON at /docs/json
          documentation: {
             components: await OpenAPI.components,
             paths: await OpenAPI.getPaths(),
          },
       }),
    )
-   .use(agentRoutes)
-   .use(waitlistRoutes)
-   .get("/works", () => {
-      return { message: "Eden WORKS!" };
-   })
+   .group(
+      "/api/v1",
+      (
+         api, // Group all API routes under /api/v1
+      ) =>
+         api
+            .use(authMiddleware)
+            .use(agentRoutes)
+            .use(contentRoutes)
+            .use(waitlistRoutes)
+            .get("/works", () => {
+               return { message: "Eden WORKS!" };
+            }),
+   )
    .listen(process.env.PORT ?? 9876);
 
 console.log(
