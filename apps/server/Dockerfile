@@ -1,5 +1,3 @@
-// apps/server/Dockerfile
-# Stage 1: Install all dependencies and build the application
 FROM oven/bun:latest AS builder
 ARG DATABASE_URL
 ARG REDIS_URL
