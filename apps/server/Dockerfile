@@ -27,7 +27,7 @@ RUN bun build \
   --minify-whitespace \
   --minify-syntax \
   --target bun \
-  --outfile server \
+  --outfile ./dist/index.js \
   ./apps/server/src/index.ts
 
 FROM oven/bun:latest AS runner 
@@ -40,4 +40,4 @@ ENV NODE_ENV=production
 
 ARG PORT
 EXPOSE ${PORT}
-CMD ["./server"]
+CMD ["bun",./dist/index.js"]
