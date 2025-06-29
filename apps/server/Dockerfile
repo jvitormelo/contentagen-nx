@@ -23,7 +23,6 @@ COPY /packages/brand ./packages/brand
 ENV NODE_ENV=production
 
 RUN bun build \
-  --compile \
   --minify-whitespace \
   --minify-syntax \
   --target bun \
