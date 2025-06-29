@@ -30,7 +30,7 @@ RUN bun build \
   --outfile server \
   ./apps/server/src/index.ts
 
-FROM gcr.io/distroless/base
+FROM oven/bun:latest AS runner 
 
 WORKDIR /app
 
