@@ -45,7 +45,7 @@ COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/brand/package.json ./packages/brand/
 
 # Install only production dependencies.
-RUN bun install --production
+RUN bun install 
 
 # ---
 
