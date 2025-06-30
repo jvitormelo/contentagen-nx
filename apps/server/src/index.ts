@@ -5,6 +5,7 @@ import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { env, isProduction } from "./config/env";
+import { bullAuth } from "./guards/bull-auth-guard";
 import { authMiddleware, OpenAPI } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
 import { ContentAnalysisRoutes } from "./routes/content-analysis-routes";
@@ -32,6 +33,12 @@ const app = new Elysia()
          origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
       }),
    )
+   .onBeforeHandle(({ request }) => {
+      const url = new URL(request.url);
+      if (url.pathname.startsWith("/ui")) {
+         return bullAuth(request);
+      }
+   })
    .use(serverAdapter.registerPlugin())
    .use(
       swagger({
