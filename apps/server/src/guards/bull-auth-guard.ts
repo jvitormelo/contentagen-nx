@@ -1,8 +1,8 @@
-import { isProduction } from "@api/config/env";
+import { env, isProduction } from "@api/config/env";
 
 // Authentication constants
-const ADMIN_USER = process.env.AP_QUEUE_UI_USERNAME ?? "admin";
-const ADMIN_PASS = process.env.AP_QUEUE_UI_PASSWORD ?? "s3cret";
+const ADMIN_USER = env.AP_QUEUE_UI_USERNAME;
+const ADMIN_PASS = env.AP_QUEUE_UI_PASSWORD;
 const COOKIE_NAME = "bull_auth"; // simple flag
 const COOKIE_VALUE = "1";
 const COOKIE_OPTS = "HttpOnly; SameSite=Strict; Max-Age=3600"; // 1 hour
