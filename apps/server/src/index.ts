@@ -4,10 +4,12 @@ import { ElysiaAdapter } from "@bull-board/elysia";
 import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
-import { env } from "./config/env";
+import { env, isProduction } from "./config/env";
 import { authMiddleware, OpenAPI } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
-import { contentRoutes } from "./routes/content-routes";
+import { ContentAnalysisRoutes } from "./routes/content-analysis-routes";
+import { contentManagementRoutes } from "./routes/content-management-routes";
+import { contentRequestRoutes } from "./routes/content-request-routes";
 import { waitlistRoutes } from "./routes/waitlist-routes";
 import { contentGenerationQueue } from "./workers/content-generation";
 
@@ -17,8 +19,8 @@ createBullBoard({
    queues: [new BullMQAdapter(contentGenerationQueue)],
    serverAdapter,
    options: {
-      uiBasePath:"node_modules/@bull-board/ui",
-   }
+      uiBasePath: isProduction ? "node_modules/@bull-board/ui" : "",
+   },
 });
 
 const app = new Elysia()
@@ -48,7 +50,12 @@ const app = new Elysia()
          api
             .use(authMiddleware)
             .use(agentRoutes)
-            .use(contentRoutes)
+            .group("/content", (content) =>
+               content
+                  .use(ContentAnalysisRoutes)
+                  .use(contentManagementRoutes)
+                  .use(contentRequestRoutes)
+            )
             .use(waitlistRoutes)
             .get("/works", () => {
                return { message: "Eden WORKS!" };
