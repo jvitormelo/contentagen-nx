@@ -42,6 +42,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
             name: "viewport",
          },
          {
+            rel: "icon",
+            href: "/favicon.svg",
+         },
+         {
             title: brandConfig.name,
          },
       ],
