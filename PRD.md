@@ -1,79 +1,119 @@
-### Summary
 
--   **Core Agent & Content Creation:** The foundational features described in the first half of the PRD are largely **Done**. You have a working system for creating agents, requesting content, generating it via a worker, and listing the results.
--   **Advanced Features & UI Polish:** Some features are **Partially Done**. For example, the backend schema supports concepts like `projects` and `comments`, but the UI to manage them is missing.
--   **New v2.0 Features:** The new features you described (Agent Details Page, Deep Writing Mode, etc.) are **Not Done** and represent the new scope of work. The updated PRD accurately captures these new requirements.
+# Product Requirements Document (PRD): Blog Automation Application
 
----
+## 1. Visão Geral do Produto
 
-### Detailed PRD vs. Codebase Analysis
+Aplicação de automação para criação de conteúdo de blogs, permitindo que agências de marketing de conteúdo e blogueiros individuais definam e utilizem agentes de IA para gerar posts de blog longos e textos otimizados para SEO de forma rápida e personalizada.
 
-Here is a section-by-section analysis:
+## 2. Público-Alvo
 
-#### `4. Principais Funcionalidades` (Existing Features)
+- Agências de marketing de conteúdo
+- Blogueiros individuais
 
-**4.1. Criação de Agente de IA**
--   **Status:** ✅ **Done**
--   **Justification:** The manual agent creation flow is fully implemented. The UI form captures all the specified details, and the backend schema supports them.
--   **Code Evidence:**
-    -   `apps/dashboard/src/features/manual-agent-creation-form/`: Contains the multi-step form for creating an agent.
-    -   `apps/dashboard/src/features/manual-agent-creation-form/ui/agent-creation-manual-form.tsx`: The main form component, which includes steps for `voiceTone`, `targetAudience`, `formattingStyle`, etc.
-    -   `apps/server/src/schemas/content-schema.ts`: The `agent` table schema includes columns like `voiceTone`, `targetAudience`, `contentType`, and `formattingStyle`.
-    -   `apps/server/src/routes/agent-routes.ts`: Provides the API endpoints (`POST /`, `PATCH /:id`) to create and update agents.
+## 3. Problemas a Resolver
 
-**4.2. Fluxo de Produção de Conteúdo**
--   **"Tela de prompt base: usuário insere briefing e exemplo de artigo"**
-    -   **Status:** ✅ **Done**
-    -   **Justification:** The content request form allows users to input a topic and a brief description, which serves as the core prompt.
-    -   **Code Evidence:**
-        -   `apps/dashboard/src/features/content-request-form/ui/content-request-form.tsx`: The UI for requesting new content.
-        -   `apps/dashboard/src/features/content-request-form/lib/use-content-request-form.ts`: Defines the form logic with `topic` and `briefDescription` fields.
--   **"Geração automática de rascunho pelo agente"**
-    -   **Status:** ✅ **Done**
-    -   **Justification:** The backend uses a BullMQ queue and worker to handle content generation asynchronously.
-    -   **Code Evidence:**
-        -   `apps/server/src/workers/content-generation.ts`: Defines the `contentGenerationQueue`, the worker logic, and the `generateAgentPrompt` function that creates the prompt for the AI.
-        -   `apps/server/src/routes/content-management-routes.ts`: The `/approve/:id` endpoint adds a job to the generation queue.
--   **"Interface de revisão manual (edição e comentários)"**
-    -   **Status:** 🟡 **Partially Done**
-    -   **Justification:** There is a page to view the generated content, but it's read-only (`ReactMarkdown`). There is no editor like Tiptap for direct editing. The database schema includes a `comment` table, but there is no UI to add or view comments.
-    -   **Code Evidence:**
-        -   `apps/dashboard/src/pages/content-request-details/ui/generated-content-display.tsx`: Displays content but lacks editing functionality.
-        -   `apps/server/src/schemas/content-schema.ts`: The `comment` table exists, indicating backend support is planned or in place.
--   **"Opção de exportação para formatos padrão (Markdown, HTML, DOCX)"**
-    -   **Status:** ✅ **Done**
-    -   **Justification:** The content details page includes functionality to export content to Markdown, MDX, and HTML. (DOCX was an example and is not present, but the core feature is there).
-    -   **Code Evidence:**
-        -   `apps/dashboard/src/pages/content-request-details/lib/use-content-export.ts`: Contains the logic for creating and downloading files in different formats.
-        -   `apps/dashboard/src/pages/content-request-details/ui/export-content-dropdown.tsx`: The UI component for the export options.
+- Falta de inspiração para pautas e temas
+- Dificuldade em manter um calendário editorial consistente
+- Qualidade de conteúdo inconsistente
+- Pouco tempo disponível para escrever
 
-**4.3. Gestão de Projetos e Agentes**
--   **"Dashboard centralizado agrupando agentes por projeto"**
-    -   **Status:** 🟡 **Partially Done**
-    -   **Justification:** The backend schema has a `project` table and a relationship with agents. However, the agent list page (`/agents`) currently displays a flat list and does not group them by project.
-    -   **Code Evidence:**
-        -   `apps/dashboard/src/pages/agent-list/ui/agent-list-page.tsx`: Renders agents in a simple grid.
-        -   `apps/server/src/schemas/content-schema.ts`: The `project` table and `projectRelations` are defined.
--   **"Criação, renomeação e exclusão de projetos"**
-    -   **Status:** ❌ **Not Done**
-    -   **Justification:** There are no UI components or API endpoints in the codebase for managing projects (create, update, delete).
+## 4. Principais Funcionalidades
 
----
+### 4.1 Criação e Gestão de Agentes de IA
 
-#### `8. Evolução do Produto (v2.0)` (New Features)
+- **[Done]** Definição de tom de voz, público-alvo, tópicos e palavras-chave SEO.
+    - _Justification:_ The agent creation form (`AgentCreationManualForm`) already captures these details.
+- **[Done]** Escolha de estilo de formatação (subtítulos, listas etc.).
+- **[Not Done]** Configuração modular de funcionalidades (ex: ativar/desativar geração de frontmatter).
+- **[Done]** Dashboard centralizado para visualizar e gerenciar todos os agentes.
+    - _Justification:_ The `AgentListPage` component displays all agents for the user.
 
-This entire section outlines the **new work** to be done. As expected, these features are not yet implemented.
+### 4.2 Fluxo de Produção de Conteúdo
 
-**8.1. Configuração Avançada e Detalhes do Agente**
--   **"Página de Detalhes do Agente"**: ❌ **Not Done**. A new route and page component will need to be created. The current `/agents/$agentId/edit` is for a form, not a detailed view/configuration hub.
--   **"Prompt Base Editável com Tiptap"**: ❌ **Not Done**. There is no Tiptap integration, and the `agent` table in `apps/server/src/schemas/content-schema.ts` needs a new column (e.g., `basePrompt TEXT`).
--   **"Geração Automática de Prompt Base"**: 🟡 **Partially Done**. The logic to *create* a prompt dynamically exists in `apps/server/src/workers/content-generation.ts`. This work will involve adapting that logic to run upon agent creation and save the output to the new `basePrompt` database field.
--   **"Artigos de Referência (Guideline Posts)"**: ❌ **Not Done**. This requires UI changes (dropdown/selector on the new agent details page) and schema changes (a way to link an agent to reference posts, likely a relation table).
--   **"Suporte a Metadados e Frontmatter"**: 🟡 **Partially Done**. The generation prompt already asks the AI for a "meta description." However, there is no formal support for `frontmatter` or UI toggles to control this. This would require schema updates and prompt engineering.
+- **[Done]** Tela de prompt base: usuário insere briefing para o agente.
+    - _Justification:_ The `ContentRequestForm` handles this.
+- **[Done]** Geração automática de rascunho pelo agente.
+    - _Justification:_ The content-generation worker in `apps/server` handles this process asynchronously.
+- **[Partially Done]** Interface de revisão e edição do conteúdo gerado.
+    - _Justification:_ A read-only view exists (`GeneratedContentDisplay`), but direct editing (Tiptap) is not yet implemented.
+- **[Done]** Opção de exportação para formatos padrão (Markdown, HTML, DOCX).
+    - _Justification:_ The `useContentExport` hook handles exports to Markdown, MDX, and HTML.
 
-**8.2. Modo de Escrita Profunda (Deep Writing Mode)**
--   **Status:** ❌ **Not Done**
--   **Justification:** This is a major new feature. The current worker (`content-generation.ts`) has a single-step generation process. This would require a new, more complex worker, multiple new prompts (researcher, critic, etc.), and a separate queue to handle these intensive jobs.
+### 4.3 Onboarding e Templates
 
-**8.3. Melhorias na Exportação de Conteúdo**
--   **"Links Internos Aprimorados"**: ❌ **Not Done**. The current export logic in `apps/dashboard/src/pages/content-request-details/lib/use-content-export.ts` simply downloads the content as is. It does not parse or transform any special syntax like `[[link]]`.
+- **[Partially Done]** Tutoriais passo a passo para configurar o primeiro agente.
+    - _Justification:_ The `TalkingMascot` component provides contextual guidance, which serves as a lightweight form of onboarding. A full, dedicated tutorial is not implemented.
+- **[Not Done]** Conjunto de templates de briefing pré-configurados para diversos nichos.
+
+## 5. Fluxo de Usuário (User Flow)
+
+- **Onboarding:** Tutorial guiado explica como criar e configurar um agente. **[Partially Done]**
+- **Configuração de agente:** Definição de tom, público, tópicos e ativação de módulos específicos. **[Done]**
+- **Criação de briefing:** Usuário preenche prompt ou escolhe template. **[Done]**
+- **Geração de rascunho:** IA produz o conteúdo; usuário recebe notificações em tempo real. **[Partially Done]**
+    - Generation is done, real-time notifications are not.
+- **Revisão e Edição:** Usuário edita o texto na plataforma. **[Partially Done]**
+    - Revision is done, editing is not.
+- **Exportação:** Usuário baixa o conteúdo final. **[Done]**
+
+## 6. Critérios de Aceitação (High-Level)
+
+- **[Done]** Usuário consegue criar um agente e gerar um rascunho em menos de 2 minutos.
+- **[Not Done]** A interface de revisão permite edição direta do texto gerado.
+- **[Not Done]** As notificações (WebSocket, Email) são disparadas corretamente após a conclusão da geração.
+
+## 7. Exclusões (Escopo Fora)
+
+- **[Not Done]** Integrações automáticas com plataformas de publicação (ex.: WordPress).
+- **[Not Done]** Funções avançadas de analítica ou métricas de performance de posts.
+- **[Not Done]** Agendamento de calendário editorial automatizado.
+
+## 8. Evolução do Produto (v2.0)
+
+Esta seção detalha as novas funcionalidades e melhorias planejadas para a próxima grande versão.
+
+### 8.1 Configuração Avançada e Modular do Agente
+
+**Descrição:**
+Para oferecer maior controle e personalização, a página de "Detalhes do Agente" será o hub para configurar o comportamento do agente de forma modular.
+
+**Funcionalidades:**
+
+- **[Not Done]** Página de Detalhes do Agente: Nova rota (`/agents/:agentId`) para visualização e edição aprofundada.
+- **[Not Done]** Prompt Base Editável com Tiptap: Editor rich text (Tiptap) para o prompt base de cada agente.
+- **[Not Done]** Geração Automática de Prompt Base: Sistema gera prompt base otimizado ao criar novo agente.
+- **[Not Done]** Artigos de Referência (Guideline Posts): Seleção de até 3 artigos existentes para guiar estilo e tom do agente.
+- **[Not Done]** Configurações Modulares (Toggles):
+    - Frontmatter: Ativar/desativar geração de frontmatter (YAML/TOML).
+    - Meta Tags & Description: Gerar meta tags e meta descriptions otimizadas para SEO.
+    - Links Internos: Ativar/desativar processamento da sintaxe de links internos (`[[link]]`) na exportação.
+
+### 8.2 Modo de Escrita Profunda (Deep Writing Mode)
+
+**Descrição:**
+Modo opcional para criação de conteúdo colaborativo entre múltiplos agentes de IA, visando artigos de altíssima qualidade.
+
+**Funcionalidades:**
+
+- **[Not Done]** Ativação do Modo: Toggle "Deep Writing Mode" no formulário de solicitação de conteúdo.
+- **[Not Done]** Fluxo de Múltiplos Agentes:
+    - Agente de Pesquisa: Gera esboço detalhado do tópico.
+    - Agentes Críticos: Personificam o público-alvo e fornecem feedback.
+    - Agente Escritor: Escreve o artigo completo com base no esboço refinado.
+    - Agente Revisor: Revisa o rascunho final para garantir qualidade e consistência.
+- **[Not Done]** Integração com Prompt do Agente: Personas dos agentes críticos derivadas das configurações de público-alvo e tom de voz do agente principal.
+
+### 8.3 Funcionalidades de Conteúdo Avançadas
+
+- **[Not Done]** Links Internos Aprimorados: Sintaxe `[[link]]` reconhecida e convertida em links relativos funcionais na exportação, melhorando SEO on-page.
+
+### 8.4 Notificações em Tempo Real e Assíncronas
+
+**Descrição:**
+Manter o usuário informado sobre o progresso da geração de conteúdo, mesmo que ele não esteja com a aplicação aberta.
+
+**Funcionalidades:**
+
+- **[Not Done]** Notificação via WebSocket: Notificação em tempo real na UI do dashboard ao concluir geração de conteúdo.
+- **[Not Done]** Notificação via Email: Email enviado ao usuário informando que o conteúdo está pronto para revisão.
+- **[Not Done]** Notificação Push: Opção para receber notificações push no navegador quando o conteúdo estiver pronto.
