@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tw-animate-css";
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @source "../../../apps/**/*.{ts,tsx}";
 @source "../../../components/**/*.{ts,tsx}";
@@ -197,10 +198,103 @@
 }
 
 @layer base {
-   * {
-      @apply border-border outline-ring/50;
+
+
+   /* Custom prose styles that respect the design system with higher specificity */
+   .prose {
+      color: var(--color-foreground) !important;
    }
-   body {
-      @apply bg-background text-foreground;
+
+   .prose h1,
+   .prose h2,
+   .prose h3,
+   .prose h4,
+   .prose h5,
+   .prose h6 {
+      color: var(--color-foreground) !important;
+   }
+
+   .prose p {
+      color: var(--color-foreground) !important;
+   }
+
+   .prose strong {
+      color: var(--color-foreground) !important;
+      font-weight: 600;
+   }
+
+   .prose em {
+      color: var(--color-foreground) !important;
+   }
+
+   .prose code {
+      color: var(--color-foreground) !important;
+      background-color: var(--color-muted) !important;
+      padding: 0.125rem 0.25rem;
+      border-radius: 0.25rem;
+   }
+
+   .prose pre {
+      background-color: var(--color-muted) !important;
+      color: var(--color-foreground) !important;
+   }
+
+   .prose pre code {
+      background-color: transparent !important;
+   }
+
+   .prose blockquote {
+      color: var(--color-muted-foreground) !important;
+      border-left-color: var(--color-border) !important;
+   }
+
+   .prose hr {
+      border-color: var(--color-border) !important;
+   }
+
+   .prose a {
+      color: var(--color-primary) !important;
+   }
+
+   .prose a:hover {
+      color: var(--color-primary) !important;
+      opacity: 0.8;
+   }
+
+   .prose ul > li::marker,
+   .prose ol > li::marker {
+      color: var(--color-muted-foreground) !important;
+   }
+
+   .prose li {
+      color: var(--color-foreground) !important;
+   }
+
+   .prose table {
+      border-color: var(--color-border) !important;
+   }
+
+   .prose th {
+      color: var(--color-foreground) !important;
+      border-color: var(--color-border) !important;
+   }
+
+   .prose td {
+      color: var(--color-foreground) !important;
+      border-color: var(--color-border) !important;
+   }
+
+   /* Additional specificity for nested elements */
+   .prose * {
+      color: inherit !important;
+   }
+
+   .prose h1 *,
+   .prose h2 *,
+   .prose h3 *,
+   .prose h4 *,
+   .prose h5 *,
+   .prose h6 * {
+      color: var(--color-foreground) !important;
    }
 }
