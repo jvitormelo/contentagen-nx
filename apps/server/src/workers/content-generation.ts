@@ -232,10 +232,11 @@ export const contentGenerationWorker = new Worker(
                `Generating content prompt for topic: ${topic} without injected knowledge base context.`,
             );
          }
-         let prompt = generateContentRequestPrompt(
-            promptOptions,
-            request.agent,
-         );
+         let prompt = generateContentRequestPrompt(promptOptions, {
+            ...request.agent,
+            contentType: request.agent.contentType ?? "blog_posts",
+            formattingStyle: request.agent.formattingStyle ?? "structured",
+         });
          // If relevantDocsText exists, prepend it to the prompt.
          if (usedKnowledgeBase && relevantDocsText) {
             prompt = `${relevantDocsText}\n\n${prompt}`;

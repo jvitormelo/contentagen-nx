@@ -112,7 +112,11 @@ export const agentRoutes = new Elysia({
 
          // Generate base prompt if it doesn't exist
          if (!agent.basePrompt) {
-            const basePrompt = generateDefaultBasePrompt(agent);
+            const basePrompt = generateDefaultBasePrompt({
+               ...agent,
+               description: agent.description ?? null,
+               formattingStyle: agent.formattingStyle ?? "structured",
+            });
 
             // Update the agent with the generated base prompt
             await db
