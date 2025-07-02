@@ -107,6 +107,14 @@ export function ContentRequestDetailsPage() {
       });
    };
 
+   if (isLoading) {
+      return (
+         <div className="h-full w-full flex items-center justify-center">
+            Loading...
+         </div>
+      );
+   }
+
    if (!request) {
       return <div>Content request not found</div>;
    }
@@ -114,7 +122,7 @@ export function ContentRequestDetailsPage() {
    return (
       <main className="h-full w-full flex flex-col gap-6">
          <TalkingMascot message="Here's your content request details! You can review, edit, and manage your generated content. Use the export options to get your content in different formats." />
-         {request.status === "pending" && (
+         {!request.approved && (
             <Card>
                <CardHeader>
                   <CardTitle>Request Status</CardTitle>
@@ -151,9 +159,7 @@ export function ContentRequestDetailsPage() {
                <GeneratedContentDisplay
                   generatedContent={generatedContent}
                   isExporting={isExporting}
-                  isGenerating={
-                     request.status === "approved" && !request.isCompleted
-                  }
+                  isGenerating={!request.isCompleted}
                   onExport={handleExportContent}
                />
             </div>

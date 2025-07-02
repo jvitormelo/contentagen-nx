@@ -8,9 +8,9 @@ import { env, isProduction } from "./config/env";
 import { bullAuth } from "./guards/bull-auth-guard";
 import { authMiddleware, OpenAPI } from "./integrations/auth";
 import { agentRoutes } from "./routes/agent-routes";
-import { ContentAnalysisRoutes } from "./routes/content-analysis-routes";
 import { contentManagementRoutes } from "./routes/content-management-routes";
 import { contentRequestRoutes } from "./routes/content-request-routes";
+import { fileRoutes } from "./routes/file-routes";
 import { waitlistRoutes } from "./routes/waitlist-routes";
 import { contentGenerationQueue } from "./workers/content-generation";
 
@@ -25,6 +25,7 @@ createBullBoard({
 });
 
 const app = new Elysia()
+
    .use(
       cors({
          allowedHeaders: ["Content-Type", "Authorization"],
@@ -57,11 +58,10 @@ const app = new Elysia()
          api
             .use(authMiddleware)
             .use(agentRoutes)
+            .use(fileRoutes)
+
             .group("/content", (content) =>
-               content
-                  .use(ContentAnalysisRoutes)
-                  .use(contentManagementRoutes)
-                  .use(contentRequestRoutes)
+               content.use(contentManagementRoutes).use(contentRequestRoutes),
             )
             .use(waitlistRoutes)
             .get("/works", () => {

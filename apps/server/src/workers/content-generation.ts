@@ -2,10 +2,13 @@ import { Queue, Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 import { db } from "../integrations/database";
 import { openRouter } from "../integrations/openrouter";
-import type { agent as Agent, ContentLength } from "../schemas/content-schema";
 import { content, contentRequest, type agent } from "../schemas/content-schema";
 import { redis } from "../services/redis";
 import { embeddingService } from "../services/embedding";
+import {
+   generateContentRequestPrompt,
+   type AgentPromptOptions,
+} from "../services/agent-prompt";
 
 export type ContentRequestWithAgent = typeof contentRequest.$inferSelect & {
    agent: typeof agent.$inferSelect;
@@ -30,62 +33,7 @@ function slugify(text: string) {
       .replace(/-+$/, ""); // Trim - from end of text
 }
 
-function generateAgentPrompt(
-   agent: typeof Agent.$inferSelect,
-   params: {
-      topic: string;
-      briefDescription: string;
-      targetLength: ContentLength;
-   },
-): string {
-   // Map ContentLength to detailed descriptions
-   const lengthDescriptions: Record<ContentLength, string> = {
-      short: "Quick and concise content (500-800 words)",
-      medium: "Balanced content with good detail (800-1500 words)",
-      long: "Comprehensive and in-depth content (1500+ words)",
-   };
-   return `
-You are an expert copywriter and SEO strategist. Your job is to craft high-quality, engaging, and SEO-optimized content tailored to the agent profile and the content request below. Use advanced copywriting techniques, ensure clarity, and maximize the content's discoverability.
-
-Follow these instructions strictly:
-1. Carefully analyze the agent profile and content request. Adapt your writing style, tone, and structure to match the agent's requirements and the target audience.
-2. Use advanced copywriting strategies (e.g., compelling headlines, strong introductions, clear structure, persuasive language, and effective calls to action if relevant).
-3. Ensure the content is highly relevant, original, and provides real value to the reader.
-4. Optimize for SEO:
-   - Naturally incorporate the SEO focus and related keywords throughout the content.
-   - Use semantic keywords and variations.
-   - Structure the content with clear headings, subheadings, and bullet points if appropriate.
-   - Write a meta description (max 155 characters) at the top of the content.
-5. The content must be well-formatted according to the agent's formattingStyle (e.g., Markdown, HTML, etc.).
-6. The output must be a valid JSON object with two keys: "content" and "tags".
-   - "content": The full, SEO-optimized text, including the meta description at the top.
-   - "tags": An array of highly relevant tags as strings (3-8 tags, no duplicates, all lowercase, related to the topic and SEO focus).
-7. Do not include any explanations, notes, or extra text outside the JSON object.
-
----
-Agent Profile:
-- Name: ${agent.name}
-- Description: ${agent.description}
-- Content Type: ${agent.contentType}
-- Voice Tone: ${agent.voiceTone}
-- Target Audience: ${agent.targetAudience}
-- Formatting Style: ${agent.formattingStyle}
-- SEO Focus: ${agent.seoFocus}
-
-Content Request:
-- Topic: ${params.topic}
-- Brief Description: ${params.briefDescription}
-- Target Length: ${params.targetLength} (${lengthDescriptions[params.targetLength]})
-
-Output format example:
-{
-  "content": "Meta description here.\n\n# Title...\nFull article...",
-  "tags": ["seo", "copywriting", "digital marketing"]
-}
-`;
-}
-
-async function generateContent(prompt: string) {
+async function generateContent(prompt: string): Promise<{ content: string }> {
    const response = await openRouter.chat.completions.create({
       model: "qwen/qwen3-30b-a3b-04-28",
       messages: [{ role: "user", content: prompt }],
@@ -99,14 +47,23 @@ async function generateContent(prompt: string) {
    }
 
    try {
-      return JSON.parse(generatedText);
+      const result = JSON.parse(generatedText);
+
+      // Verify result.content is a string before returning
+      if (typeof result.content !== "string") {
+         throw new Error("AI response does not contain valid content string");
+      }
+
+      // Return only content
+      return { content: result.content };
    } catch (error) {
       console.error("Failed to parse JSON response from AI:", error);
       throw new Error("Invalid JSON response from AI");
    }
 }
 
-function calculateWordsCount(text: string): number {
+function calculateWordsCount(text: string | undefined | null): number {
+   if (typeof text !== "string") return 0;
    return text.split(/\s+/).length;
 }
 
@@ -115,35 +72,12 @@ function calculateTimeToRead(wordsCount: number): number {
    return Math.ceil(wordsCount / wordsPerMinute);
 }
 
-function extractTags(
-   generatedTags: string[] | string,
-   topic: string,
-): string[] {
-   let tags: string[] = [];
-   if (typeof generatedTags === "string" && generatedTags.length > 0) {
-      tags = generatedTags
-         .split(",")
-         .map((tag) => tag.trim())
-         .filter((tag) => tag.length > 0);
-   } else if (Array.isArray(generatedTags) && generatedTags.length > 0) {
-      tags = generatedTags
-         .map((tag) => String(tag).trim())
-         .filter((tag) => tag.length > 0);
-   }
-
-   if (tags.length === 0) {
-      tags = topic.split(" ").map((tag) => tag.trim().toLowerCase());
-   }
-
-   return tags;
-}
-
 async function saveContent(
    request: ContentRequestWithAgent,
-   generatedContent: { content: string; tags: string[] | string },
+   generatedContent: { content: string },
 ) {
    const slug = slugify(request.topic);
-   const tags = extractTags(generatedContent.tags, request.topic);
+
    const wordsCount = calculateWordsCount(generatedContent.content);
    const timeToRead = calculateTimeToRead(wordsCount);
 
@@ -159,30 +93,42 @@ async function saveContent(
       // Continue without embedding - can be generated later
    }
 
-   const [newContent] = await db
-      .insert(content)
-      .values({
-         agentId: request.agentId,
-         body: generatedContent.content,
-         title: request.topic,
-         userId: request.userId,
-         slug,
-         tags,
-         wordsCount,
-         readTimeMinutes: timeToRead,
-         embedding,
-      })
-      .returning();
+   try {
+      const [newContent] = await db
+         .insert(content)
+         .values({
+            agentId: request.agentId,
+            body: generatedContent.content,
+            title: request.topic,
+            userId: request.userId,
+            slug,
+            wordsCount,
+            readTimeMinutes: timeToRead,
+            embedding,
+         })
+         .returning();
 
-   await db
-      .update(contentRequest)
-      .set({
-         isCompleted: true,
-         generatedContentId: newContent?.id,
-      })
-      .where(eq(contentRequest.id, request.id));
+      if (!newContent) {
+         throw new Error("Failed to create content record");
+      }
 
-   return newContent;
+      // Update request with completion
+      // Note: approved field is left as-is (remains false)
+      await db
+         .update(contentRequest)
+         .set({
+            isCompleted: true,
+            generatedContentId: newContent.id,
+         })
+         .where(eq(contentRequest.id, request.id));
+
+      return newContent;
+   } catch (error) {
+      console.error("Database error while saving content:", error);
+      throw new Error(
+         `Failed to save content: ${error instanceof Error ? error.message : String(error)}`,
+      );
+   }
 }
 
 export const contentGenerationWorker = new Worker(
@@ -200,28 +146,60 @@ export const contentGenerationWorker = new Worker(
          });
 
          if (!request || !request.agent) {
-            throw new Error("Request or agent not found");
+            const errorMsg = `Request ${requestId} or associated agent not found`;
+            job.log(errorMsg);
+            throw new Error(errorMsg);
          }
 
-         const { agent, topic, briefDescription, targetLength } = request;
+         const { topic, briefDescription, targetLength } = request;
 
-         const prompt = generateAgentPrompt(agent, {
+         // Handle nullable boolean and enum values with proper defaults
+         const internalLinkFormat = request.internalLinkFormat ?? "mdx";
+         const includeMetaTags = request.includeMetaTags ?? false;
+         const includeMetaDescription = request.includeMetaDescription ?? false;
+
+         const promptOptions: AgentPromptOptions = {
             topic,
-            briefDescription,
+            description: briefDescription,
             targetLength,
-         });
+            linkFormat: internalLinkFormat,
+            includeMetaTags,
+            includeMetaDescription,
+         };
 
+         job.log(`Generating content prompt for topic: ${topic}`);
+         const prompt = generateContentRequestPrompt(
+            promptOptions,
+            request.agent,
+         );
+
+         job.log(`Calling AI service to generate content`);
          const generatedContent = await generateContent(prompt);
 
-         await saveContent(request, generatedContent);
+         job.log(`Saving generated content to database`);
+         const savedContent = await saveContent(request, generatedContent);
 
-         job.log(`Successfully processed content for request: ${requestId}`);
-      } catch (error) {
-         console.error(
-            `Failed to process content for request: ${requestId}`,
-            error,
+         job.log(
+            `Successfully processed content for request: ${requestId}, generated content ID: ${savedContent?.id}`,
          );
-         throw error;
+
+         // Return the generated content ID for job completion tracking
+         return {
+            success: true,
+            requestId,
+            generatedContentId: savedContent?.id,
+         };
+      } catch (error) {
+         const errorMsg = `Failed to process content for request: ${requestId}`;
+         console.error(errorMsg, error);
+         job.log(
+            `ERROR: ${errorMsg} - ${error instanceof Error ? error.message : String(error)}`,
+         );
+
+         // Re-throw to ensure job fails and can be retried if needed
+         throw new Error(
+            `${errorMsg}: ${error instanceof Error ? error.message : String(error)}`,
+         );
       }
    },
    { connection: redis },
