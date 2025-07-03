@@ -55,7 +55,8 @@ FROM node:lts-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-
+ARG VITE_SERVER_URL
+ARG ARCJET_KEY
 # Copy the pruned, production-only node_modules from the 'deps' stage.
 # This will solve the original 'module not found' error.
 COPY --from=deps /app/node_modules ./node_modules
