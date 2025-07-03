@@ -18,8 +18,7 @@ const EnvSchema = Type.Object({
    MINIO_SECRET_KEY: Type.String(),
    MINIO_BUCKET: Type.String(),
    ARCJET_KEY: Type.String(),
-   ARCJET_ENV: Type.String()
-
+   ARCJET_ENV: Type.Optional(Type.String()),
 });
 
 function parseEnv(env: NodeJS.ProcessEnv): Static<typeof EnvSchema> {
