@@ -1,10 +1,13 @@
-import { env } from "@/config/env";
 import arcjet, { detectBot, shield, tokenBucket } from "@arcjet/node";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
 
+if (!process.env.ARCJET_KEY) {
+   throw new Error("ARCJET_KEY is not set");
+}
+
 const aj = arcjet({
-   key: env.ARCJET_KEY, // Get your site key from https://app.arcjet.com
+   key: process.env.ARCJET_KEY, // Get your site key from https://app.arcjet.com
    characteristics: ["ip.src"], // Track requests by IP
    rules: [
       // Shield protects your app from common attacks e.g. SQL injection
