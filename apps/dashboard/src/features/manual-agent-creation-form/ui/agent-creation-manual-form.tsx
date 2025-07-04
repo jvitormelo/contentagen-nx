@@ -29,6 +29,7 @@ import {
    voiceToneEnum,
    languageEnum,
    brandIntegrationEnum,
+   communicationStyleEnum, // <-- Add this import
 } from "@api/schemas/agent-schema";
 import { z } from "zod";
 import type { EdenClientType } from "@packages/eden";
@@ -51,6 +52,9 @@ export const agentFormSchema = z.object({
    brandIntegration: z.enum(brandIntegrationEnum.enumValues, {
       required_error: "Brand integration is required",
    }),
+   communicationStyle: z.enum(communicationStyleEnum.enumValues, {
+      required_error: "Communication style is required",
+   }), // <-- Add this field
 });
 export type AgentFormData = z.infer<typeof agentFormSchema>;
 export type AgentForm = ReturnType<typeof useAgentForm>;
@@ -60,6 +64,7 @@ const steps = [
    { id: "step-voice-tone", title: "Voice Tone" },
    { id: "step-target-audience", title: "Target Audience" },
    { id: "step-formatting-style", title: "Formatting Style" },
+   { id: "step-brand-integration", title: "Brand Integration" }, // New step
    { id: "step-brand-integration", title: "Brand Integration" }, // New step
    { id: "step-review-submit", title: "Review & Submit" },
 ] as const;
@@ -93,7 +98,7 @@ export function AgentCreationManualForm({
          case "step-formatting-style":
             return "How should your content be structured?";
          case "step-brand-integration":
-            return "How closely should your agent follow your brand guidelines?";
+            return "How closely should your agent follow your brand guidelines? Also, choose how your agent should communicate: as a singular person or in third person.";
          case "step-topics-seo":
             return "Let's add topics and keywords for SEO!";
          case "step-review-submit":
