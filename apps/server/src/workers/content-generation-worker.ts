@@ -1,20 +1,19 @@
+import { knowledgeChunk } from "@api/schemas/agent-schema";
 import { Queue, Worker, type Job } from "bullmq";
-import { eq, sql, and, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull, sql } from "drizzle-orm";
 import { db } from "../integrations/database";
 import { openRouter } from "../integrations/openrouter";
-import { content, contentRequest } from "../schemas/content-schema";
-import { knowledgeChunk } from "../schemas/agent-schema";
-import type { agent } from "../schemas/agent-schema";
-import { redis } from "../services/redis";
-import { embeddingService } from "../services/embedding";
+import { content, contentRequest, type Agent } from "../schemas/content-schema";
 import {
    generateAgentPrompt,
    type AgentPromptOptions,
 } from "../services/agent-prompt";
+import { embeddingService } from "../services/embedding";
+import { redis } from "../services/redis";
 
 // Enhanced types
 export type ContentRequestWithAgent = typeof contentRequest.$inferSelect & {
-   agent: typeof agent.$inferSelect;
+   agent: Agent;
 };
 
 export type ContentGenerationJobData = {
@@ -521,10 +520,6 @@ async function saveContent(
          })
          .where(eq(contentRequest.id, request.id));
 
-      job.log(
-         `Content saved successfully with ID: ${newContent.id}, slug: ${uniqueSlug}`,
-      );
-
       return newContent;
    } catch (error) {
       const errorMsg = `Database error while saving content: ${error instanceof Error ? error.message : String(error)}`;
@@ -788,11 +783,11 @@ process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 
 // Export utility functions for testing and external use
 export {
+   calculateContentMetrics,
+   CONTENT_CONFIG,
    generateContent,
    retrieveRelevantKnowledge,
    retrieveBrandKnowledge,
    retrieveTopicKnowledge,
-   calculateContentMetrics,
    slugify,
-   CONTENT_CONFIG,
 };
