@@ -65,7 +65,6 @@ const steps = [
    { id: "step-target-audience", title: "Target Audience" },
    { id: "step-formatting-style", title: "Formatting Style" },
    { id: "step-brand-integration", title: "Brand Integration" }, // New step
-   { id: "step-brand-integration", title: "Brand Integration" }, // New step
    { id: "step-review-submit", title: "Review & Submit" },
 ] as const;
 
@@ -99,8 +98,6 @@ export function AgentCreationManualForm({
             return "How should your content be structured?";
          case "step-brand-integration":
             return "How closely should your agent follow your brand guidelines? Also, choose how your agent should communicate: as a singular person or in third person.";
-         case "step-topics-seo":
-            return "Let's add topics and keywords for SEO!";
          case "step-review-submit":
             return "Almost there! Let's review everything before creating your agent!";
          default:
