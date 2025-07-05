@@ -20,8 +20,8 @@ export function AgentListPage() {
             {data?.agents.map((agent) => (
                <AgentCard key={agent.id} agent={agent} />
             ))}
+            <CreateNewAgentButton />
          </div>
-         <CreateNewAgentButton />
       </main>
    );
 }
