@@ -8,7 +8,6 @@ const EnvSchema = Type.Object({
    RESEND_API_KEY: Type.String(),
    POLAR_ACCESS_TOKEN: Type.String(),
    POLAR_SUCCESS_URL: Type.String(),
-   POLAR_FREE_PLAN: Type.String(),
    POLAR_PREMIUM_PLAN: Type.String(),
    POLAR_PRO_PLAN: Type.String(),
    REDIS_URL: Type.String(),
