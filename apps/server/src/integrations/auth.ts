@@ -62,6 +62,12 @@ export const auth = betterAuth({
             checkout({
                successUrl: "http://localhost:3000/profile",
                authenticatedUsersOnly: true,
+               products: [
+                  {
+                     productId: env.POLAR_PREMIUM_PLAN,
+                     slug: "premium",
+                  },
+               ],
             }),
             usage(),
          ],
