@@ -3,7 +3,8 @@ import {
    POLAR_BILLING_EVENTS,
    handleContentMonthlyLimit,
    getPolarPlanBasedOnValue,
-} from "@packages/billing-limits";
+   handleAgentSlotsLimit,
+} from "@packages/polar-billing";
 
 async function getUserState(headers: Headers) {
    const state = await auth.api.state({
@@ -60,4 +61,21 @@ async function userHasFreeGenerationLimit(headers: Headers) {
       },
    });
    return true;
+}
+
+export async function handleAgentSlots(headers: Headers) {
+   const { state, plan } = await getUserState(headers);
+
+   const agentSlots = Number(state?.metadata?.agents || 0);
+
+   handleAgentSlotsLimit(agentSlots, plan);
+
+   await polarClient.customers.update({
+      id: state.id,
+      customerUpdate: {
+         metadata: {
+            agents: agentSlots + 1,
+         },
+      },
+   });
 }

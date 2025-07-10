@@ -1,14 +1,15 @@
 ---
 
-import { Picture } from "astro:assets";
+import { Image } from "astro:assets";
 import {
    Card,
    CardDescription,
    CardHeader,
    CardTitle,
 } from "@packages/ui/components/card";
-import agentImage from "../assets/agent.png";
 
+import lightAgent from "../assets/light/light-agent.webp";
+import darkAgent from "../assets/dark/dark-agent.webp";
 const features = [
    {
       description:
@@ -37,12 +38,26 @@ const features = [
       Build, customize, and publish standout blog content in minutes with smart automation and agent-driven workflows.
     </p>
   </div>
-    <Picture
-      class="rounded-xl shadow-xl ring-2 ring-black/10 w-full max-w-4xl "
-      formats={['webp']}
-      src={agentImage}
-      alt="Feature illustration"
-    />
+  <div class="relative w-full flex justify-center">
+      <Image
+        src={lightAgent}
+        alt="hero-image light"
+        class="rounded-xl shadow-xl ring-2 ring-black/10 w-full max-w-4xl  block dark:hidden"
+        width={Number(lightAgent.width)}
+        height={Number(lightAgent.height) }
+        loading="lazy"
+      />
+      <Image
+        src={darkAgent}
+        alt="hero-image dark"
+        class="rounded-xl shadow-xl ring-2 ring-black/10 w-full max-w-4xl  hidden dark:block"
+        width={Number(darkAgent.width)}
+
+        height={Number(darkAgent.height)}
+        loading="lazy"
+      />
+    </div>
+  
   <div class="grid gap-4 grid-cols-1 md:grid-cols-3 w-full ">
     {features.map(feature => (
       <Card >
