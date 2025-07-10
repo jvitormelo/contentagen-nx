@@ -69,55 +69,53 @@ export function AgentDetailsKnowledgeChunksCard() {
             ) : !data || data.length === 0 ? (
                <div>No knowledge chunks found.</div>
             ) : (
-               <ul className="space-y-2">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {data.map((chunk: { id: string; content?: string }) => (
-                     <li
-                        key={chunk.id}
-                        className="border rounded p-2 flex flex-col gap-2"
-                     >
-                        <div className="flex justify-between items-center">
-                           <span className="font-mono text-xs truncate max-w-xs">
+                     <Card key={chunk.id} className="border shadow-sm">
+                        <CardHeader>
+                           <CardTitle className="line-clamp-1 text-base">
                               {chunk.id}
-                           </span>
-                           <div className="flex gap-2">
-                              <Button
-                                 size="sm"
-                                 variant="outline"
-                                 onClick={() =>
-                                    setViewedChunk(
-                                       viewedChunk === chunk.id
-                                          ? null
-                                          : chunk.id,
+                           </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                           {viewedChunk === chunk.id && (
+                              <pre className="bg-muted p-2 rounded text-xs overflow-x-auto whitespace-pre-wrap max-h-48">
+                                 {chunk.content ||
+                                    JSON.stringify(chunk, null, 2)}
+                              </pre>
+                           )}
+                        </CardContent>
+                        <CardFooter className="flex gap-2">
+                           <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                 setViewedChunk(
+                                    viewedChunk === chunk.id ? null : chunk.id,
+                                 )
+                              }
+                           >
+                              {viewedChunk === chunk.id ? "Hide" : "View"}
+                           </Button>
+                           <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                 if (
+                                    confirm(
+                                       "Are you sure you want to delete this chunk?",
                                     )
+                                 ) {
+                                    deleteChunkMutation.mutate(chunk.id);
                                  }
-                              >
-                                 {viewedChunk === chunk.id ? "Hide" : "View"}
-                              </Button>
-                              <Button
-                                 size="sm"
-                                 variant="destructive"
-                                 onClick={() => {
-                                    if (
-                                       confirm(
-                                          "Are you sure you want to delete this chunk?",
-                                       )
-                                    ) {
-                                       deleteChunkMutation.mutate(chunk.id);
-                                    }
-                                 }}
-                              >
-                                 Delete
-                              </Button>
-                           </div>
-                        </div>
-                        {viewedChunk === chunk.id && (
-                           <pre className="bg-muted p-2 rounded text-xs overflow-x-auto whitespace-pre-wrap max-h-48">
-                              {chunk.content || JSON.stringify(chunk, null, 2)}
-                           </pre>
-                        )}
-                     </li>
+                              }}
+                           >
+                              Delete
+                           </Button>
+                        </CardFooter>
+                     </Card>
                   ))}
-               </ul>
+               </div>
             )}
          </CardContent>
          <CardFooter></CardFooter>

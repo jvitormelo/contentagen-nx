@@ -13,6 +13,8 @@ import {
    useRouteContext,
    useNavigate,
 } from "@tanstack/react-router";
+import { InfoItem } from "@packages/ui/components/info-item";
+import { Activity } from "lucide-react";
 
 export function AgentDetailsContentRequestsCard() {
    const { agentId } = useParams({ from: "/_dashboard/agents/$agentId/" });
@@ -51,37 +53,66 @@ export function AgentDetailsContentRequestsCard() {
             ) : !data || data.length === 0 ? (
                <div>No content requests found.</div>
             ) : (
-               <ul className="space-y-2">
+               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {data.map(
                      (req: {
                         id: string;
                         topic: string;
                         briefDescription: string;
-                        targetLength: number | null;
+
                         createdAt: Date;
+                        updatedAt: Date;
+                        agentId: string;
+                        generatedContentId: string | null;
+                        isCompleted: boolean | null;
                      }) => (
-                        <li
-                           key={req.id}
-                           className="border rounded p-2 flex flex-col gap-1"
-                        >
-                           <div className="flex justify-between items-center">
-                              <span className="font-mono text-xs truncate max-w-xs">
+                        <Card key={req.id} className="border shadow-sm">
+                           <CardHeader>
+                              <CardTitle className="line-clamp-1 text-base">
                                  {req.topic}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                 {new Date(req.createdAt).toLocaleDateString()}
-                              </span>
-                           </div>
-                           <div className="text-xs text-muted-foreground">
-                              {req.briefDescription}
-                           </div>
-                           <div className="text-xs">
-                              Target Length: {req.targetLength ?? "-"}
-                           </div>
-                        </li>
+                              </CardTitle>
+                              <CardDescription className="line-clamp-1 text-xs">
+                                 {req.briefDescription}
+                              </CardDescription>
+                           </CardHeader>
+                           <CardContent>
+                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                                 <span>
+                                    Created:{" "}
+                                    {new Date(
+                                       req.createdAt,
+                                    ).toLocaleDateString()}
+                                 </span>
+                              </div>
+                              <InfoItem
+                                 icon={<Activity className="h-4 w-4" />}
+                                 label="Status"
+                                 value={
+                                    req.isCompleted === true
+                                       ? "Completed"
+                                       : "Generating"
+                                 }
+                              />
+                           </CardContent>
+                           <CardFooter>
+                              <Button
+                                 className="w-full"
+                                 variant="outline"
+                                 size="sm"
+                                 onClick={() =>
+                                    navigate({
+                                       to: "/content/requests/$requestId",
+                                       params: { requestId: req.id },
+                                    })
+                                 }
+                              >
+                                 Manage your content
+                              </Button>
+                           </CardFooter>
+                        </Card>
                      ),
                   )}
-               </ul>
+               </div>
             )}
          </CardContent>
          <CardFooter className="flex justify-end">

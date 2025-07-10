@@ -92,8 +92,10 @@ export const AgentPersonaCard: React.FC<AgentPersonaCardProps> = ({
             <div className="flex items-center gap-4 rounded-lg bg-muted p-4 ">
                <Bot className="w-8 h-8 rounded-full bg-muted" />
                <div>
-                  <p className="font-medium text-sm">{name}</p>
-                  <p className="text-xs text-muted-foreground">{description}</p>
+                  <p className="font-medium text-sm line-clamp-1">{name}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-1">
+                     {description}
+                  </p>
                </div>
             </div>
             <Separator />
