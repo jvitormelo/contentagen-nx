@@ -16,7 +16,7 @@ COPY package.json ./
 COPY apps/server/package.json ./apps/server/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/brand/package.json ./packages/brand/
-COPY packages/billing-limits/package.json ./packages/billing-limits/
+COPY packages/polar-billing/package.json ./packages/polar-billing/
 
 
 # Install all dependencies (monorepo-aware)
@@ -45,7 +45,7 @@ COPY package.json ./
 COPY apps/server/package.json ./apps/server/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/brand/package.json ./packages/brand/
-COPY packages/billing-limits/package.json ./packages/billing-limits/
+COPY packages/polar-billing/package.json ./packages/polar-billing/
 # Install only production dependencies.
 RUN bun install 
 
