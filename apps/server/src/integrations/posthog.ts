@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { getElysiaPosthogConfig } from "@packages/posthog";
+import { getElysiaPosthogConfig } from "@packages/posthog/server";
 const posthog = getElysiaPosthogConfig();
 export const posthogPlugin = new Elysia({
   name: "posthog-plugin",

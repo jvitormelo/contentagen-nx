@@ -9,7 +9,20 @@
    "scripts": {
       "check": "biome check --write ./src"
    },
-   "types": "./src/index.ts",
+   "exports": {
+      ".": {
+         "types": "./dist/src/index.d.ts",
+         "default": "./src/index.ts"
+      },
+      "./client": {
+         "types": "./dist/src/client.d.ts",
+         "default": "./src/client.ts"
+      },
+      "./server": {
+         "types": "./dist/src/server.d.ts",
+         "default": "./src/server.ts"
+      }
+   },
    "version": "0.0.0",
    "dependencies": {
       "posthog-node": "^5.5.0"

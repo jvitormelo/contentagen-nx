@@ -13,7 +13,7 @@ import {
    Scripts,
 } from "@tanstack/react-router";
 import { Toaster } from "@packages/ui/components/sonner";
-import { getReactPosthogConfig } from "@packages/posthog";
+import { getReactPosthogConfig } from "@packages/posthog/client";
 import { PostHogProvider } from "posthog-js/react";
 export interface MyRouterContext {
    eden: EdenClientType;
