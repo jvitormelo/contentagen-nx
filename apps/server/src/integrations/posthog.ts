@@ -2,12 +2,12 @@ import { Elysia } from "elysia";
 import { getElysiaPosthogConfig } from "@packages/posthog/server";
 const posthog = getElysiaPosthogConfig();
 export const posthogPlugin = new Elysia({
-  name: "posthog-plugin",
+   name: "posthog-plugin",
 })
-  .derive(() => ({
-    posthog,
-  }))
-  .onStop(async () => {
-    await posthog.shutdown();
-    console.info("PostHog client shut down.");
-  });
+   .derive(() => ({
+      posthog,
+   }))
+   .onStop(async () => {
+      await posthog.shutdown();
+      console.info("PostHog client shut down.");
+   });

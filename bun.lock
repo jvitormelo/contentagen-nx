@@ -199,6 +199,7 @@
         "minio": "^8.0.5",
         "openai": "^5.8.2",
         "pg": "^8.16.3",
+        "posthog-node": "^5.5.0",
         "react": "catalog:react",
         "react-dom": "catalog:react",
         "resend": "^4.6.0",
