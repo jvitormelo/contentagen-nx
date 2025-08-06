@@ -43,7 +43,6 @@ export const testConnection = async (client: ChromaClient): Promise<boolean> => 
 export const getOrCreateCollection = async (
    client: ChromaClient,
    name: keyof typeof CollectionName,
-   metadata?: Metadata,
 ): Promise<{ collection: Collection; justCreated: boolean }> => {
    const collectionName = CollectionName[name];
    try {
@@ -68,18 +67,31 @@ export const getOrCreateCollection = async (
          const collections = await client.listCollections();
          console.log(`Current collections:`, collections.map(c => c.name));
          
-         const collection = await client.createCollection({
-            name: collectionName,
-            embeddingFunction: embedder,
-            metadata,
-         });
-         console.log(`Successfully created collection: ${collectionName}`);
+         // Try creating collection without embedding function first
+         console.log(`Attempting to create collection without embedding function: ${collectionName}`);
+         let collection: Collection;
+         try {
+            collection = await client.createCollection({
+               name: collectionName,
+            });
+            console.log(`Successfully created collection without embedding function: ${collectionName}`);
+         } catch (basicCreateErr) {
+            console.log(`Failed to create basic collection, trying with embedding function:`, basicCreateErr);
+            collection = await client.createCollection({
+               name: collectionName,
+               embeddingFunction: embedder,
+            });
+            console.log(`Successfully created collection with embedding function: ${collectionName}`);
+         }
+         
          return { collection, justCreated: true };
       } catch (createErr) {
          console.error(`Failed to create collection "${collectionName}":`, createErr);
+         console.error(`Full error details:`, JSON.stringify(createErr, null, 2));
          
          // Try to get the collection again in case it was created by another process
          try {
+            console.log(`Retrying to get collection: ${collectionName}`);
             const collection = await client.getCollection({
                name: collectionName,
                embeddingFunction: embedder,

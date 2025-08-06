@@ -3,18 +3,10 @@ import { ChromaClient as InternalChromaCLient } from "chromadb";
 
 export const createChromaClient = (baseUrl: string): InternalChromaCLient => {
    try {
-      // Parse the URL to extract host, port, and ssl info
-      const url = new URL(baseUrl);
-      const host = url.hostname;
-      const port = parseInt(url.port) || (url.protocol === "https:" ? 443 : 80);
-      const ssl = url.protocol === "https:";
-
-      console.log(`Creating ChromaDB client for ${host}:${port} (SSL: ${ssl})`);
+      console.log(`Creating ChromaDB client for ${baseUrl}`);
 
       const client = new InternalChromaCLient({
-         host,
-         port,
-         ssl,
+         path: baseUrl,
          headers: {
             "Authorization": `Bearer ${serverEnv.CHROMA_TOKEN}`
          }
