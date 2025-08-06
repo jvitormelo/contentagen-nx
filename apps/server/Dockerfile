@@ -150,9 +150,17 @@ WORKDIR /app
 # Install system dependencies for ONNX Runtime and other ML libraries
 USER root
 RUN apt-get update && apt-get install -y \
-    libonnxruntime1.16.0 \
+    wget \
+    ca-certificates \
     libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget -qO- https://github.com/microsoft/onnxruntime/releases/download/v1.16.3/onnxruntime-linux-x64-1.16.3.tgz | tar -xz -C /tmp \
+    && cp /tmp/onnxruntime-linux-x64-1.16.3/lib/libonnxruntime.so.1.16.3 /usr/local/lib/ \
+    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so.1 \
+    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so \
+    && ldconfig \
+    && rm -rf /tmp/onnxruntime-linux-x64-1.16.3
 
 COPY --from=builder /app/server server
 
