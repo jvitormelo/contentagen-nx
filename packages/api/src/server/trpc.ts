@@ -5,6 +5,7 @@ import type { DatabaseInstance } from "@packages/database/client";
 import type { MinioClient } from "@packages/files/client";
 import type { ChromaClient } from "@packages/chroma-db/client";
 import type { OpenRouterClient } from "@packages/openrouter/client";
+import { ensureAgentKnowledgeCollection } from "@packages/chroma-db/helpers";
 export const createTRPCContext = async ({
    auth,
    db,
@@ -32,7 +33,13 @@ export const createTRPCContext = async ({
    const session = await auth.api.getSession({
       headers,
    });
-
+const collection = await ensureAgentKnowledgeCollection(chromaClient);
+if(!collection) {
+      throw new TRPCError({
+         code: "INTERNAL_SERVER_ERROR",
+         message: "Failed to ensure agent knowledge collection",
+      });
+   }
    return {
       openRouterClient,
       minioBucket,

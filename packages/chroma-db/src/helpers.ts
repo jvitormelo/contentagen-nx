@@ -37,72 +37,63 @@ export const testConnection = async (client: ChromaClient): Promise<boolean> => 
 };
 
 /**
- * Get a collection by name, or create it if it doesn't exist.
- * Returns { collection, justCreated }
+ * Ensure the agent_knowledge collection exists, creating it if necessary
  */
-export const getOrCreateCollection = async (
-   client: ChromaClient,
-   name: keyof typeof CollectionName,
-): Promise<{ collection: Collection; justCreated: boolean }> => {
-   const collectionName = CollectionName[name];
+export const ensureAgentKnowledgeCollection = async (client: ChromaClient): Promise<Collection> => {
+   const collectionName = "agent_knowledge";
+   
    try {
-      console.log(`Attempting to get collection: ${collectionName}`);
+      // Try to get the collection first
       const collection = await client.getCollection({
          name: collectionName,
          embeddingFunction: embedder,
       });
-      console.log(`Successfully retrieved collection: ${collectionName}`);
-      return { collection, justCreated: false };
-   } catch (err) {
-      console.log(
-         `Collection "${collectionName}" not found, creating a new one:`,
-         err instanceof Error ? err.message : String(err),
-      );
-      
-      // Add a small delay to prevent race conditions
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      console.log(`✓ Collection '${collectionName}' already exists`);
+      return collection;
+   } catch {
+      // Collection doesn't exist, create it
+      console.log(`Creating collection '${collectionName}'...`);
       try {
-         // First, let's check if we can connect and list collections
-         const collections = await client.listCollections();
-         console.log(`Current collections:`, collections.map(c => c.name));
-         
-         // Try creating collection without embedding function first
-         console.log(`Attempting to create collection without embedding function: ${collectionName}`);
-         let collection: Collection;
+         const collection = await client.createCollection({
+            name: collectionName,
+            embeddingFunction: embedder,
+         });
+         console.log(`✓ Successfully created collection '${collectionName}'`);
+         return collection;
+      } catch (createError) {
+         console.error(`✗ Failed to create collection '${collectionName}':`, createError);
+         // Try without embedding function as fallback
          try {
-            collection = await client.createCollection({
-               name: collectionName,
-            });
-            console.log(`Successfully created collection without embedding function: ${collectionName}`);
-         } catch (basicCreateErr) {
-            console.log(`Failed to create basic collection, trying with embedding function:`, basicCreateErr);
-            collection = await client.createCollection({
-               name: collectionName,
-               embeddingFunction: embedder,
-            });
-            console.log(`Successfully created collection with embedding function: ${collectionName}`);
-         }
-         
-         return { collection, justCreated: true };
-      } catch (createErr) {
-         console.error(`Failed to create collection "${collectionName}":`, createErr);
-         console.error(`Full error details:`, JSON.stringify(createErr, null, 2));
-         
-         // Try to get the collection again in case it was created by another process
-         try {
-            console.log(`Retrying to get collection: ${collectionName}`);
-            const collection = await client.getCollection({
-               name: collectionName,
-               embeddingFunction: embedder,
-            });
-            console.log(`Collection "${collectionName}" found after creation attempt`);
-            return { collection, justCreated: false };
-         } catch (finalErr) {
-            console.error(`Final attempt to get collection "${collectionName}" failed:`, finalErr);
-            throw createErr;
+            const collection = await client.createCollection({ name: collectionName });
+            console.log(`✓ Created collection '${collectionName}' without embedding function`);
+            return collection;
+         } catch (fallbackError) {
+            console.error(`✗ Failed to create collection '${collectionName}' even without embedding function:`, fallbackError);
+            throw fallbackError;
          }
       }
+   }
+};
+
+/**
+ * Get a collection by name. The collection should already exist since we create them during client initialization.
+ */
+export const getCollection = async (
+   client: ChromaClient,
+   name: keyof typeof CollectionName,
+): Promise<Collection> => {
+   const collectionName = CollectionName[name];
+   try {
+      console.log(`Getting collection: ${collectionName}`);
+      const collection = await client.getCollection({
+         name: collectionName,
+         embeddingFunction: embedder,
+      });
+      console.log(`✓ Successfully retrieved collection: ${collectionName}`);
+      return collection;
+   } catch (err) {
+      console.error(`✗ Failed to get collection "${collectionName}":`, err);
+      throw err;
    }
 };
 type AddToCollectionArgs = Parameters<Collection["add"]>[0];
@@ -113,10 +104,6 @@ export const createCollection = async (
    opts: { name: string; metadata?: Metadata },
 ) => {
    return await client.createCollection(opts);
-};
-
-export const getCollection = async (client: ChromaClient, name: string) => {
-   return await client.getCollection({ name });
 };
 
 export const listCollections = async (client: ChromaClient) => {

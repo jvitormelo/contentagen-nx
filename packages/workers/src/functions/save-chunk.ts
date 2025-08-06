@@ -2,8 +2,7 @@ import { serverEnv } from "@packages/environment/server";
 import { createChromaClient } from "@packages/chroma-db/client";
 import {
    addToCollection,
-   getOrCreateCollection,
-   testConnection,
+   ensureAgentKnowledgeCollection,
 } from "@packages/chroma-db/helpers";
 
 const chroma = createChromaClient(serverEnv.CHROMA_DB_URL);
@@ -15,14 +14,10 @@ export async function runDistilledChunkFormatterAndSaveOnChroma(payload: {
 }) {
    const { chunk, agentId, sourceId } = payload;
    try {
-      // Test connection first
-      const isConnected = await testConnection(chroma);
-      if (!isConnected) {
-         throw new Error("Failed to connect to ChromaDB");
-      }
-
-      const collection = await getOrCreateCollection(chroma, "AgentKnowledge");
-      await addToCollection(collection.collection, {
+      // Ensure the collection exists before using it
+      const collection = await ensureAgentKnowledgeCollection(chroma);
+      
+      await addToCollection(collection, {
          documents: [chunk],
          ids: [crypto.randomUUID()],
          metadatas: [
