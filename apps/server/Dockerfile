@@ -62,6 +62,9 @@ COPY packages/openrouter ./packages/openrouter
 # Install all dependencies (monorepo-aware)
 RUN bun install
 
+# Copy the rest of the source code for all workspaces.
+# This is crucial for the build step to access the server source code.
+COPY . .
 
 ENV NODE_ENV=production
 ENV POLAR_PREMIUM_PLAN=${POLAR_PREMIUM_PLAN}
