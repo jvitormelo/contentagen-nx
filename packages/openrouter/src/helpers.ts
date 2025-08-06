@@ -26,9 +26,11 @@ export async function generateOpenRouterText(
    const result = await generateText({
       ...params,
       model: client(MODELS[model], {
-         reasoning: {
-            max_tokens: reasoning ? REASONING_EFFORT[reasoning] : 0,
-            enabled: Boolean(reasoning),
+         extraBody: {
+            reasoning: {
+               max_tokens: reasoning ? REASONING_EFFORT[reasoning] : 0,
+               enabled: Boolean(reasoning),
+            },
          },
       }),
    });
@@ -49,9 +51,11 @@ export async function generateOpenRouterObject(
       schema,
 
       model: client(MODELS[model], {
-         reasoning: {
-            max_tokens: reasoning ? REASONING_EFFORT[reasoning] : 0,
-            enabled: Boolean(reasoning),
+         extraBody: {
+            reasoning: {
+               max_tokens: reasoning ? REASONING_EFFORT[reasoning] : 0,
+               enabled: Boolean(reasoning),
+            },
          },
       }),
    });
