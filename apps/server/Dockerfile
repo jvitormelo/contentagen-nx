@@ -25,6 +25,10 @@ COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/database/package.json ./packages/database/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
+COPY packages/prompts/package.json ./packages/prompts/
+COPY packages/errors/package.json ./packages/errors/
+COPY packages/chroma-db/package.json ./packages/chroma-db/
+COPY packages/openrouter/package.json ./packages/openrouter/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
 COPY packages/tasks/package.json ./packages/tasks/
@@ -35,14 +39,14 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/arcjet/package.json ./packages/arcjet/
-
-
+COPY packages/prompts ./packages/prompts
+COPY packages/errors ./packages/errors
+COPY packages/chroma-db ./packages/chroma-db
+COPY packages/openrouter ./packages/openrouter
 
 # Install all dependencies (monorepo-aware)
 RUN bun install
 
-# Copy source code
-COPY . .
 
 ENV NODE_ENV=production
 RUN bun build \
@@ -73,6 +77,10 @@ COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/database/package.json ./packages/database/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
+COPY packages/prompts/package.json ./packages/prompts/
+COPY packages/errors/package.json ./packages/errors/
+COPY packages/chroma-db/package.json ./packages/chroma-db/
+COPY packages/openrouter/package.json ./packages/openrouter/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
 COPY packages/tasks/package.json ./packages/tasks/
@@ -83,6 +91,10 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/arcjet/package.json ./packages/arcjet/
+COPY packages/prompts ./packages/prompts
+COPY packages/errors ./packages/errors
+COPY packages/chroma-db ./packages/chroma-db
+COPY packages/openrouter ./packages/openrouter
 
 # Install only production dependencies.
 RUN bun install 
