@@ -5,7 +5,6 @@ import { agentFileRouter } from "./router/agent-file";
 import type { MinioClient } from "@packages/files/client";
 import type { ChromaClient } from "@packages/chroma-db/client";
 import { agentRouter } from "./router/agent";
-import { agentKnowledgeRouter } from "./router/agent-knowledge";
 import { contentRouter } from "./router/content";
 
 import { sessionRouter } from "./router/session";
@@ -14,7 +13,6 @@ import type { OpenRouterClient } from "@packages/openrouter/client";
 export const appRouter = router({
    agent: agentRouter,
    agentFile: agentFileRouter,
-   agentKnowledge: agentKnowledgeRouter,
    content: contentRouter,
    sessionHelper: sessionRouter,
 });

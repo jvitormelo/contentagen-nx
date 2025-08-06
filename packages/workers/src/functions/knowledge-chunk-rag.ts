@@ -2,7 +2,7 @@ import { serverEnv } from "@packages/environment/server";
 import { createChromaClient } from "@packages/chroma-db/client";
 import {
    queryCollection,
-   getOrCreateCollection,
+   ensureAgentKnowledgeCollection,
 } from "@packages/chroma-db/helpers";
 import { createOpenrouterClient } from "@packages/openrouter/client";
 import { generateOpenRouterText } from "@packages/openrouter/helpers";
@@ -23,9 +23,9 @@ export async function runKnowledgeChunkRag(payload: {
    const { agentId } = payload;
 
    try {
-      const collection = await getOrCreateCollection(chroma, "AgentKnowledge");
+      const collection = await ensureAgentKnowledgeCollection(chroma);
 
-      const chunks = await queryCollection(collection.collection, {
+      const chunks = await queryCollection(collection, {
          nResults: 50,
          where: {
             agentId: agentId,
