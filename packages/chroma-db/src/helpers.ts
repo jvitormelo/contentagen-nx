@@ -1,6 +1,10 @@
 import type { Collection, Metadata, ChromaClient } from "chromadb";
-import { DefaultEmbeddingFunction } from "@chroma-core/default-embed";
-export const embedder = new DefaultEmbeddingFunction();
+import { OpenAIEmbeddingFunction } from "@chroma-core/openai";
+import { serverEnv } from "@packages/environment/server";
+export const embedder = new OpenAIEmbeddingFunction({
+   modelName: "text-embedding-3-small",
+   apiKey: serverEnv.OPENAI_API_KEY,
+});
 
 // Collection names used in ChromaDB
 export const CollectionName = {

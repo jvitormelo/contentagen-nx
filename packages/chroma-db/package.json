@@ -14,11 +14,12 @@
       "typecheck": "tsc --build --noEmit --emitDeclarationOnly false"
    },
    "dependencies": {
-      "@chroma-core/default-embed": "^0.1.8",
-      "@tooling/typescript": "workspace:*",
-      "chromadb": "^3.0.9"
+      "@chroma-core/openai": "^0.1.7",
+      "chromadb": "^3.0.9",
+      "@packages/environment": "workspace:*"
    },
    "devDependencies": {
+      "@tooling/typescript": "workspace:*",
       "typescript": "catalog:development"
    }
 }
