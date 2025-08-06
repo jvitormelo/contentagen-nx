@@ -36,9 +36,9 @@ const clientBuildConfig: BuildEnvironmentOptions = {
   rollupOptions: {
     input: path.resolve(__dirname, 'src/entry-client.tsx'),
     output: {
-      entryFileNames: 'static/[name].js',
-      chunkFileNames: 'static/assets/[name]-[hash].js',
-      assetFileNames: 'static/assets/[name]-[hash][extname]',
+      entryFileNames: 'assets/[name].js',
+      chunkFileNames: 'assets/[name]-[hash].js',
+      assetFileNames: 'assets/[name]-[hash][extname]',
     },
   },
 }
