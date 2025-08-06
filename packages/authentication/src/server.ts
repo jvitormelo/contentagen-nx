@@ -54,8 +54,15 @@ export const createAuth = ({
       plugins: getPlugins(resendClient, polarClient),
       secret: serverEnv.BETTER_AUTH_SECRET,
       trustedOrigins: serverEnv.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
+      advanced:{
+         crossSubDomainCookies:{
+            enabled:true,
+            domain:"contentagen.com"
+         }
+      },
       session: {
          cookieCache: {
+
             enabled: true,
             maxAge: 5 * 60,
             sameSite: "none",
