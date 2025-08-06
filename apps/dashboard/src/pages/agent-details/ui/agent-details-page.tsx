@@ -1,22 +1,12 @@
 import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { AgentDetailsKnowledgeBaseCard } from "./agent-details-knowledge-base-card";
-import { AgentDetailsPromptCard } from "./agent-details-prompt-card";
 import { AgentPersonaCard } from "./agent-persona-card";
 import { FileViewerModal } from "./file-viewer-modal";
 import { AgentStatsCard } from "./agent-stats-card";
 import useAgentDetails from "../lib/use-agent-details";
 import useFileViewer from "../lib/use-file-viewer";
 import { AgentDetailsContentRequestsCard } from "./agent-details-content-requests-card";
-import { Suspense, useState } from "react";
-
-import { Button } from "@packages/ui/components/button";
-import {
-   Dialog,
-   DialogContent,
-   DialogHeader,
-   DialogTitle,
-   DialogFooter,
-} from "@packages/ui/components/dialog";
+import { Suspense } from "react";
 
 export function AgentDetailsPage() {
    const {
@@ -28,9 +18,6 @@ export function AgentDetailsPage() {
       close,
    } = useFileViewer();
    const { agent, uploadedFiles, agentId } = useAgentDetails();
-
-   // Dialog state
-   const [showBrandDialog, setShowBrandDialog] = useState(false);
 
    return (
       <Suspense>
@@ -68,9 +55,6 @@ export function AgentDetailsPage() {
                      agentId={agentId}
                   />
                </div>
-               <div className="col-span-1 md:col-span-3">
-                  <AgentDetailsPromptCard basePrompt={agent?.systemPrompt} />
-               </div>
             </div>
             <FileViewerModal
                open={isOpen}
@@ -79,25 +63,6 @@ export function AgentDetailsPage() {
                loading={isFileLoading}
                onClose={close}
             />
-            <Dialog open={showBrandDialog} onOpenChange={setShowBrandDialog}>
-               <DialogContent>
-                  <DialogHeader>
-                     <DialogTitle>Extract Brand Information</DialogTitle>
-                  </DialogHeader>
-                  {/* TODO: Add website URL input and extraction logic here */}
-                  <DialogFooter>
-                     <Button
-                        variant="secondary"
-                        onClick={() => setShowBrandDialog(false)}
-                     >
-                        Cancel
-                     </Button>
-                     <Button onClick={() => setShowBrandDialog(false)}>
-                        Extract
-                     </Button>
-                  </DialogFooter>
-               </DialogContent>
-            </Dialog>
          </main>
       </Suspense>
    );
