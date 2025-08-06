@@ -16,6 +16,7 @@ import {
    getSocialProviders,
 } from "./helpers";
 import { emailOTP, openAPI, organization, apiKey } from "better-auth/plugins";
+import { isProduction } from "@packages/environment/helpers";
 export interface AuthOptions {
    db: DatabaseInstance;
    polarClient: Polar;
@@ -56,11 +57,13 @@ export const createAuth = ({
       trustedOrigins: serverEnv.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
       advanced:{
          crossSubDomainCookies:{
-            enabled:true,
-            domain:"contentagen.com"
+            enabled: isProduction,
+            domain:".contentagen.com"
+
          }
       },
       session: {
+
          cookieCache: {
 
             enabled: true,
