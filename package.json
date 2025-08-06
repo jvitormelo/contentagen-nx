@@ -17,6 +17,7 @@
    "private": true,
    "scripts": {
       "build:all": "nx run-many -t build --parallel=3",
+      "trigger:deploy": "nx run tasks:deploy",
       "db:studio": "nx run database:studio",
       "db:push": "nx run database:push",
       "db:migrate": "nx run database:migrate",
