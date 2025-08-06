@@ -84,20 +84,6 @@ export function AgentDetailsKnowledgeBaseCard({
    const [showUploadCredenza, setShowUploadCredenza] = useState(false);
    const [showGenerateCredenza, setShowGenerateCredenza] = useState(false);
 
-   // TanStack Form for website URL (with zod validation)
-   const websiteSchema = z.object({
-      websiteUrl: z.string().url("Please enter a valid URL"),
-   });
-   useAppForm({
-      defaultValues: { websiteUrl: "" },
-      validators: { onBlur: websiteSchema },
-      onSubmit: async ({ formApi }) => {
-         // TODO: implement your generate logic here
-         formApi.reset();
-      },
-   });
-
-   // Upload Brand Files Credenza (self-contained version)
    function UploadBrandFilesCredenza({
       open,
       onOpenChange,
