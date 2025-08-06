@@ -53,7 +53,7 @@ RUN bun build \
   --minify-whitespace \
   --minify-syntax \
   --target bun \
-  --outfile ./dist/index.js \
+  --outfile server \
   ./apps/server/src/index.ts
 
 # ---
@@ -102,20 +102,14 @@ RUN bun install
 # ---
 
 # Stage 3: Create the final, small production image
-FROM oven/bun:latest AS runner
+FROM gcr.io/distroless/base
 WORKDIR /app
+
+COPY --from=builder /app/server server
 
 ENV NODE_ENV=production
 
-# Copy the pruned, production-only node_modules from the 'deps' stage.
-COPY --from=deps /app/node_modules ./node_modules
-
-# Copy the built application from the 'builder' stage
-COPY --from=builder /app/dist ./dist
-
-# Also copy the final package.json to the root of the app directory.
-COPY --from=deps /app/package.json ./package.json
 
 ARG PORT
 EXPOSE ${PORT}
-CMD ["bun", "./dist/index.js"]
+CMD ["./server"]
