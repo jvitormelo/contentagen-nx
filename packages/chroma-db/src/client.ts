@@ -3,11 +3,12 @@ import { ChromaClient as InternalChromaCLient } from "chromadb";
 export const createChromaClient = (baseUrl: string): InternalChromaCLient => {
    return new InternalChromaCLient({
       path: baseUrl,
-      fetchOptions:{
-         headers:{
-            "AUTHORIZATION": serverEnv.CHROMA_TOKEN
-         }
-      }
+      auth: {
+    provider: "token",
+    credentials: serverEnv.CHROMA_TOKEN,
+    tokenHeaderType: "AUTHORIZATION"
+  }
+      
    });
 };
 
