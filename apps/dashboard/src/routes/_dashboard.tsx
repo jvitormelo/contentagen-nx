@@ -22,30 +22,10 @@ export const Route = createFileRoute("/_dashboard")({
 
 function RouteComponent() {
    const location = useLocation();
-   const router = useRouter();
    const trpc = useTRPC();
-   const { data: session, error } = useSuspenseQuery(
+   const { data: session } = useSuspenseQuery(
       trpc.sessionHelper.getSession.queryOptions(),
    );
-   useIsomorphicLayoutEffect(() => {
-      if (error) {
-         toast.error("Failed to fetch session data.");
-         router.navigate({
-            to: "/auth/sign-in",
-            search: location.search,
-            replace: true,
-         });
-         return;
-      }
-      if (!session) {
-         toast.error("You must be logged in to access this page.");
-         router.navigate({
-            to: "/auth/sign-in",
-            search: location.search,
-            replace: true,
-         });
-      }
-   }, [session, location]);
 
    return (
       <DashboardLayout session={session}>
