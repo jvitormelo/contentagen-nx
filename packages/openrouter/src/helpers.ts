@@ -25,7 +25,7 @@ export async function generateOpenRouterText(
    const { model, reasoning } = lllmConfig;
    const result = await generateText({
       ...params,
-      model: client.chat(MODELS[model], {
+      model: client(MODELS[model], {
          reasoning: {
             max_tokens: reasoning ? REASONING_EFFORT[reasoning] : 0,
             enabled: Boolean(reasoning),
@@ -48,7 +48,7 @@ export async function generateOpenRouterObject(
       ...params,
       schema,
 
-      model: client.chat(MODELS[model], {
+      model: client(MODELS[model], {
          reasoning: {
             max_tokens: reasoning ? REASONING_EFFORT[reasoning] : 0,
             enabled: Boolean(reasoning),
