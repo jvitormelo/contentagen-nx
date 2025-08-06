@@ -91,6 +91,7 @@ ENV MINIO_BUCKET=${MINIO_BUCKET}
 ENV TAVILY_API_KEY=${TAVILY_API_KEY}
 ENV CHROMA_DB_URL=${CHROMA_DB_URL}
 RUN bun build \
+  --compile \
   --minify-whitespace \
   --minify-syntax \
   --target bun \
@@ -143,10 +144,13 @@ RUN bun install
 # ---
 
 # Stage 3: Create the final, small production image
-FROM gcr.io/distroless/base
+FROM oven/bun:latest
 WORKDIR /app
 
 COPY --from=builder /app/server server
+
+# Set execute permissions for the compiled binary
+RUN chmod +x ./server
 
 ENV NODE_ENV=production
 ENV POLAR_PREMIUM_PLAN=${POLAR_PREMIUM_PLAN}
