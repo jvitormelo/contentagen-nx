@@ -1,10 +1,10 @@
 import { useAppForm } from "@packages/ui/components/form";
 import { type FormEvent, useCallback } from "react";
 import {
-   type AgentCreationManualForm,
-   type AgentFormData,
-   agentFormSchema,
-} from "../ui/agent-creation-manual-form";
+   type PersonaConfig,
+   PersonaConfigSchema,
+} from "@packages/database/schemas/agent";
+import type { AgentCreationManualForm } from "../ui/agent-creation-manual-form";
 
 export function useAgentForm({
    defaultValues,
@@ -12,23 +12,22 @@ export function useAgentForm({
 }: AgentCreationManualForm) {
    const form = useAppForm({
       defaultValues: {
-         contentType: "blog_posts",
-         description: "",
-         formattingStyle: "structured",
-         name: "",
-         targetAudience: "general_public",
-         voiceTone: "professional",
-         brandIntegration: "strict_guideline",
-         communicationStyle: "first_person", // Added default value
-         language: "english",
+         metadata: { name: "", description: "" },
+         voice: { communication: "I" },
+         audience: { base: "general_public" },
+         formatting: { style: "structured" },
+         language: { primary: "en" },
+         brand: { integrationStyle: "strict_guideline" },
+         purpose: undefined,
          ...defaultValues,
-      } as AgentFormData,
+      } as PersonaConfig,
       onSubmit: async ({ value, formApi }) => {
+         // No custom parsing needed, just submit the PersonaConfig as is
          await onSubmit(value);
          formApi.reset();
       },
       validators: {
-         onBlur: agentFormSchema,
+         onBlur: PersonaConfigSchema,
       },
    });
 

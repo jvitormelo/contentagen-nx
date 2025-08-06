@@ -1,7 +1,7 @@
 {
    "dependencies": {
       "@packages/posthog": "workspace:*",
-      "@arcjet/astro": "catalog:astro",
+      "@arcjet/astro": "catalog:security",
       "@astrojs/check": "catalog:astro",
       "@astrojs/node": "catalog:astro",
       "@astrojs/react": "catalog:astro",
@@ -9,14 +9,13 @@
       "@astrojs/ts-plugin": "catalog:astro",
       "@lucide/astro": "catalog:astro",
       "@packages/brand": "workspace:*",
-      "@packages/eden": "workspace:*",
       "@packages/ui": "workspace:*",
       "@tailwindcss/vite": "catalog:ui",
       "astro": "catalog:astro",
       "react": "catalog:react",
       "react-dom": "catalog:react",
       "sonner": "catalog:ui",
-      "zod": "^3.25.67"
+      "zod": "catalog:validation"
    },
    "devDependencies": {
       "@tooling/typescript": "workspace:*",
@@ -34,5 +33,5 @@
       "typecheck": "bunx --bun astro check"
    },
    "type": "module",
-   "version": "0.0.1"
+   "version": "0.2.0"
 }

@@ -2,61 +2,74 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import SuperJSON from "superjson";
 import type { AuthInstance } from "@packages/authentication/server";
 import type { DatabaseInstance } from "@packages/database/client";
-
+import type { MinioClient } from "@packages/files/client";
+import type { ChromaClient } from "@packages/chroma-db/client";
+import type { OpenRouterClient } from "@packages/openrouter/client";
 export const createTRPCContext = async ({
-  auth,
-  db,
-  headers,
+   auth,
+   db,
+   headers,
+   minioClient,
+   minioBucket,
+   chromaClient,
+   openRouterClient,
 }: {
-  auth: AuthInstance;
-  db: DatabaseInstance;
-  headers: Headers;
+   openRouterClient: OpenRouterClient; // Replace with actual type if available
+   auth: AuthInstance;
+   db: DatabaseInstance;
+   minioClient: MinioClient;
+   minioBucket: string;
+   headers: Headers;
+   chromaClient: ChromaClient;
 }): Promise<{
-  db: DatabaseInstance;
-  session: AuthInstance["$Infer"]["Session"] | null;
+   openRouterClient: OpenRouterClient; // Pass the OpenRouter client to the context
+   minioBucket: string;
+   db: DatabaseInstance;
+   minioClient: MinioClient;
+   chromaClient: ChromaClient;
+   session: AuthInstance["$Infer"]["Session"] | null;
 }> => {
-  const session = await auth.api.getSession({
-    headers,
-  });
-  return {
-    db,
-    session,
-  };
+   const session = await auth.api.getSession({
+      headers,
+   });
+
+   return {
+      openRouterClient,
+      minioBucket,
+      minioClient,
+      db,
+      chromaClient,
+      session,
+   };
 };
 
-export const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: SuperJSON,
-});
+export const t = initTRPC
+   .context<ReturnType<typeof createTRPCContext>>()
+   .create({
+      transformer: SuperJSON,
+   });
 
 export const router = t.router;
-
+const isAuthed = t.middleware(async ({ ctx, next }) => {
+   const resolvedCtx = await ctx;
+   if (!resolvedCtx.session?.user) {
+      throw new TRPCError({ code: "FORBIDDEN" });
+   }
+   return next({
+      ctx: {
+         session: { ...resolvedCtx.session },
+      },
+   });
+});
 const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now();
-  let waitMsDisplay = "";
-  if (t._config.isDev) {
-    // artificial delay in dev 100-500ms
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-    waitMsDisplay = ` (artificial delay: ${waitMs}ms)`;
-  }
-  const result = await next();
-  const end = Date.now();
+   const start = Date.now();
+   const result = await next();
+   const end = Date.now();
 
-  console.log(
-    `\t[TRPC] /${path} executed after ${end - start}ms${waitMsDisplay}`,
-  );
-  return result;
+   console.info(`[TRPC] ${path} took ${end - start}ms to execute`);
+
+   return result;
 });
 
 export const publicProcedure = t.procedure.use(timingMiddleware);
-
-export const protectedProcedure = publicProcedure.use(({ ctx, next }) => {
-  if (!ctx.session?.user) {
-    throw new TRPCError({ code: "FORBIDDEN" });
-  }
-  return next({
-    ctx: {
-      session: { ...ctx.session },
-    },
-  });
-});
+export const protectedProcedure = publicProcedure.use(isAuthed);

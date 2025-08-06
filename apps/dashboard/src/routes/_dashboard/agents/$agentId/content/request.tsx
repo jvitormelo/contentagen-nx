@@ -1,4 +1,4 @@
-import { AgentContentRequestPage } from "@/pages/create-content-request/ui/create-content-request-page";
+import { AgentContentRequestPage } from "@/pages/create-content/ui/create-content-request-page";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(

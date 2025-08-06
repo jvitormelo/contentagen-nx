@@ -3,16 +3,14 @@ import { useAppForm } from "@packages/ui/components/form";
 import { useRouter } from "@tanstack/react-router";
 import { type FormEvent, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import z from "zod";
-import { betterAuthClient } from "@/integrations/better-auth";
+import { z } from "zod";
+import { betterAuthClient } from "@/integrations/clients";
 
 type codes = "INVALID_EMAIL_OR_PASSWORD" | "default";
 export const useSignIn = () => {
    const schema = z.object({
-      email: z.string().email("Enter a valid email"),
-      password: z
-         .string()
-         .min(8, "Enter a password with at least 8 characters"),
+      email: z.email("Please enter a valid email address"),
+      password: z.string().min(8, "Password must be at least 8 characters"),
    });
    const router = useRouter();
    const getErrorMessage = useMemo(
@@ -22,12 +20,11 @@ export const useSignIn = () => {
       }),
       [],
    );
-   //TODO: setar a url certa em prod
    const handleGoogleSignIn = useCallback(async () => {
       await betterAuthClient.signIn.social(
          {
             provider: "google",
-            callbackURL: `${window.location.origin}/agents`,
+            callbackURL: `${window.location.origin}/home`,
          },
          {
             onError: ({ error }) => {
@@ -73,7 +70,7 @@ export const useSignIn = () => {
                      id: "sign-in-toast",
                   });
                   router.navigate({
-                     to: "/agents",
+                     to: "/home",
                   });
                },
             },

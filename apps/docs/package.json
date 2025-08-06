@@ -1,7 +1,7 @@
 {
    "dependencies": {
       "@astrojs/ts-plugin": "catalog:astro",
-      "@arcjet/astro": "catalog:astro",
+      "@arcjet/astro": "catalog:security",
       "@astrojs/node": "catalog:astro",
       "@astrojs/check": "catalog:astro",
       "@astrojs/starlight": "^0.34.3",
@@ -27,5 +27,5 @@
       "typecheck": "bunx --bun astro check"
    },
    "type": "module",
-   "version": "0.0.1"
+   "version": "0.2.0"
 }

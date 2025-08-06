@@ -4,78 +4,36 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { useAgentForm } from "../lib/use-agent-form";
-import {
-   FormattingStyleStep,
-   TargetAudienceStep,
-   FormattingStyleStepSubscribe,
-   TargetAudienceStepSubscribe,
-} from "./audience-style-step";
 import { BasicInfoStep, BasicInfoStepSubscribe } from "./basic-info-step";
-import { ContentTypeStep, ContentTypeStepSubscribe } from "./content-type-step";
-import {
-   ReviewSubmitStep,
-   ReviewSubmitStepSubscribe,
-} from "./review-submit-step";
 import { VoiceToneStep, VoiceToneStepSubscribe } from "./voice-tone-step";
+import { AudienceStep, AudienceStepSubscribe } from "./audience-step";
+import { FormattingStep, FormattingStepSubscribe } from "./formatting-step";
+import { LanguageStep, LanguageStepSubscribe } from "./language-step";
+import { BrandStep, BrandStepSubscribe } from "./brand-step";
+import { PurposeStep, PurposeStepSubscribe } from "./purpose-step";
+import { ReviewStep, ReviewStepSubscribe } from "./review-step";
 import {
-   BrandIntegrationStep,
-   BrandIntegrationStepSubscribe,
-} from "./brand-integration-step";
+   type PersonaConfig,
+   PersonaConfigSchema,
+} from "@packages/database/schemas/agent";
+export const agentFormSchema = PersonaConfigSchema;
 
-import {
-   contentTypeEnum,
-   formattingStyleEnum,
-   targetAudienceEnum,
-   voiceToneEnum,
-   languageEnum,
-   brandIntegrationEnum,
-   communicationStyleEnum, // <-- Add this import
-} from "@api/schemas/agent-schema";
-import { z } from "zod";
-import type { EdenClientType } from "@packages/eden";
-export const agentFormSchema = z.object({
-   contentType: z.enum(contentTypeEnum.enumValues, {
-      required_error: "Content type is required",
-   }),
-   description: z.string().min(1, "Description is required"),
-   formattingStyle: z.enum(formattingStyleEnum.enumValues).optional(),
-   name: z.string().min(1, "Agent name is required"),
-   targetAudience: z.enum(targetAudienceEnum.enumValues, {
-      required_error: "Target audience is required",
-   }),
-   voiceTone: z.enum(voiceToneEnum.enumValues, {
-      required_error: "Voice tone is required",
-   }),
-   language: z.enum(languageEnum.enumValues, {
-      required_error: "Language is required",
-   }),
-   brandIntegration: z.enum(brandIntegrationEnum.enumValues, {
-      required_error: "Brand integration is required",
-   }),
-   communicationStyle: z.enum(communicationStyleEnum.enumValues, {
-      required_error: "Communication style is required",
-   }), // <-- Add this field
-});
-export type AgentFormData = z.infer<typeof agentFormSchema>;
 export type AgentForm = ReturnType<typeof useAgentForm>;
 const steps = [
    { id: "step-basic-info", title: "Basic Information" },
-   { id: "step-content-type", title: "Content Type" },
-   { id: "step-voice-tone", title: "Voice Tone" },
-   { id: "step-target-audience", title: "Target Audience" },
-   { id: "step-formatting-style", title: "Formatting Style" },
-   { id: "step-brand-integration", title: "Brand Integration" }, // New step
-   { id: "step-review-submit", title: "Review & Submit" },
+   { id: "step-audience", title: "Audience" },
+   { id: "step-purpose", title: "Purpose" },
+   { id: "step-voice-tone", title: "Voice & Tone" },
+   { id: "step-brand", title: "Brand" },
+   { id: "step-language", title: "Language" },
+   { id: "step-formatting", title: "Formatting" },
+   { id: "step-review", title: "Review" },
 ] as const;
-
-export type Agent = NonNullable<
-   Awaited<ReturnType<EdenClientType["api"]["v1"]["agents"]["get"]>>["data"]
->["agents"][number];
-
 const { Stepper } = defineStepper(...steps);
+
 export type AgentCreationManualForm = {
-   defaultValues?: Agent;
-   onSubmit: (values: AgentFormData) => Promise<void>;
+   defaultValues?: Partial<PersonaConfig>;
+   onSubmit: (values: PersonaConfig) => Promise<void>;
 };
 
 export function AgentCreationManualForm({
@@ -84,27 +42,28 @@ export function AgentCreationManualForm({
 }: AgentCreationManualForm) {
    const { handleSubmit, form } = useAgentForm({ defaultValues, onSubmit });
 
-   const getMascotMessage = (step: string) => {
+   const getMascotMessage = (step: (typeof steps)[number]["id"]) => {
       switch (step) {
          case "step-basic-info":
             return "Let's give your content agent a special name!";
-         case "step-content-type":
-            return "Now let's choose what type of content to create!";
+         case "step-audience":
+            return "Who is your agent writing for?";
+         case "step-purpose":
+            return "What is the main purpose or channel for this agent's content?";
          case "step-voice-tone":
-            return "How should your agent communicate with your audience?";
-         case "step-target-audience":
-            return "Who will be reading your content?";
-         case "step-formatting-style":
-            return "How should your content be structured?";
-         case "step-brand-integration":
-            return "How closely should your agent follow your brand guidelines? Also, choose how your agent should communicate: as a singular person or in third person.";
-         case "step-review-submit":
-            return "Almost there! Let's review everything before creating your agent!";
+            return "Now, let's define your agent's voice and tone.";
+         case "step-brand":
+            return "How closely should your agent follow your brand guidelines?";
+         case "step-language":
+            return "What language and variant should your agent use?";
+         case "step-formatting":
+            return "How should your agent format the content?";
+         case "step-review":
+            return "Perfect! Review your agent configuration and create your agent.";
          default:
-            return "Let's create your content agent!";
+            return "Let's get started with your agent's basic information.";
       }
    };
-
    return (
       <Stepper.Provider
          labelOrientation="vertical"
@@ -137,12 +96,16 @@ export function AgentCreationManualForm({
                   })}
                </Stepper.Navigation>
 
-               <TalkingMascot message={getMascotMessage(methods.current.id)} />
+               <TalkingMascot
+                  message={getMascotMessage(
+                     methods.current.id as "step-basic-info" | "step-brand",
+                  )}
+               />
 
-               <Stepper.Panel className="h-full ">
+               <Stepper.Panel className="h-full">
                   <AnimatePresence mode="wait" initial={false}>
                      <motion.div
-                        className="h-full space-y-4"
+                        className="h-full"
                         key={methods.current.id}
                         initial={{ opacity: 0, scale: 0.96 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -153,36 +116,29 @@ export function AgentCreationManualForm({
                            "step-basic-info": () => (
                               <BasicInfoStep form={form} />
                            ),
-                           "step-content-type": () => (
-                              <ContentTypeStep form={form} />
-                           ),
+                           "step-audience": () => <AudienceStep form={form} />,
+                           "step-purpose": () => <PurposeStep form={form} />,
                            "step-voice-tone": () => (
                               <VoiceToneStep form={form} />
                            ),
-                           "step-target-audience": () => (
-                              <TargetAudienceStep form={form} />
+                           "step-brand": () => <BrandStep form={form} />,
+                           "step-language": () => <LanguageStep form={form} />,
+                           "step-formatting": () => (
+                              <FormattingStep form={form} />
                            ),
-                           "step-formatting-style": () => (
-                              <FormattingStyleStep form={form} />
-                           ),
-                           "step-brand-integration": () => (
-                              <BrandIntegrationStep form={form} />
-                           ),
-                           "step-review-submit": () => (
-                              <ReviewSubmitStep form={form} />
-                           ),
+                           "step-review": () => <ReviewStep form={form} />,
                         })}
                      </motion.div>
                   </AnimatePresence>
                </Stepper.Panel>
                <Stepper.Controls
-                  className="flex justify-between gap-4 "
+                  className="flex justify-between gap-4"
                   id="navigation-controls"
                >
                   <div>
                      {!methods.isFirst && (
                         <Button
-                           className="gap-4 "
+                           className="gap-4"
                            onClick={methods.prev}
                            type="button"
                            variant="outline"
@@ -192,7 +148,7 @@ export function AgentCreationManualForm({
                         </Button>
                      )}
                   </div>
-                  <div className="flex gap-4">
+                  <div>
                      {methods.switch({
                         "step-basic-info": () => (
                            <BasicInfoStepSubscribe
@@ -200,8 +156,14 @@ export function AgentCreationManualForm({
                               next={methods.next}
                            />
                         ),
-                        "step-content-type": () => (
-                           <ContentTypeStepSubscribe
+                        "step-audience": () => (
+                           <AudienceStepSubscribe
+                              form={form}
+                              next={methods.next}
+                           />
+                        ),
+                        "step-purpose": () => (
+                           <PurposeStepSubscribe
                               form={form}
                               next={methods.next}
                            />
@@ -212,26 +174,26 @@ export function AgentCreationManualForm({
                               next={methods.next}
                            />
                         ),
-                        "step-target-audience": () => (
-                           <TargetAudienceStepSubscribe
+                        "step-brand": () => (
+                           <BrandStepSubscribe
                               form={form}
                               next={methods.next}
                            />
                         ),
-                        "step-formatting-style": () => (
-                           <FormattingStyleStepSubscribe
+                        "step-language": () => (
+                           <LanguageStepSubscribe
                               form={form}
                               next={methods.next}
                            />
                         ),
-                        "step-brand-integration": () => (
-                           <BrandIntegrationStepSubscribe
+                        "step-formatting": () => (
+                           <FormattingStepSubscribe
                               form={form}
                               next={methods.next}
                            />
                         ),
-                        "step-review-submit": () => (
-                           <ReviewSubmitStepSubscribe form={form} />
+                        "step-review": () => (
+                           <ReviewStepSubscribe form={form} />
                         ),
                      })}
                   </div>

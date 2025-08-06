@@ -1,6 +1,5 @@
 import { Client } from "minio";
-import type { Static } from "@sinclair/typebox";
-import { Type } from "@sinclair/typebox";
+import type { ServerEnv } from "@packages/environment/server";
 const parseEndpoint = (endpoint: string) => {
    // Remove protocol if present
    const cleanEndpoint = endpoint.replace(/^https?:\/\//, "");
@@ -13,18 +12,16 @@ const parseEndpoint = (endpoint: string) => {
       port: portStr
          ? parseInt(portStr, 10)
          : endpoint.includes("https")
-           ? 443
-           : 9000,
+            ? 443
+            : 9000,
    };
 };
-const EnvSchema = Type.Object({
-   MINIO_ENDPOINT: Type.String(),
-   MINIO_ACCESS_KEY: Type.String(),
-   MINIO_SECRET_KEY: Type.String(),
-   MINIO_BUCKET: Type.String(),
-});
-type Env = Static<typeof EnvSchema>;
-export function getMinioClient(env: Static<typeof EnvSchema>) {
+export function getMinioClient(
+   env: Pick<
+      ServerEnv,
+      "MINIO_ENDPOINT" | "MINIO_ACCESS_KEY" | "MINIO_SECRET_KEY"
+   >,
+): Client {
    const { endPoint, port } = parseEndpoint(env.MINIO_ENDPOINT);
 
    const internalClient = new Client({
@@ -36,27 +33,21 @@ export function getMinioClient(env: Static<typeof EnvSchema>) {
    });
    return internalClient;
 }
-type MinioClient = ReturnType<typeof getMinioClient>;
+export type MinioClient = ReturnType<typeof getMinioClient>;
 export async function uploadFile(
    fileName: string,
    fileBuffer: Buffer,
    contentType: string,
-   env: Env,
+   bucketName: string,
    minioClient: MinioClient,
 ): Promise<string> {
-   const bucketName = env.MINIO_BUCKET;
-   // Ensure bucket exists
    const bucketExists = await minioClient.bucketExists(bucketName);
    if (!bucketExists) {
       await minioClient.makeBucket(bucketName);
    }
-   // Generate unique filename with timestamp
-   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-   const uniqueFileName = `${timestamp}_${fileName}`;
-   // Upload file
    await minioClient.putObject(
       bucketName,
-      uniqueFileName,
+      fileName,
       fileBuffer,
       fileBuffer.length,
       {
@@ -64,27 +55,37 @@ export async function uploadFile(
       },
    );
    // Return the file URL (now using server proxy)
-   return `/api/v1/files/${uniqueFileName}`;
+   return fileName;
 }
 
 export async function getFile(
    fileName: string,
-   env: Env,
+   bucketName: string,
    minioClient: MinioClient,
 ): Promise<NodeJS.ReadableStream> {
-   const bucketName = env.MINIO_BUCKET;
-
    // Get file from MinIO
    const stream = await minioClient.getObject(bucketName, fileName);
    return stream;
 }
 
+export async function listFiles(
+   bucketName: string,
+   prefix: string,
+   minioClient: MinioClient,
+): Promise<string[]> {
+   const files: string[] = [];
+   const stream = minioClient.listObjectsV2(bucketName, prefix, true);
+   for await (const obj of stream) {
+      if (obj.name) files.push(obj.name.replace(prefix, ""));
+   }
+   return files;
+}
+
 export async function getFileInfo(
    fileName: string,
-   env: Env,
+   bucketName: string,
    minioClient: MinioClient,
 ): Promise<{ size: number; contentType: string }> {
-   const bucketName = env.MINIO_BUCKET;
    const stat = await minioClient.statObject(bucketName, fileName);
    return { size: stat.size, contentType: stat.metaData["content-type"] };
 }

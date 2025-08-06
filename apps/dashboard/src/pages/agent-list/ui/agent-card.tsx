@@ -26,7 +26,7 @@ import {
    AlertDialogTitle,
 } from "@packages/ui/components/alert-dialog";
 import { Button } from "@packages/ui/components/button";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import {
    Edit,
    MoreVertical,
@@ -35,47 +35,70 @@ import {
    CheckCircle2,
    Trash,
 } from "lucide-react";
-import type { EdenClientType } from "@packages/eden";
 import { formatValueToTitleCase } from "@packages/ui/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getContext } from "@/integrations/eden";
 import { toast } from "sonner";
-
-type Agent = NonNullable<
-   Awaited<ReturnType<EdenClientType["api"]["v1"]["agents"]["get"]>>["data"]
->["agents"][number];
+import { useTRPC } from "@/integrations/clients";
+import type { AgentSelect } from "@packages/database/schema";
+import type { PersonaConfig } from "@packages/database/schemas/agent";
 
 type AgentCardProps = {
-   agent: Agent;
+   agent: AgentSelect;
 };
 
 export function AgentCard({ agent }: AgentCardProps) {
    const queryClient = useQueryClient();
-   const { eden } = getContext();
-   const { mutate: deleteAgent, isPending } = useMutation({
-      mutationFn: async (id: string) =>
-         await eden.api.v1.agents({ id }).delete(),
-      onError: () => {
-         toast.error("Failed to delete agent");
-      },
-      onSuccess: () => {
-         queryClient.invalidateQueries({
-            queryKey: ["get-agents"],
-         });
-         toast.success("Agent deleted successfully");
-      },
-   });
+   const trpc = useTRPC();
+   const { mutate: deleteAgent, isPending } = useMutation(
+      trpc.agent.delete.mutationOptions({
+         onError: () => {
+            toast.error("Failed to delete agent");
+         },
+         onSuccess: () => {
+            queryClient.invalidateQueries({
+               queryKey: trpc.agent.listByUser.queryKey(),
+            });
+            toast.success("Agent deleted successfully");
+         },
+      }),
+   );
+   const infoItems = React.useMemo(() => {
+      const personaConfig = agent.personaConfig as PersonaConfig;
 
-   const infoItems = React.useMemo(
-      () => [
+      // Extract voice communication style
+      const voiceStyle = personaConfig.voice?.communication
+         ? formatValueToTitleCase(
+              personaConfig.voice.communication.replace("_", " "),
+           )
+         : "Not specified";
+
+      // Extract audience base
+      const audienceBase = personaConfig.audience?.base
+         ? formatValueToTitleCase(personaConfig.audience.base.replace("_", " "))
+         : "Not specified";
+
+      // Extract purpose/channel if available
+      const purpose = personaConfig.purpose
+         ? formatValueToTitleCase(personaConfig.purpose.replace("_", " "))
+         : null;
+
+      return [
          {
             icon: <Users />,
             label: "Voice & Audience",
-            value: `${formatValueToTitleCase(agent.voiceTone)} • ${formatValueToTitleCase(agent.targetAudience)}`,
+            value: `${voiceStyle} • ${audienceBase}`,
          },
-      ],
-      [agent],
-   );
+         ...(purpose
+            ? [
+                 {
+                    icon: <FileText />,
+                    label: "Purpose",
+                    value: purpose,
+                 },
+              ]
+            : []),
+      ];
+   }, [agent]);
    const statsItems = React.useMemo(
       () => [
          {
@@ -93,13 +116,15 @@ export function AgentCard({ agent }: AgentCardProps) {
    );
    const [dropdownOpen, setDropdownOpen] = React.useState(false);
    const [alertOpen, setAlertOpen] = React.useState(false);
-
+   const router = useRouter();
    return (
       <Card>
          <CardHeader>
-            <CardTitle className="line-clamp-1">{agent.name}</CardTitle>
+            <CardTitle className="line-clamp-1">
+               {(agent.personaConfig as PersonaConfig).metadata.name}
+            </CardTitle>
             <CardDescription className="line-clamp-1">
-               {agent.description}
+               {(agent.personaConfig as PersonaConfig).metadata.description}
             </CardDescription>
             <CardAction>
                <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
@@ -114,15 +139,15 @@ export function AgentCard({ agent }: AgentCardProps) {
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end">
-                     <DropdownMenuItem asChild>
-                        <Link
-                           params={{
-                              agentId: agent.id,
-                           }}
-                           to="/agents/$agentId/edit"
-                        >
-                           <Edit className="w-4 h-4 mr-2" /> Edit
-                        </Link>
+                     <DropdownMenuItem
+                        onClick={() =>
+                           router.navigate({
+                              to: "/agents/$agentId/edit",
+                              params: { agentId: agent.id },
+                           })
+                        }
+                     >
+                        <Edit className="w-4 h-4 mr-2" /> Edit
                      </DropdownMenuItem>
                      <DropdownMenuItem
                         disabled={isPending}
@@ -147,7 +172,7 @@ export function AgentCard({ agent }: AgentCardProps) {
                      <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                           onClick={() => deleteAgent(agent.id)}
+                           onClick={() => deleteAgent({ id: agent.id })}
                            disabled={isPending}
                         >
                            Continue
@@ -167,7 +192,7 @@ export function AgentCard({ agent }: AgentCardProps) {
                   value={item.value}
                />
             ))}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2">
                {statsItems.map((item) => (
                   <InfoItem
                      key={item.label}

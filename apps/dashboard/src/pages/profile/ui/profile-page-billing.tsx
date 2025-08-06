@@ -1,4 +1,4 @@
-import { betterAuthClient } from "@/integrations/better-auth";
+import { betterAuthClient } from "@/integrations/clients";
 import { useBillingInfo } from "@/pages/profile/lib/use-billing-info";
 import { Badge } from "@packages/ui/components/badge";
 import { Button } from "@packages/ui/components/button";
@@ -23,7 +23,7 @@ export function ProfilePageBilling() {
 
    const goToCheckout = useCallback(async () => {
       return await betterAuthClient.checkout({
-         slug: "pro",
+         slug: "basic",
       });
    }, []);
 

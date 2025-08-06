@@ -1,48 +1,65 @@
-import { betterAuth } from "better-auth";
 import type { DatabaseInstance } from "@packages/database/client";
-import type { Polar } from "@polar-sh/sdk";
 import {
-   getSocialProviders,
+   sendEmailOTP,
+   type ResendClient,
+   type SendEmailOTPOptions,
+} from "@packages/transactional/client";
+import { serverEnv } from "@packages/environment/server";
+
+import type { Polar } from "@polar-sh/sdk";
+import { betterAuth, type BetterAuthOptions } from "better-auth";
+import {
    getDatabaseAdapter,
    getEmailAndPasswordOptions,
    getEmailVerificationOptions,
    getPlugins,
-   getTrustedOrigins,
-   type EnvSchema,
+   getSocialProviders,
 } from "./helpers";
-import type { Static } from "@sinclair/typebox";
+import { emailOTP, openAPI, organization, apiKey } from "better-auth/plugins";
 export interface AuthOptions {
    db: DatabaseInstance;
-   authSchema: Record<string, unknown>;
-   sendEmailOTP: (email: string, otp: string, type: string) => Promise<void>;
    polarClient: Polar;
-   env: Static<typeof EnvSchema>;
+   resendClient: ResendClient;
 }
 
-export const getBaseOptions = (db: DatabaseInstance) => ({
-   database: getDatabaseAdapter(db, {}),
-});
+export const getBaseOptions = (db: DatabaseInstance): BetterAuthOptions =>
+   ({
+      database: getDatabaseAdapter(db),
+      plugins: [
+         emailOTP({
+            async sendVerificationOTP({
+               email,
+               otp,
+               type,
+            }: SendEmailOTPOptions) {
+               await sendEmailOTP({} as ResendClient, { email, otp, type });
+            },
+         }),
+         openAPI(),
+         organization(),
+         apiKey(),
+      ],
+   }) satisfies BetterAuthOptions;
 export type AuthInstance = ReturnType<typeof createAuth>;
 export const createAuth = ({
    db,
-   authSchema,
-   sendEmailOTP,
+   resendClient,
    polarClient,
-   env,
-}: AuthOptions) => {
+}: AuthOptions): ReturnType<typeof betterAuth> => {
    return betterAuth({
-      socialProviders: getSocialProviders(env),
-      appName: "ContentaGen-Auth",
-      database: getDatabaseAdapter(db, authSchema),
+      socialProviders: getSocialProviders(),
+      database: getDatabaseAdapter(db),
       emailAndPassword: getEmailAndPasswordOptions(),
       emailVerification: getEmailVerificationOptions(),
-      plugins: getPlugins(sendEmailOTP, polarClient),
-      secret: env.BETTER_AUTH_SECRET,
-      trustedOrigins: getTrustedOrigins(env),
+      plugins: getPlugins(resendClient, polarClient),
+      secret: serverEnv.BETTER_AUTH_SECRET,
+      trustedOrigins: serverEnv.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
       session: {
          cookieCache: {
             enabled: true,
             maxAge: 5 * 60,
+            sameSite: "none",
+            secure: true,
          },
       },
    });

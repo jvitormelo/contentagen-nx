@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { Button } from "@packages/ui/components/button";
 import { Input } from "@packages/ui/components/input";
 import {
@@ -7,6 +9,7 @@ import {
    CardHeader,
    CardTitle,
    CardFooter,
+   CardAction,
 } from "@packages/ui/components/card";
 import { Badge } from "@packages/ui/components/badge";
 import {
@@ -17,10 +20,38 @@ import {
 } from "@packages/ui/components/dropdown-menu";
 import { Upload, FileText, MoreHorizontal } from "lucide-react";
 import useFileUpload, { type UploadedFile } from "../lib/use-file-upload";
-import { useState } from "react";
-import { useEden } from "@/integrations/eden";
+import { useState, useEffect } from "react";
+// import { useTRPC } from "@/integrations/clients";
+import {
+   Credenza,
+   CredenzaContent,
+   CredenzaHeader,
+   CredenzaTitle,
+   CredenzaFooter,
+   CredenzaClose,
+} from "@packages/ui/components/credenza";
+import { useAppForm } from "@packages/ui/components/form";
+import {
+   Dropzone,
+   DropzoneEmptyState,
+   DropzoneContent,
+} from "@packages/ui/components/dropzone";
+import { GenerateBrandFilesCredenza } from "../features/dynamic-brand-files";
 
 const FILE_UPLOAD_LIMIT = 5;
+
+function KnowledgeBaseEmptyState() {
+   return (
+      <div className="text-center py-8 text-muted-foreground">
+         <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+         <p>No brand files yet</p>
+         <p className="text-sm">
+            Upload Markdown files with your brand’s values, voice, or
+            guidelines.
+         </p>
+      </div>
+   );
+}
 
 export interface AgentDetailsKnowledgeBaseCardProps {
    uploadedFiles: UploadedFile[];
@@ -33,89 +64,140 @@ export function AgentDetailsKnowledgeBaseCard({
    uploadedFiles,
    onViewFile,
 
-   agentId,
+   // agentId,
 }: AgentDetailsKnowledgeBaseCardProps) {
-   const { eden } = useEden();
+   const [isClient, setIsClient] = useState(false);
+   useEffect(() => {
+      setIsClient(true);
+   }, []);
+
+   // const trpc = useTRPC();
    const {
       fileInputRef,
       handleFileSelect,
-      handleButtonClick,
       handleDeleteFile,
       canAddMore,
       remainingSlots,
    } = useFileUpload(uploadedFiles, { fileLimit: FILE_UPLOAD_LIMIT });
 
-   // New: Website link input state
-   const [websiteUrl, setWebsiteUrl] = useState("");
-   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+   // Separate Credenza states
+   const [showUploadCredenza, setShowUploadCredenza] = useState(false);
+   const [showGenerateCredenza, setShowGenerateCredenza] = useState(false);
 
-   async function handleWebsiteSubmit() {
-      if (!websiteUrl || !agentId) return;
-      setIsSubmitting(true);
-      setSubmitMessage(null);
-      try {
-         // Use Eden to call backend API
-         const res = await eden.api.v1.agents["brand-website"].post({
-            url: websiteUrl,
-            agentId,
-         });
-         if (!res.error) {
-            setSubmitMessage("Brand website knowledge extracted and saved!");
-            setWebsiteUrl("");
-         } else {
-            setSubmitMessage("Failed to extract brand knowledge.");
+   // TanStack Form for website URL (with zod validation)
+   const websiteSchema = z.object({
+      websiteUrl: z.string().url("Please enter a valid URL"),
+   });
+   useAppForm({
+      defaultValues: { websiteUrl: "" },
+      validators: { onBlur: websiteSchema },
+      onSubmit: async ({ formApi }) => {
+         // TODO: implement your generate logic here
+         formApi.reset();
+      },
+   });
+
+   // Upload Brand Files Credenza (self-contained version)
+   function UploadBrandFilesCredenza({
+      open,
+      onOpenChange,
+   }: {
+      open: boolean;
+      onOpenChange: (open: boolean) => void;
+   }) {
+      const FILE_UPLOAD_LIMIT = 5;
+      const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+      const [error, setError] = useState<string | null>(null);
+
+      const handleFileSelect = (
+         e: React.ChangeEvent<HTMLInputElement> | { target: { files: File[] } },
+      ) => {
+         const files: File[] =
+            "target" in e && e.target.files ? Array.from(e.target.files) : [];
+         if (!files.length) return;
+         if (uploadedFiles.length + files.length > FILE_UPLOAD_LIMIT) {
+            setError(`You can upload up to ${FILE_UPLOAD_LIMIT} files.`);
+            return;
          }
-      } catch (err) {
-         console.error("Error extracting brand knowledge:", err);
-         setSubmitMessage("Error connecting to backend.");
-      }
-      setIsSubmitting(false);
+         const newFiles = files.map((file) => ({
+            fileName: file.name,
+            fileUrl: URL.createObjectURL(file),
+            uploadedAt: new Date().toISOString(),
+         }));
+         setUploadedFiles((prev) => [...prev, ...newFiles]);
+         setError(null);
+      };
+
+      return (
+         <Credenza open={open} onOpenChange={onOpenChange}>
+            <CredenzaContent>
+               <CredenzaHeader>
+                  <CredenzaTitle>Upload Brand Files</CredenzaTitle>
+               </CredenzaHeader>
+               <Dropzone
+                  accept={{ "text/markdown": [".md"] }}
+                  maxFiles={FILE_UPLOAD_LIMIT}
+                  onDrop={(acceptedFiles: File[]) =>
+                     handleFileSelect({ target: { files: acceptedFiles } })
+                  }
+               >
+                  <DropzoneEmptyState>
+                     <div className="flex flex-col items-center justify-center py-8">
+                        <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                           Drag and drop or click to upload Markdown files
+                        </span>
+                     </div>
+                  </DropzoneEmptyState>
+                  <DropzoneContent />
+               </Dropzone>
+               {error && (
+                  <div className="text-xs text-red-500 mt-2">{error}</div>
+               )}
+               <div className="text-xs text-muted-foreground mt-2">
+                  Upload Markdown files with your brand’s values, voice, or
+                  guidelines.
+               </div>
+               <div className="mt-4 space-y-2">
+                  {uploadedFiles.length > 0 &&
+                     uploadedFiles.map((file) => (
+                        <div
+                           key={file.fileName}
+                           className="flex items-center gap-2"
+                        >
+                           <FileText className="w-4 h-4 text-muted-foreground" />
+                           <span className="text-xs">{file.fileName}</span>
+                        </div>
+                     ))}
+               </div>
+               <CredenzaFooter className="mt-4">
+                  <CredenzaClose asChild>
+                     <Button variant="outline" type="button">
+                        Close
+                     </Button>
+                  </CredenzaClose>
+               </CredenzaFooter>
+            </CredenzaContent>
+         </Credenza>
+      );
    }
 
+   // Generate Brand Files from Website Credenza (self-contained version)
+
    return (
-      <Card>
-         <CardHeader className="flex items-center justify-between">
-            <div>
-               <CardTitle>Brand Knowledge</CardTitle>
-               <CardDescription>
-                  Upload files about your brand for your agent to use.
-                  <br />
-                  Or enter your brand website link to auto-extract product and
-                  brand info.
-               </CardDescription>
-            </div>
-            <div className="flex items-center">
+      <Card className="h-full">
+         <CardHeader className="">
+            <CardTitle>Brand Knowledge</CardTitle>
+            <CardDescription>
+               Upload files about your brand for your agent to use.
+            </CardDescription>
+            <CardAction>
                <Badge variant="outline">
                   {remainingSlots}/{FILE_UPLOAD_LIMIT}
                </Badge>
-            </div>
+            </CardAction>
          </CardHeader>
-         <CardContent>
-            {/* New: Website link input */}
-            <div className="mb-4 flex gap-2 items-center">
-               <Input
-                  type="url"
-                  placeholder="Enter brand website URL"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  disabled={isSubmitting}
-                  className="w-full"
-               />
-               <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isSubmitting || !websiteUrl}
-                  onClick={handleWebsiteSubmit}
-               >
-                  {isSubmitting ? "Extracting..." : "Extract Brand Info"}
-               </Button>
-            </div>
-            {submitMessage && (
-               <div className="text-sm text-muted-foreground mb-2">
-                  {submitMessage}
-               </div>
-            )}
+         <CardContent className="h-full">
             {uploadedFiles.length > 0 ? (
                <div className="space-y-2">
                   {uploadedFiles.map((file, index) => (
@@ -131,9 +213,11 @@ export function AgentDetailsKnowledgeBaseCard({
                               </p>
                               <p className="text-xs text-muted-foreground">
                                  Uploaded{" "}
-                                 {new Date(
-                                    file.uploadedAt,
-                                 ).toLocaleDateString()}
+                                 {isClient
+                                    ? new Date(
+                                         file.uploadedAt,
+                                      ).toLocaleDateString()
+                                    : "..."}
                               </p>
                            </div>
                         </div>
@@ -168,14 +252,7 @@ export function AgentDetailsKnowledgeBaseCard({
                   ))}
                </div>
             ) : (
-               <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No brand files yet</p>
-                  <p className="text-sm">
-                     Upload Markdown files with your brand’s values, voice, or
-                     guidelines.
-                  </p>
-               </div>
+               <KnowledgeBaseEmptyState />
             )}
          </CardContent>
          {/* Hidden file input for uploads */}
@@ -189,17 +266,46 @@ export function AgentDetailsKnowledgeBaseCard({
          />
          <CardFooter>
             {canAddMore && (
-               <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full flex items-center justify-center gap-2"
-                  onClick={handleButtonClick}
-               >
-                  <Upload className="w-4 h-4" />
-                  Upload Files
-               </Button>
+               <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                     <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full flex items-center justify-center gap-2"
+                     >
+                        <Upload className="w-4 h-4" />
+                        Upload or Generate
+                     </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                     <DropdownMenuItem
+                        onSelect={() => {
+                           setShowUploadCredenza(true);
+                        }}
+                     >
+                        Upload Files
+                     </DropdownMenuItem>
+                     <DropdownMenuItem
+                        onSelect={() => {
+                           setShowGenerateCredenza(true);
+                        }}
+                     >
+                        Generate from Website
+                     </DropdownMenuItem>
+                  </DropdownMenuContent>
+               </DropdownMenu>
             )}
          </CardFooter>
+         {/* Credenza for file upload */}
+         <UploadBrandFilesCredenza
+            open={showUploadCredenza}
+            onOpenChange={setShowUploadCredenza}
+         />
+         {/* Credenza for website generation */}
+         <GenerateBrandFilesCredenza
+            open={showGenerateCredenza}
+            onOpenChange={setShowGenerateCredenza}
+         />
       </Card>
    );
 }

@@ -1,24 +1,21 @@
-import { createQueryKey } from "@packages/eden";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useParams, useRouteContext } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
+import { useTRPC } from "@/integrations/clients";
 
 export default function useAgentDetails() {
    // Get agentId from URL params
    const { agentId } = useParams({ from: "/_dashboard/agents/$agentId/" });
-   const { eden } = useRouteContext({ from: "/_dashboard/agents/$agentId/" });
+   const trpc = useTRPC();
 
-   // Fetch agent data
-   const { data: agentData, isLoading } = useSuspenseQuery({
-      queryKey: createQueryKey("eden.api.v1.agents({ id: agentId }).get"),
-      queryFn: async () => await eden.api.v1.agents({ id: agentId }).get(),
-      select: (data) => data.data,
-   });
+   // Fetch agent data using TRPC
+   const { data: agent, isLoading } = useSuspenseQuery(
+      trpc.agent.get.queryOptions({ id: agentId }),
+   );
 
    return {
-      agent: agentData?.agent,
+      agent,
       isLoading,
-      uploadedFiles: agentData?.agent?.uploadedFiles || [],
-      eden,
+      uploadedFiles: agent?.uploadedFiles || [],
       agentId,
    };
 }

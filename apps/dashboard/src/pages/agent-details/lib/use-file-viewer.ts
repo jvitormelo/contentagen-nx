@@ -1,49 +1,37 @@
-// React hook for viewing files, using eden API and toast for errors.
-
 import { useState } from "react";
-import { toast } from "sonner";
-import { useRouteContext } from "@tanstack/react-router";
+import { useTRPC } from "@/integrations/clients";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "@tanstack/react-router";
 
 export default function useFileViewer() {
-   const { eden } = useRouteContext({ from: "/_dashboard/agents/$agentId/" });
-
+   const trpc = useTRPC();
+   const { agentId } = useParams({ from: "/_dashboard/agents/$agentId/" });
    const [isOpen, setIsOpen] = useState(false);
    const [fileName, setFileName] = useState("");
-   const [fileContent, setFileContent] = useState("");
-   const [isLoading, setIsLoading] = useState(false);
 
-   const open = async (fileName: string, fileUrl: string) => {
-      setIsLoading(true);
+   const { data, isLoading } = useQuery({
+      ...trpc.agentFile.getFileContent.queryOptions({
+         agentId: agentId, // fallback to avoid undefined
+         fileName,
+      }),
+      enabled: isOpen && fileName !== "",
+   });
+
+   const open = (fileName: string) => {
       setFileName(fileName);
       setIsOpen(true);
-
-      try {
-         const urlFileName = fileUrl.split("/").pop() || fileName;
-         const response = await eden.api.v1
-            .files({ filename: urlFileName })
-            .get();
-         if (response.error) throw new Error("Failed to fetch file content");
-         setFileContent(response.data as unknown as string);
-      } catch (error) {
-         console.error("Error loading file content:", error);
-         toast.error("Failed to load file content");
-         setFileContent("Failed to load file content. Please try again.");
-      } finally {
-         setIsLoading(false);
-      }
+      // refetch will be triggered by useQuery's enabled
    };
 
    const close = () => {
       setIsOpen(false);
-      setFileContent("");
       setFileName("");
-      setIsLoading(false);
    };
 
    return {
       isOpen,
       fileName,
-      fileContent,
+      fileContent: data?.content,
       isLoading,
       open,
       close,

@@ -22,15 +22,18 @@
    "dependencies": {
       "@packages/authentication": "workspace:*",
       "@packages/database": "workspace:*",
-      "@sinclair/typebox": "catalog:database",
-      "@trpc/client": "^11.4.3",
-      "@trpc/server": "^11.4.3",
-      "superjson": "^2.2.2",
-      "url-join": "^5.0.0"
+      "@packages/files": "workspace:*",
+      "@packages/chroma-db": "workspace:*",
+      "@trpc/client": "catalog:trpc",
+      "@trpc/server": "catalog:trpc",
+      "superjson": "catalog:trpc",
+      "url-join": "catalog:trpc",
+      "zod": "catalog:validation"
    },
    "devDependencies": {
       "@tooling/typescript": "workspace:*",
       "typescript": "catalog:development",
-      "vite": "^6.1.0"
+      "vite": "catalog:vite",
+      "vitest": "catalog:testing"
    }
 }

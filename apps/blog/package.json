@@ -1,7 +1,7 @@
 {
    "dependencies": {
       "@packages/posthog": "workspace:*",
-      "@arcjet/astro": "catalog:astro",
+      "@arcjet/astro": "catalog:security",
       "@lucide/astro": "catalog:astro",
       "@astrojs/ts-plugin": "catalog:astro",
       "@astrojs/node": "catalog:astro",
@@ -32,5 +32,5 @@
       "typecheck": "bunx --bun astro check"
    },
    "type": "module",
-   "version": "0.0.1"
+   "version": "0.2.0"
 }

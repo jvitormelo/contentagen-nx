@@ -1,10 +1,13 @@
 {
    "dependencies": {
-      "@sinclair/typebox": "catalog:database"
+      "zod": "catalog:validation",
+      "@packages/errors": "workspace:*"
    },
    "devDependencies": {
       "@tooling/typescript": "workspace:*",
-      "typescript": "catalog:development"
+      "typescript": "catalog:development",
+      "vite": "catalog:vite",
+      "vitest": "catalog:testing"
    },
    "license": "MIT",
    "name": "@packages/environment",
@@ -15,6 +18,8 @@
    "private": true,
    "type": "module",
    "exports": {
+      "./server": "./src/server.ts",
+      "./client": "./src/client.ts",
       "./helpers": "./src/helpers.ts"
    },
    "version": "0.0.0"
