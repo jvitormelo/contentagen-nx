@@ -14,8 +14,6 @@ COPY packages/brand/package.json ./packages/brand/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/api/package.json ./packages/api/
-COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/environment/package.json ./packages/environment/
 COPY packages/chroma-db/package.json ./packages/chroma-db/
@@ -55,11 +53,8 @@ COPY packages/brand/package.json ./packages/brand/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/api/package.json ./packages/api/
-COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/environment/package.json ./packages/environment/
-COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/chroma-db/package.json ./packages/chroma-db/
 COPY packages/database/package.json ./packages/database/
 COPY packages/files/package.json ./packages/files/
@@ -83,7 +78,10 @@ ARG ARCJET_KEY
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy the built application from the 'builder' stage
-COPY --from=builder /app/apps/dashboard/.output ./.output
+COPY --from=builder /app/apps/dashboard/dist ./dist
+
+# Copy the server.js file which serves the application
+COPY --from=builder /app/apps/dashboard/server.js ./server.js
 
 # Also copy the final package.json to the root of the app directory.
 # This is good practice and helps with Node's module resolution.
@@ -94,5 +92,5 @@ ARG PORT=3000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-# Start the server using the entrypoint from the build output
-CMD ["node", ".output/server/index.mjs"]
+# Start the server using the server.js file
+CMD ["node", "server.js"]
