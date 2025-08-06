@@ -10,13 +10,14 @@ COPY bun.lock ./
 COPY package.json ./
 COPY apps/blog/package.json ./apps/blog/
 COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/ui/package.json ./packages/ui/
+COPY tooling/typescript/package.json ./tooling/typescript/
 # Install all dependencies (including devDependencies needed for the build step)
 RUN bun install 
 
 # Copy the rest of the source code for all workspaces.
 # A .dockerignore file in your monorepo root is crucial for this step.
 COPY . .
-RUN echo "Resolved, downloaded and extracted [34]\n\nerror: Workspace dependency \"@tooling/typescript\" not found\nSearched in \"./*\"\nWorkspace documentation: https://bun.com/docs/install/workspaces\n\nerror: Workspace dependency \"@tooling/typescript\" not found\nSearched in \"./*\"\nWorkspace documentation: https://bun.com/docs/install/workspaces\n\nerror: Workspace dependency \"@tooling/typescript\" not found\nSearched in \"./*\"\nWorkspace documentation: https://bun.com/docs/install/workspaces\n\nerror: Workspace dependency \"@packages/ui\" not found\nSearched in \"./*\"\nWorkspace documentation: https://bun.com/docs/install/workspaces"
 
 # Build the blog application.
 # The build output will be in /app/apps/blog/dist
@@ -36,8 +37,8 @@ COPY bun.lock ./
 COPY package.json ./
 COPY apps/blog/package.json ./apps/blog/
 COPY packages/posthog/package.json ./packages/posthog/
-
-COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/ui/package.json ./packages/ui/
+COPY tooling/typescript/package.json ./tooling/typescript/
 # Install only production dependencies. This creates a lean, clean node_modules folder.
 RUN bun install 
 
