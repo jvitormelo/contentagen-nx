@@ -19,6 +19,7 @@
     "@packages/ui": "workspace:*",
     "@packages/errors": "workspace:*",
     "@packages/transactional": "workspace:*",
+    "sonner": "catalog:ui",
     "@tailwindcss/vite": "catalog:vite",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-query-devtools": "catalog:tanstack",
