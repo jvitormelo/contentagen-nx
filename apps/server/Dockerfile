@@ -33,7 +33,7 @@ COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/brand/package.json ./packages/brand/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
-COPY packages/tasks/package.json ./packages/tasks/
+
 COPY packages/files/package.json ./packages/files/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
@@ -46,7 +46,7 @@ COPY packages/chroma-db/package.json ./packages/chroma-db/
 COPY packages/openrouter/package.json ./packages/openrouter/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
-COPY packages/tasks/package.json ./packages/tasks/
+
 COPY packages/files/package.json ./packages/files/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
@@ -111,7 +111,7 @@ COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/brand/package.json ./packages/brand/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
-COPY packages/tasks/package.json ./packages/tasks/
+
 COPY packages/files/package.json ./packages/files/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
@@ -125,7 +125,7 @@ COPY packages/chroma-db/package.json ./packages/chroma-db/
 COPY packages/openrouter/package.json ./packages/openrouter/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
-COPY packages/tasks/package.json ./packages/tasks/
+
 COPY packages/files/package.json ./packages/files/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
