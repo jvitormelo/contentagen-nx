@@ -52,7 +52,7 @@ export const ensureAgentKnowledgeCollection = async (client: ChromaClient): Prom
       return collection;
    } catch {
       // Collection doesn't exist, create it
-      console.log(`Creating collection '${collectionName}'...`);
+      console.log(`Creating collection '${collectionName}' with OpenAI embedding function...`);
       try {
          const collection = await client.createCollection({
             name: collectionName,
@@ -62,15 +62,7 @@ export const ensureAgentKnowledgeCollection = async (client: ChromaClient): Prom
          return collection;
       } catch (createError) {
          console.error(`✗ Failed to create collection '${collectionName}':`, createError);
-         // Try without embedding function as fallback
-         try {
-            const collection = await client.createCollection({ name: collectionName });
-            console.log(`✓ Created collection '${collectionName}' without embedding function`);
-            return collection;
-         } catch (fallbackError) {
-            console.error(`✗ Failed to create collection '${collectionName}' even without embedding function:`, fallbackError);
-            throw fallbackError;
-         }
+         throw createError;
       }
    }
 };
