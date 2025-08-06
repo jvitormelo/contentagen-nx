@@ -147,6 +147,13 @@ RUN bun install
 FROM oven/bun:latest
 WORKDIR /app
 
+# Install system dependencies for ONNX Runtime and other ML libraries
+USER root
+RUN apt-get update && apt-get install -y \
+    libonnxruntime1.16.0 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/server server
 
 # Set execute permissions for the compiled binary
