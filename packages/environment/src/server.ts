@@ -25,6 +25,7 @@ const EnvSchema = z.object({
    MINIO_BUCKET: z.string().default("content-writer"),
    TAVILY_API_KEY: z.string(),
    CHROMA_DB_URL: z.string(),
+   CHROMA_TOKEN: z.string(),
 });
 export type ServerEnv = z.infer<typeof EnvSchema>;
 export const serverEnv: ServerEnv = parseEnv(process.env, EnvSchema);
