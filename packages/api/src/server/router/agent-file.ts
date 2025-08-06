@@ -10,7 +10,7 @@ import {
 import { getFile } from "@packages/files/client";
 import {
    deleteFromCollection,
-   getOrCreateCollection,
+   ensureAgentKnowledgeCollection,
 } from "@packages/chroma-db/helpers";
 import { AgentInsertSchema } from "@packages/database/schema";
 
@@ -123,11 +123,11 @@ export const agentFileRouter = router({
          const key = `${agentId}/${fileName}`;
          const bucketName = (await ctx).minioBucket;
          const resolvedCtx = await ctx;
-         const chromaCollection = await getOrCreateCollection(
+         const chromaCollection = await ensureAgentKnowledgeCollection(
             resolvedCtx.chromaClient,
-            "AgentKnowledge",
+           
          );
-         await deleteFromCollection(chromaCollection.collection, {
+         await deleteFromCollection(chromaCollection, {
             where: {
                sourceId: key,
             },
