@@ -26,23 +26,30 @@ export const getOrCreateCollection = async (
 ): Promise<{ collection: Collection; justCreated: boolean }> => {
    const collectionName = CollectionName[name];
    try {
+      console.log(`Attempting to get collection: ${collectionName}`);
       const collection = await client.getCollection({
          name: collectionName,
          embeddingFunction: embedder,
       });
+      console.log(`Successfully retrieved collection: ${collectionName}`);
       return { collection, justCreated: false };
    } catch (err) {
-      console.error(
+      console.log(
          `Collection "${collectionName}" not found, creating a new one:`,
-         err,
+         err instanceof Error ? err.message : String(err),
       );
-      const collection = await client.createCollection({
-         name: collectionName,
-         embeddingFunction: embedder,
-
-         metadata,
-      });
-      return { collection, justCreated: true };
+      try {
+         const collection = await client.createCollection({
+            name: collectionName,
+            embeddingFunction: embedder,
+            metadata,
+         });
+         console.log(`Successfully created collection: ${collectionName}`);
+         return { collection, justCreated: true };
+      } catch (createErr) {
+         console.error(`Failed to create collection "${collectionName}":`, createErr);
+         throw createErr;
+      }
    }
 };
 type AddToCollectionArgs = Parameters<Collection["add"]>[0];
