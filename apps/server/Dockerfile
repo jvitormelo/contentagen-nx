@@ -16,7 +16,6 @@ COPY package.json ./
 COPY apps/server/package.json ./apps/server/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/brand/package.json ./packages/brand/
-COPY packages/polar-billing/package.json ./packages/polar-billing/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
 COPY packages/tasks/package.json ./packages/tasks/
@@ -65,7 +64,6 @@ COPY package.json ./
 COPY apps/server/package.json ./apps/server/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/brand/package.json ./packages/brand/
-COPY packages/polar-billing/package.json ./packages/polar-billing/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
 COPY packages/tasks/package.json ./packages/tasks/
