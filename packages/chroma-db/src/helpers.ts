@@ -16,6 +16,27 @@ export type CollectionName =
    (typeof CollectionName)[keyof typeof CollectionName];
 
 /**
+ * Test ChromaDB connection
+ */
+export const testConnection = async (client: ChromaClient): Promise<boolean> => {
+   try {
+      const heartbeat = await client.heartbeat();
+      console.log(`ChromaDB connection test successful. Heartbeat: ${heartbeat}`);
+      
+      const version = await client.version();
+      console.log(`ChromaDB version: ${version}`);
+      
+      const collections = await client.listCollections();
+      console.log(`Existing collections: ${collections.map(c => c.name).join(', ') || 'none'}`);
+      
+      return true;
+   } catch (error) {
+      console.error(`ChromaDB connection test failed:`, error);
+      return false;
+   }
+};
+
+/**
  * Get a collection by name, or create it if it doesn't exist.
  * Returns { collection, justCreated }
  */
@@ -38,7 +59,15 @@ export const getOrCreateCollection = async (
          `Collection "${collectionName}" not found, creating a new one:`,
          err instanceof Error ? err.message : String(err),
       );
+      
+      // Add a small delay to prevent race conditions
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       try {
+         // First, let's check if we can connect and list collections
+         const collections = await client.listCollections();
+         console.log(`Current collections:`, collections.map(c => c.name));
+         
          const collection = await client.createCollection({
             name: collectionName,
             embeddingFunction: embedder,
@@ -48,7 +77,19 @@ export const getOrCreateCollection = async (
          return { collection, justCreated: true };
       } catch (createErr) {
          console.error(`Failed to create collection "${collectionName}":`, createErr);
-         throw createErr;
+         
+         // Try to get the collection again in case it was created by another process
+         try {
+            const collection = await client.getCollection({
+               name: collectionName,
+               embeddingFunction: embedder,
+            });
+            console.log(`Collection "${collectionName}" found after creation attempt`);
+            return { collection, justCreated: false };
+         } catch (finalErr) {
+            console.error(`Final attempt to get collection "${collectionName}" failed:`, finalErr);
+            throw createErr;
+         }
       }
    }
 };

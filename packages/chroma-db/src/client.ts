@@ -11,7 +11,7 @@ export const createChromaClient = (baseUrl: string): InternalChromaCLient => {
 
       console.log(`Creating ChromaDB client for ${host}:${port} (SSL: ${ssl})`);
 
-      return new InternalChromaCLient({
+      const client = new InternalChromaCLient({
          host,
          port,
          ssl,
@@ -19,6 +19,15 @@ export const createChromaClient = (baseUrl: string): InternalChromaCLient => {
             "Authorization": `Bearer ${serverEnv.CHROMA_TOKEN}`
          }
       });
+
+      // Test the connection immediately
+      client.heartbeat().then((result) => {
+         console.log(`ChromaDB heartbeat successful: ${result}`);
+      }).catch((error) => {
+         console.error(`ChromaDB heartbeat failed:`, error);
+      });
+
+      return client;
    } catch (error) {
       console.error("Failed to create ChromaDB client:", error);
       throw error;
