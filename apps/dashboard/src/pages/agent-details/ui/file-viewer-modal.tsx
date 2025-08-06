@@ -1,8 +1,8 @@
 // FileViewerModal.tsx
-
+import { ScrollArea } from "@packages/ui/components/scroll-area";
 import { Button } from "@packages/ui/components/button";
 import { FileText, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@packages/ui/components/markdown";
 import {
    Credenza,
    CredenzaBody,
@@ -48,9 +48,9 @@ export function FileViewerModal({
                      </span>
                   </div>
                ) : (
-                  <div className="prose prose-sm max-w-none dark:prose-invert">
-                     <ReactMarkdown>{fileContent}</ReactMarkdown>
-                  </div>
+                  <ScrollArea className="max-h-96 h-full">
+                     <Markdown content={fileContent} />
+                  </ScrollArea>
                )}
             </CredenzaBody>
 
