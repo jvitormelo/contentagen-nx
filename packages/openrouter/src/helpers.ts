@@ -1,5 +1,5 @@
 import { generateObject, generateText } from "ai";
-import { ZodObject } from "zod";
+import type { ZodObject } from "zod";
 import type { OpenRouterClient } from "./client";
 export const MODELS = {
    small: "google/gemini-2.5-flash-lite",
