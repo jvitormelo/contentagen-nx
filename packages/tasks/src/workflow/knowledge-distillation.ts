@@ -48,31 +48,15 @@ export async function runDistillationPipeline(payload: {
       logger.info("Distillation completed", {
          distilledChunkCount: distilledChunks.length,
       });
-      const formattedChunks = await batch.triggerAndWait<
-         typeof distilledChunkFormatterAndSaveOnChroma
-      >(
+      await batch.trigger<typeof distilledChunkFormatterAndSaveOnChroma>(
          distilledChunks.map((chunk) => ({
             id: "distilled-chunk-formatter-and-save-on-chroma-job",
             payload: { chunk, agentId, sourceId },
          })),
       );
-      const formattedChunksOutput = formattedChunks.runs.map((result) => {
-         if (result.ok) {
-            return result.output.chunk;
-         } else {
-            logger.error("Error on saving chunk in chroma db", {
-               error: result.error,
-               agentId,
-            });
-            throw new Error(
-               "Error saving chunk to ChromaDB. Please check the logs for more details.",
-            );
-         }
-      });
       logger.info("Knowledge distillation pipeline complete", {
          agentId,
-         formattedChunkCount: formattedChunksOutput.length,
-         formattedChunksPreview: formattedChunksOutput,
+         formattedChunkCount: distilledChunks.length,
       });
    } catch (error) {
       logger.error("Error in distillation pipeline", {
