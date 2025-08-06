@@ -11,6 +11,7 @@ import { minioClient } from "./integrations/minio";
 import { chromaClient, openRouterClient } from "./integrations/chromadb";
 const trpcApi = createApi({
    chromaClient,
+
    openRouterClient,
    minioClient,
    minioBucket: env.MINIO_BUCKET,
