@@ -135,31 +135,7 @@
       "name": "server",
       "version": "0.2.0",
       "dependencies": {
-        "@elysiajs/cors": "catalog:server",
-        "@packages/api": "workspace:*",
-        "@packages/arcjet": "workspace:*",
-        "@packages/authentication": "workspace:*",
-        "@packages/database": "workspace:*",
-        "@packages/environment": "workspace:*",
-        "@packages/files": "workspace:*",
-        "@packages/payment": "workspace:*",
-        "@packages/posthog": "workspace:*",
-        "@packages/transactional": "workspace:*",
-        "@packages/workers": "workspace:*",
-        "@trpc/server": "catalog:trpc",
-        "elysia": "catalog:server",
-      },
-      "devDependencies": {
-        "@tooling/typescript": "workspace:*",
-        "@types/bun": "latest",
-        "typescript": "catalog:development",
-      },
-    },
-    "apps/worker": {
-      "name": "worker",
-      "version": "0.2.0",
-      "dependencies": {
-        "@bull-board/elysia": "^6.9.3",
+        "@bull-board/elysia": "^6.12.0",
         "@elysiajs/cors": "catalog:server",
         "@packages/api": "workspace:*",
         "@packages/arcjet": "workspace:*",
@@ -3322,8 +3298,6 @@
     "why-is-node-running": ["why-is-node-running@2.3.0", "", { "dependencies": { "siginfo": "^2.0.0", "stackback": "0.0.2" }, "bin": { "why-is-node-running": "cli.js" } }, "sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w=="],
 
     "widest-line": ["widest-line@5.0.0", "", { "dependencies": { "string-width": "^7.0.0" } }, "sha512-c9bZp7b5YtRj2wOe6dlj32MK+Bx/M/d+9VB2SHM1OtsUHR0aV0tdP6DWh/iMt0kWi1t5g1Iudu6hQRNd1A4PVA=="],
-
-    "worker": ["worker@workspace:apps/worker"],
 
     "wrap-ansi": ["wrap-ansi@7.0.0", "", { "dependencies": { "ansi-styles": "^4.0.0", "string-width": "^4.1.0", "strip-ansi": "^6.0.0" } }, "sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q=="],
 

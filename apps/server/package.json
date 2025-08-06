@@ -1,16 +1,17 @@
 {
    "dependencies": {
-      "@packages/environment": "workspace:*",
-      "@packages/workers": "workspace:*",
-      "@packages/files": "workspace:*",
+      "@bull-board/elysia": "^6.12.0",
+      "@elysiajs/cors": "catalog:server",
       "@packages/api": "workspace:*",
+      "@packages/arcjet": "workspace:*",
       "@packages/authentication": "workspace:*",
       "@packages/database": "workspace:*",
+      "@packages/environment": "workspace:*",
+      "@packages/files": "workspace:*",
       "@packages/payment": "workspace:*",
-      "@packages/transactional": "workspace:*",
-      "@elysiajs/cors": "catalog:server",
-      "@packages/arcjet": "workspace:*",
       "@packages/posthog": "workspace:*",
+      "@packages/transactional": "workspace:*",
+      "@packages/workers": "workspace:*",
       "@trpc/server": "catalog:trpc",
       "elysia": "catalog:server"
    },
