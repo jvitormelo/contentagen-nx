@@ -2,36 +2,34 @@ import { Client } from "minio";
 import type { ServerEnv } from "@packages/environment/server";
 import { isProduction } from "@packages/environment/helpers";
 const parseEndpoint = (endpointUrl: string) => {
-  // 1. Ensure the URL has a protocol so the URL constructor works correctly.
-  const fullUrl = endpointUrl.startsWith("http") 
-    ? endpointUrl 
-    : `http://${endpointUrl}`;
+   // 1. Ensure the URL has a protocol so the URL constructor works correctly.
+   const fullUrl = endpointUrl.startsWith("http")
+      ? endpointUrl
+      : `http://${endpointUrl}`;
 
-  try {
-    const url = new URL(fullUrl);
+   try {
+      const url = new URL(fullUrl);
 
-    // 2. Determine SSL from the protocol
-    const useSSL = url.protocol === "https:";
+      // 2. Determine SSL from the protocol
+      const useSSL = url.protocol === "https:";
 
-    // 3. Get the port, defaulting based on the protocol if not specified
-    const port = url.port 
-      ? parseInt(url.port, 10) 
-      : (useSSL ? 443 : 9000);
-      
-    return {
-      endPoint: url.hostname,
-      port,
-      useSSL,
-    };
-  } catch (error) {
-    console.error(`Invalid endpoint URL provided: ${endpointUrl} - ${error}`);
-    // Return a sensible default or throw an error
-    return {
-      endPoint: "localhost",
-      port: 9000,
-      useSSL: false,
-    };
-  }
+      // 3. Get the port, defaulting based on the protocol if not specified
+      const port = url.port ? parseInt(url.port, 10) : useSSL ? 443 : 9000;
+
+      return {
+         endPoint: url.hostname,
+         port,
+         useSSL,
+      };
+   } catch (error) {
+      console.error(`Invalid endpoint URL provided: ${endpointUrl} - ${error}`);
+      // Return a sensible default or throw an error
+      return {
+         endPoint: "localhost",
+         port: 9000,
+         useSSL: false,
+      };
+   }
 };
 export function getMinioClient(
    env: Pick<
@@ -39,14 +37,14 @@ export function getMinioClient(
       "MINIO_ENDPOINT" | "MINIO_ACCESS_KEY" | "MINIO_SECRET_KEY"
    >,
 ): Client {
-   const { endPoint, port } = parseEndpoint(env.MINIO_ENDPOINT);
+   const { endPoint, port, useSSL } = parseEndpoint(env.MINIO_ENDPOINT);
 
    const internalClient = new Client({
       endPoint,
       port,
       accessKey: env.MINIO_ACCESS_KEY,
       secretKey: env.MINIO_SECRET_KEY,
-      useSSL: isProduction, // Set to true in production with HTTPS
+      useSSL, // Set to true in production with HTTPS
    });
    return internalClient;
 }
