@@ -1,18 +1,18 @@
 {
    "dependencies": {
-      "@packages/openrouter": "workspace:*",
-      "@packages/files": "workspace:*",
-      "@packages/prompts": "workspace:*",
       "@packages/chroma-db": "workspace:*",
-      "@trigger.dev/sdk": "catalog:tasks"
+      "@packages/redis": "workspace:*",
+      "@packages/files": "workspace:*",
+      "@packages/openrouter": "workspace:*",
+      "@packages/prompts": "workspace:*",
+      "bullmq": "^5.56.9"
    },
    "devDependencies": {
       "@tooling/typescript": "workspace:*",
-      "@trigger.dev/build": "catalog:tasks",
       "typescript": "catalog:development"
    },
    "license": "MIT",
-   "name": "@packages/tasks",
+   "name": "@packages/workers",
    "scripts": {
       "check": "biome check --write ./src",
       "typecheck": "bunx --bun tsc --noEmit ",
@@ -22,9 +22,8 @@
    "private": true,
    "type": "module",
    "exports": {
-      ".": "./src/index.ts",
-      "./triggers/*": "./src/trigger/*.ts",
-      "./workflows/*": "./src/workflow/*.ts"
+      "./functions/*": "./src/functions/*.ts",
+      "./queues/*": "./src/queues/*.ts"
    },
    "version": "0.0.0"
 }

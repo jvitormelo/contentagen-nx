@@ -58,6 +58,7 @@ COPY packages/prompts ./packages/prompts
 COPY packages/errors ./packages/errors
 COPY packages/chroma-db ./packages/chroma-db
 COPY packages/openrouter ./packages/openrouter
+COPY packages/workers ./packages/workers
 
 # Install all dependencies (monorepo-aware)
 RUN bun install
@@ -91,12 +92,11 @@ ENV MINIO_BUCKET=${MINIO_BUCKET}
 ENV TAVILY_API_KEY=${TAVILY_API_KEY}
 ENV CHROMA_DB_URL=${CHROMA_DB_URL}
 RUN bun build \
-  --compile \
-  --minify-whitespace \
-  --minify-syntax \
-  --target bun \
-  --outfile server \
-  ./apps/server/src/index.ts
+    --minify-whitespace \
+    --minify-syntax \
+    --target bun \
+    --outfile ./dist/index.js \
+    ./apps/server/src/index.ts
 
 # ---
 
@@ -104,21 +104,6 @@ RUN bun build \
 FROM oven/bun:latest AS deps
 WORKDIR /app
 
-# Install ONNX Runtime system dependencies
-USER root
-RUN apt-get update && apt-get install -y \
-    wget \
-    ca-certificates \
-    libgomp1 \
-    && wget -qO- https://github.com/microsoft/onnxruntime/releases/download/v1.16.3/onnxruntime-linux-x64-1.16.3.tgz | tar -xz -C /tmp \
-    && cp /tmp/onnxruntime-linux-x64-1.16.3/lib/libonnxruntime.so.1.16.3 /usr/local/lib/ \
-    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so.1 \
-    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so \
-    && ldconfig \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/onnxruntime-linux-x64-1.16.3
-
-# Copy all package manifests and lockfile again
 COPY bun.lock ./
 COPY package.json ./
 COPY apps/server/package.json ./apps/server/
@@ -134,6 +119,7 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/prompts/package.json ./packages/prompts/
+COPY packages/workers/package.json ./packages/workers/
 COPY packages/errors/package.json ./packages/errors/
 COPY packages/chroma-db/package.json ./packages/chroma-db/
 COPY packages/openrouter/package.json ./packages/openrouter/
@@ -158,12 +144,9 @@ RUN bun install
 # ---
 
 # Stage 3: Create the final, small production image
-FROM gcr.io/distroless/cc-debian12
-WORKDIR /app
 
-COPY --from=deps /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/
-COPY --from=deps /usr/local/lib/libonnxruntime.so.1 /usr/local/lib/
-COPY --from=deps /usr/local/lib/libonnxruntime.so /usr/local/lib/
+FROM oven/bun:latest AS runner
+WORKDIR /app
 COPY --from=builder /app/server server
 
 ENV NODE_ENV=production
@@ -191,6 +174,23 @@ ENV MINIO_BUCKET=${MINIO_BUCKET}
 ENV TAVILY_API_KEY=${TAVILY_API_KEY}
 ENV CHROMA_DB_URL=${CHROMA_DB_URL}
 
+RUN bun install 
+
+# ---
+
+# Stage 3: Create the final, small production image
+
+ENV NODE_ENV=production
+
+# Copy the pruned, production-only node_modules from the 'deps' stage.
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy the built application from the 'builder' stage
+COPY --from=builder /app/dist ./dist
+
+# Also copy the final package.json to the root of the app directory.
+COPY --from=deps /app/package.json ./package.json
+
 ARG PORT
 EXPOSE ${PORT}
-CMD ["./server"]
+CMD ["bun", "./dist/index.js"]
