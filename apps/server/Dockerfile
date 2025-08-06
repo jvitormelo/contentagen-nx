@@ -30,42 +30,28 @@ COPY bun.lock ./
 COPY package.json ./
 COPY apps/server/package.json ./apps/server/
 COPY tooling/typescript/package.json ./tooling/typescript/
-COPY packages/brand/package.json ./packages/brand/
-COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/environment/package.json ./packages/environment/
-
-COPY packages/files/package.json ./packages/files/
-COPY packages/redis/package.json ./packages/redis/
 COPY packages/api/package.json ./packages/api/
-COPY packages/authentication/package.json ./packages/authentication/
-COPY packages/database/package.json ./packages/database/
-COPY packages/payment/package.json ./packages/payment/
-COPY packages/transactional/package.json ./packages/transactional/
-COPY packages/prompts/package.json ./packages/prompts/
-COPY packages/errors/package.json ./packages/errors/
-COPY packages/chroma-db/package.json ./packages/chroma-db/
-COPY packages/openrouter/package.json ./packages/openrouter/
-COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/environment/package.json ./packages/environment/
-
-COPY packages/files/package.json ./packages/files/
-COPY packages/api/package.json ./packages/api/
-COPY packages/authentication/package.json ./packages/authentication/
-COPY packages/database/package.json ./packages/database/
-COPY packages/payment/package.json ./packages/payment/
-COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/arcjet/package.json ./packages/arcjet/
-COPY packages/prompts ./packages/prompts
-COPY packages/errors ./packages/errors
-COPY packages/chroma-db ./packages/chroma-db
-COPY packages/openrouter ./packages/openrouter
-COPY packages/workers ./packages/workers
+COPY packages/authentication/package.json ./packages/authentication/
+COPY packages/brand/package.json ./packages/brand/
+COPY packages/chroma-db/package.json ./packages/chroma-db/
+COPY packages/database/package.json ./packages/database/
+COPY packages/environment/package.json ./packages/environment/
+COPY packages/errors/package.json ./packages/errors/
+COPY packages/files/package.json ./packages/files/
+COPY packages/openrouter/package.json ./packages/openrouter/
+COPY packages/payment/package.json ./packages/payment/
+COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/prompts/package.json ./packages/prompts/
+COPY packages/redis/package.json ./packages/redis/
+COPY packages/tavily/package.json ./packages/tavily/
+COPY packages/transactional/package.json ./packages/transactional/
+COPY packages/workers/package.json ./packages/workers/
 
 # Install all dependencies (monorepo-aware)
 RUN bun install
 
-# Copy the rest of the source code for all workspaces.
-# This is crucial for the build step to access the server source code.
+# Copy source code
 COPY . .
 
 ENV NODE_ENV=production
@@ -105,40 +91,28 @@ RUN bun build \
 FROM oven/bun:latest AS deps
 WORKDIR /app
 
+# Copy all package manifests and lockfile again
 COPY bun.lock ./
 COPY package.json ./
 COPY apps/server/package.json ./apps/server/
 COPY tooling/typescript/package.json ./tooling/typescript/
-COPY packages/brand/package.json ./packages/brand/
-COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/environment/package.json ./packages/environment/
-
-COPY packages/files/package.json ./packages/files/
 COPY packages/api/package.json ./packages/api/
+COPY packages/arcjet/package.json ./packages/arcjet/
 COPY packages/authentication/package.json ./packages/authentication/
+COPY packages/brand/package.json ./packages/brand/
+COPY packages/chroma-db/package.json ./packages/chroma-db/
 COPY packages/database/package.json ./packages/database/
+COPY packages/environment/package.json ./packages/environment/
+COPY packages/errors/package.json ./packages/errors/
+COPY packages/files/package.json ./packages/files/
+COPY packages/openrouter/package.json ./packages/openrouter/
 COPY packages/payment/package.json ./packages/payment/
-COPY packages/transactional/package.json ./packages/transactional/
+COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/prompts/package.json ./packages/prompts/
 COPY packages/redis/package.json ./packages/redis/
-COPY packages/workers/package.json ./packages/workers/
-COPY packages/errors/package.json ./packages/errors/
-COPY packages/chroma-db/package.json ./packages/chroma-db/
-COPY packages/openrouter/package.json ./packages/openrouter/
-COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/environment/package.json ./packages/environment/
-
-COPY packages/files/package.json ./packages/files/
-COPY packages/api/package.json ./packages/api/
-COPY packages/authentication/package.json ./packages/authentication/
-COPY packages/database/package.json ./packages/database/
-COPY packages/payment/package.json ./packages/payment/
+COPY packages/tavily/package.json ./packages/tavily/
 COPY packages/transactional/package.json ./packages/transactional/
-COPY packages/arcjet/package.json ./packages/arcjet/
-COPY packages/prompts ./packages/prompts
-COPY packages/errors ./packages/errors
-COPY packages/chroma-db ./packages/chroma-db
-COPY packages/openrouter ./packages/openrouter
+COPY packages/workers/package.json ./packages/workers/
 
 # Install only production dependencies.
 RUN bun install 
@@ -146,10 +120,8 @@ RUN bun install
 # ---
 
 # Stage 3: Create the final, small production image
-
 FROM oven/bun:latest AS runner
 WORKDIR /app
-COPY --from=builder /app/server server
 
 ENV NODE_ENV=production
 ENV POLAR_PREMIUM_PLAN=${POLAR_PREMIUM_PLAN}
@@ -175,14 +147,6 @@ ENV MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
 ENV MINIO_BUCKET=${MINIO_BUCKET}
 ENV TAVILY_API_KEY=${TAVILY_API_KEY}
 ENV CHROMA_DB_URL=${CHROMA_DB_URL}
-
-RUN bun install 
-
-# ---
-
-# Stage 3: Create the final, small production image
-
-ENV NODE_ENV=production
 
 # Copy the pruned, production-only node_modules from the 'deps' stage.
 COPY --from=deps /app/node_modules ./node_modules
