@@ -35,6 +35,7 @@ COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
 
 COPY packages/files/package.json ./packages/files/
+COPY packages/redis/package.json ./packages/redis/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/database/package.json ./packages/database/
@@ -119,6 +120,7 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/prompts/package.json ./packages/prompts/
+COPY packages/redis/package.json ./packages/redis/
 COPY packages/workers/package.json ./packages/workers/
 COPY packages/errors/package.json ./packages/errors/
 COPY packages/chroma-db/package.json ./packages/chroma-db/
