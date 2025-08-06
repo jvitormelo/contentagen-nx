@@ -100,9 +100,23 @@ RUN bun build \
 
 # ---
 
-# Stage 2: Create a clean, production-only node_modules folder
+# Stage 2: Create a clean, production-only node_modules folder and install ONNX Runtime
 FROM oven/bun:latest AS deps
 WORKDIR /app
+
+# Install ONNX Runtime system dependencies
+USER root
+RUN apt-get update && apt-get install -y \
+    wget \
+    ca-certificates \
+    libgomp1 \
+    && wget -qO- https://github.com/microsoft/onnxruntime/releases/download/v1.16.3/onnxruntime-linux-x64-1.16.3.tgz | tar -xz -C /tmp \
+    && cp /tmp/onnxruntime-linux-x64-1.16.3/lib/libonnxruntime.so.1.16.3 /usr/local/lib/ \
+    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so.1 \
+    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so \
+    && ldconfig \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/onnxruntime-linux-x64-1.16.3
 
 # Copy all package manifests and lockfile again
 COPY bun.lock ./
@@ -144,30 +158,13 @@ RUN bun install
 # ---
 
 # Stage 3: Create the final, small production image
-FROM ubuntu:22.04
+FROM gcr.io/distroless/cc-debian12
 WORKDIR /app
 
-# Install system dependencies including Bun and ONNX Runtime
-RUN apt-get update && apt-get install -y \
-    curl \
-    unzip \
-    wget \
-    ca-certificates \
-    libgomp1 \
-    && curl -fsSL https://bun.sh/install | bash \
-    && mv /root/.bun/bin/bun /usr/local/bin/ \
-    && wget -qO- https://github.com/microsoft/onnxruntime/releases/download/v1.16.3/onnxruntime-linux-x64-1.16.3.tgz | tar -xz -C /tmp \
-    && cp /tmp/onnxruntime-linux-x64-1.16.3/lib/libonnxruntime.so.1.16.3 /usr/local/lib/ \
-    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so.1 \
-    && ln -s /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/libonnxruntime.so \
-    && ldconfig \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/onnxruntime-linux-x64-1.16.3
-
+COPY --from=deps /usr/local/lib/libonnxruntime.so.1.16.3 /usr/local/lib/
+COPY --from=deps /usr/local/lib/libonnxruntime.so.1 /usr/local/lib/
+COPY --from=deps /usr/local/lib/libonnxruntime.so /usr/local/lib/
 COPY --from=builder /app/server server
-
-# Set execute permissions for the compiled binary
-RUN chmod +x ./server
 
 ENV NODE_ENV=production
 ENV POLAR_PREMIUM_PLAN=${POLAR_PREMIUM_PLAN}
