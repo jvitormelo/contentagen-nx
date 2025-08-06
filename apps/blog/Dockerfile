@@ -9,8 +9,9 @@ WORKDIR /app
 COPY bun.lock ./
 COPY package.json ./
 COPY apps/blog/package.json ./apps/blog/
-COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/ui/package.json ./packages/ui/
+COPY packages/brand/package.json ./packages/brand/
+COPY packages/posthog/package.json ./packages/posthog/
 COPY tooling/typescript/package.json ./tooling/typescript/
 # Install all dependencies (including devDependencies needed for the build step)
 RUN bun install 
@@ -33,11 +34,13 @@ FROM oven/bun:latest AS deps
 
 WORKDIR /app
 
+# Copy all package manifests and lockfile again
 COPY bun.lock ./
 COPY package.json ./
 COPY apps/blog/package.json ./apps/blog/
-COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/ui/package.json ./packages/ui/
+COPY packages/brand/package.json ./packages/brand/
+COPY packages/posthog/package.json ./packages/posthog/
 COPY tooling/typescript/package.json ./tooling/typescript/
 # Install only production dependencies. This creates a lean, clean node_modules folder.
 RUN bun install 
@@ -49,7 +52,7 @@ FROM node:lts-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-
+ARG ARCJET_KEY
 
 # Copy the pruned, production-only node_modules from the 'deps' stage.
 # This will solve the original 'module not found' error.
@@ -63,7 +66,7 @@ COPY --from=builder /app/apps/blog/dist ./dist
 COPY --from=deps /app/package.json ./package.json
 
 # Set and expose the port. Default to 4321 if not provided.
-ARG PORT
+ARG PORT=4321
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
