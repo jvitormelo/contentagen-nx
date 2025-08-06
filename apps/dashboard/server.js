@@ -95,9 +95,14 @@ export async function createServer(
 }
 
 if (!isTest) {
-  createServer().then(async ({ app }) =>
-    app.listen(await getPort({ port: portNumbers(3000, 3100) }), () => {
-      console.info('Client Server: http://localhost:3000')
-    }),
-  )
+  createServer().then(async ({ app }) => {
+    // In production, the PORT env var is set by the hosting provider.
+    // In development, we use get-port to find an available port.
+    const port = process.env.PORT || (await getPort({ port: portNumbers(3000, 3100) }));
+ 
+    app.listen(port, () => {
+      // The log now dynamically shows the correct port.
+      console.info(`Client Server listening on port: ${port}`);
+    });
+  });
 }
