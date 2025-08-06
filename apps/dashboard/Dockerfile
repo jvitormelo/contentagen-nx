@@ -18,6 +18,12 @@ COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/environment/package.json ./packages/environment/
+COPY packages/chroma-db/package.json ./packages/chroma-db/
+COPY packages/database/package.json ./packages/database/
+COPY packages/files/package.json ./packages/files/
+COPY packages/payment/package.json ./packages/payment/
+COPY packages/transactional/package.json ./packages/transactional/
+COPY packages/errors/package.json ./packages/errors/
 # Install all dependencies (including devDependencies needed for the build step)
 RUN bun install 
 
@@ -53,8 +59,13 @@ COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/environment/package.json ./packages/environment/
-
 COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/chroma-db/package.json ./packages/chroma-db/
+COPY packages/database/package.json ./packages/database/
+COPY packages/files/package.json ./packages/files/
+COPY packages/payment/package.json ./packages/payment/
+COPY packages/transactional/package.json ./packages/transactional/
+COPY packages/errors/package.json ./packages/errors/
 # Install only production dependencies. This creates a lean, clean node_modules folder.
 RUN bun install 
 
