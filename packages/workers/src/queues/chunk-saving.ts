@@ -2,6 +2,7 @@ import { Worker, Queue, type Job } from "bullmq";
 import { runDistilledChunkFormatterAndSaveOnChroma } from "../functions/save-chunk";
 import { serverEnv } from "@packages/environment/server";
 import { createRedisClient } from "@packages/redis";
+import { registerGracefulShutdown } from "../helpers";
 
 const QUEUE_NAME = "chunk-saving-job";
 const redis = createRedisClient(serverEnv.REDIS_URL);
@@ -9,6 +10,7 @@ const redis = createRedisClient(serverEnv.REDIS_URL);
 export const chunkSavingQueue = new Queue(QUEUE_NAME, {
    connection: redis,
 });
+registerGracefulShutdown(chunkSavingQueue);
 
 export const chunkSavingWorker = new Worker(
    QUEUE_NAME,
@@ -52,5 +54,6 @@ export const chunkSavingWorker = new Worker(
       },
    },
 );
+registerGracefulShutdown(chunkSavingWorker);
 
 console.info("[ChunkSaving] Worker initialized with concurrency=2 and rate limit 5/sec");

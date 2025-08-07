@@ -4,6 +4,7 @@ import { runChunkDistillation } from "../functions/chunk-distillation";
 import { chunkSavingQueue } from "./chunk-saving";
 import { serverEnv } from "@packages/environment/server";
 import { createRedisClient } from "@packages/redis";
+import { registerGracefulShutdown } from "../helpers";
 
 export async function runDistillationPipeline(payload: {
    inputText: string;
@@ -76,6 +77,7 @@ const redis = createRedisClient(serverEnv.REDIS_URL);
 export const knowledgeDistillationQueue = new Queue(QUEUE_NAME, {
    connection: redis,
 });
+registerGracefulShutdown(knowledgeDistillationQueue);
 
 export const knowledgeDistillationWorker = new Worker(
    QUEUE_NAME,
@@ -92,3 +94,4 @@ export const knowledgeDistillationWorker = new Worker(
       connection: redis,
    },
 );
+registerGracefulShutdown(knowledgeDistillationWorker);

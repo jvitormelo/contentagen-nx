@@ -6,6 +6,7 @@ import { runCreateBrandDocument } from "../functions/create-brand-document";
 import { knowledgeDistillationQueue } from "./knowledge-distillation";
 import { serverEnv } from "@packages/environment/server";
 import { createRedisClient } from "@packages/redis";
+import { registerGracefulShutdown } from "../helpers";
 
 interface AutoBrandKnowledgePayload {
    agentId: string;
@@ -22,6 +23,7 @@ export const autoBrandKnowledgeQueue = new Queue<AutoBrandKnowledgePayload>(
       connection: redis,
    },
 );
+registerGracefulShutdown(autoBrandKnowledgeQueue);
 
 export const autoBrandKnowledgeWorker = new Worker<AutoBrandKnowledgePayload>(
    QUEUE_NAME,
@@ -120,3 +122,4 @@ export const autoBrandKnowledgeWorker = new Worker<AutoBrandKnowledgePayload>(
       connection: redis,
    },
 );
+registerGracefulShutdown(autoBrandKnowledgeWorker);

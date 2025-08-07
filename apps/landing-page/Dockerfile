@@ -1,5 +1,3 @@
-# apps/landing-page/Dockerfile
-# Stage 1: Install all dependencies and build the application
 FROM oven/bun:latest AS builder
 
 WORKDIR /app
