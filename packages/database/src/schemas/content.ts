@@ -23,20 +23,40 @@ export const ContentRequestSchema = z.object({
    description: z.string().min(1, "Description is required"),
 });
 export type ContentRequest = z.infer<typeof ContentRequestSchema>;
-
 export const ContentStatsSchema = z.object({
-   wordsCount: z.string().optional(),
-   readTimeMinutes: z.string().optional(),
-   qualityScore: z.string().optional(),
+   wordsCount: z
+      .string()
+      .optional()
+      .describe("The number of words in the content."),
+   readTimeMinutes: z
+      .string()
+      .optional()
+      .describe("Estimated reading time in minutes."),
+   qualityScore: z
+      .string()
+      .optional()
+      .describe("A score representing the quality of the content."),
 });
 export type ContentStats = z.infer<typeof ContentStatsSchema>;
 
 export const ContentMetaSchema = z.object({
-   title: z.string().optional(),
-   slug: z.string().optional(),
-   tags: z.array(z.string()).optional(),
-   topics: z.array(z.string()).optional(),
-   sources: z.array(z.string()).optional(),
+   title: z.string().optional().describe("The title of the content."),
+   slug: z
+      .string()
+      .optional()
+      .describe("A URL-friendly identifier for the content."),
+   tags: z
+      .array(z.string())
+      .optional()
+      .describe("Tags associated with the content."),
+   topics: z
+      .array(z.string())
+      .optional()
+      .describe("Topics covered in the content."),
+   sources: z
+      .array(z.string())
+      .optional()
+      .describe("Sources referenced for the content."),
 });
 export type ContentMeta = z.infer<typeof ContentMetaSchema>;
 
@@ -76,11 +96,9 @@ export const content = pgTable(
    },
    (table) => [index("content_agent_id_idx").on(table.agentId)],
 );
-
 export type ContentStatus = (typeof contentStatusEnum.enumValues)[number];
 export type ContentSelect = typeof content.$inferSelect;
 export type ContentInsert = typeof content.$inferInsert;
-
 export const ContentInsertSchema = createInsertSchema(content);
 export const ContentSelectSchema = createSelectSchema(content);
 export const ContentUpdateSchema = createUpdateSchema(content);
