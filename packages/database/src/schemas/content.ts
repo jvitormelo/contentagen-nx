@@ -16,9 +16,6 @@ import {
    createUpdateSchema,
 } from "drizzle-zod";
 
-/* ------------------------------------------------------------------
-   1. Zod Schemas for JSONB fields
------------------------------------------------------------------- */
 export const ContentRequestSchema = z.object({
    description: z.string().min(1, "Description is required"),
 });
@@ -60,18 +57,12 @@ export const ContentMetaSchema = z.object({
 });
 export type ContentMeta = z.infer<typeof ContentMetaSchema>;
 
-/* ------------------------------------------------------------------
-   2. Content Status Enum
------------------------------------------------------------------- */
 export const contentStatusEnum = pgEnum("content_status", [
    "draft",
    "approved",
    "generating",
 ]);
 
-/* ------------------------------------------------------------------
-   3. Content Table
------------------------------------------------------------------- */
 export const content = pgTable(
    "content",
    {
