@@ -16,6 +16,7 @@ import { ElysiaAdapter } from "@bull-board/elysia";
 import { createBullBoard } from "@bull-board/api";
 import { autoBrandKnowledgeQueue } from "@packages/workers/queues/auto-brand-knowledge";
 import { contentGenerationQueue } from "@packages/workers/queues/content-generation";
+import { chunkSavingQueue } from "@packages/workers/queues/chunk-saving";
 import { knowledgeDistillationQueue } from "@packages/workers/queues/knowledge-distillation";
 import { isProduction } from "@packages/environment/helpers";
 const serverAdapter = new ElysiaAdapter("/ui");
@@ -25,6 +26,7 @@ createBullBoard({
       new BullMQAdapter(contentGenerationQueue),
       new BullMQAdapter(knowledgeDistillationQueue), // Register the knowledge distillation queue
       new BullMQAdapter(autoBrandKnowledgeQueue), // Register the auto brand knowledge queue
+      new BullMQAdapter(chunkSavingQueue), // Register the chunk saving queue
    ],
 
    serverAdapter,

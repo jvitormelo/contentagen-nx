@@ -1,7 +1,7 @@
 import { Worker, Queue, type Job } from "bullmq";
 import { runChunkText } from "../functions/chunk-text";
 import { runChunkDistillation } from "../functions/chunk-distillation";
-import { runDistilledChunkFormatterAndSaveOnChroma } from "../functions/save-chunk";
+import { chunkSavingQueue } from "./chunk-saving";
 import { serverEnv } from "@packages/environment/server";
 import { createRedisClient } from "@packages/redis";
 
@@ -40,18 +40,26 @@ export async function runDistillationPipeline(payload: {
       console.info("Distillation completed", {
          distilledChunkCount: distillationResults.length,
       });
-      await Promise.all(
-         distillationResults.map(async (chunk) =>
-            runDistilledChunkFormatterAndSaveOnChroma({
+      
+      // Queue chunk saving jobs in bulk instead of processing all at once
+      console.info("Queuing chunk saving jobs", {
+         chunkCount: distillationResults.length,
+         agentId,
+      });
+      await chunkSavingQueue.addBulk(
+         distillationResults.map((chunk, index) => ({
+            name: `chunk-save-${agentId}-${sourceId}-${index}`,
+            data: {
                chunk,
                agentId,
                sourceId,
-            }),
-         ),
+            },
+         })),
       );
+      
       console.info("Knowledge distillation pipeline complete", {
          agentId,
-         formattedChunkCount: distillationResults.length,
+         queuedChunkCount: distillationResults.length,
       });
    } catch (error) {
       console.error("Error in distillation pipeline", {
