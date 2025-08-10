@@ -13,46 +13,48 @@ import {
    AgentSelectSchema,
    PersonaConfigSchema,
 } from "@packages/database/schemas/agent";
-import { generateSystemPrompt } from "@packages/prompts/helpers/agent-system-prompt-assembler";
+
+import { getAgentContentStats } from "@packages/database/repositories/content-repository";
 
 export const agentRouter = router({
-   regenerateSystemPrompt: protectedProcedure
+   stats: protectedProcedure
       .input(AgentSelectSchema.pick({ id: true }))
-      .mutation(async ({ ctx, input }) => {
-         // 1. Load agent
-         const agent = await getAgentById((await ctx).db, input.id);
-         if (!agent)
-            throw new TRPCError({
-               code: "NOT_FOUND",
-               message: "Agent not found",
-            });
-         // 2. Regenerate system prompt
-         const newSystemPrompt = generateSystemPrompt(agent.personaConfig);
-         // 3. Update agent
-         const updated = await updateAgent((await ctx).db, input.id, {
-            systemPrompt: newSystemPrompt,
-         });
-         return updated;
-      }),
-   updateSystemPrompt: protectedProcedure
-      .input(
-         AgentUpdateSchema.pick({
-            id: true,
-            systemPrompt: true,
-         }),
-      )
-      .mutation(async ({ ctx, input }) => {
-         if (!input.id) {
-            throw new TRPCError({
-               code: "BAD_REQUEST",
-               message: "Agent ID is required for updating the system prompt.",
-            });
-         }
-         // 1. Update only the system prompt
-         const updated = await updateAgent((await ctx).db, input.id, {
-            systemPrompt: input.systemPrompt,
-         });
-         return updated;
+      .query(async ({ ctx, input }) => {
+         const contents = await getAgentContentStats((await ctx).db, input.id);
+
+         const toNumber = (val: unknown) => {
+            const n = Number(val);
+            return Number.isFinite(n) ? n : 0;
+         };
+         const isNumber = (val: unknown): val is number =>
+            typeof val === "number" && Number.isFinite(val);
+
+         const wordsWritten = contents.reduce(
+            (sum, item) => sum + toNumber(item.stats?.wordsCount),
+            0,
+         );
+         const totalDraft = contents.filter(
+            (item) => item.status === "draft",
+         ).length;
+         const totalPublished = contents.filter(
+            (item) => item.status === "approved",
+         ).length;
+
+         const qualityScores = contents
+            .map((item) => toNumber(item.stats?.qualityScore))
+            .filter(isNumber);
+         const avgQualityScore =
+            qualityScores.length > 0
+               ? qualityScores.reduce((sum, val) => sum + val, 0) /
+               qualityScores.length
+               : null;
+
+         return {
+            wordsWritten,
+            totalDraft,
+            totalPublished,
+            avgQualityScore,
+         };
       }),
    create: protectedProcedure
       .input(PersonaConfigSchema)
@@ -69,7 +71,6 @@ export const agentRouter = router({
                AgentInsert,
                "id" | "createdAt" | "updatedAt"
             > = {
-               systemPrompt: generateSystemPrompt(input),
                personaConfig: input,
                userId: userId,
             };
@@ -99,19 +100,9 @@ export const agentRouter = router({
                message: "Agent ID is required for update.",
             });
          }
-         const getNewSystemPrompt = () => {
-            if (!updateFields.personaConfig) {
-               return;
-            }
-            return generateSystemPrompt({
-               ...updateFields.personaConfig,
-            });
-         };
-         const systemPrompt = getNewSystemPrompt();
          try {
             await updateAgent((await ctx).db, id, {
                personaConfig: updateFields.personaConfig,
-               systemPrompt,
                updatedAt: new Date(),
             });
             return { success: true };

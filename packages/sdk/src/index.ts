@@ -1,0 +1,147 @@
+import { createAuthClient } from "@packages/authentication/client";
+import { ContentSelectSchema } from "@packages/database/schemas/content";
+import SuperJSON from "superjson";
+import { z } from "zod";
+import type { ContentSelect } from "@packages/database/schemas/content";
+import {
+   ListContentByAgentInputSchema,
+   GetContentByIdInputSchema,
+} from "@packages/database/schemas/agent";
+
+const PRODUCTION_API_URL = "https://api.contentagen.com";
+
+export interface SdkConfig {
+   apiKey: string;
+   apiUrl?: string;
+}
+
+export class ContentaGenSDK {
+   public auth;
+   private trpcUrl: string;
+   private apiKey: string;
+
+   constructor(config: SdkConfig) {
+      if (!config.apiKey) {
+         throw new Error("apiKey is required to initialize the ContentaGenSDK");
+      }
+
+      const baseUrl = config.apiUrl ?? PRODUCTION_API_URL;
+
+      this.auth = createAuthClient({ apiBaseUrl: baseUrl });
+      this.trpcUrl = `${baseUrl}/trpc`;
+      this.apiKey = config.apiKey;
+   }
+
+   private transformDates(data: unknown): unknown {
+      if (Array.isArray(data)) {
+         return data.map((item) => this.transformDates(item));
+      }
+
+      if (data && typeof data === "object" && data !== null) {
+         const obj = { ...data } as Record<string, unknown>;
+
+         // Transform createdAt and updatedAt fields if they exist and are strings
+         if (typeof obj.createdAt === "string") {
+            obj.createdAt = new Date(obj.createdAt);
+         }
+         if (typeof obj.updatedAt === "string") {
+            obj.updatedAt = new Date(obj.updatedAt);
+         }
+
+         return obj;
+      }
+
+      return data;
+   }
+
+   private async _query<T>(
+      path: string,
+      input: unknown,
+      schema: z.ZodType<T>,
+   ): Promise<T> {
+      const url = new URL(`${this.trpcUrl}/${path}`);
+      if (input) {
+         url.searchParams.set("input", SuperJSON.stringify(input));
+      }
+
+      const response = await fetch(url.toString(), {
+         headers: { "sdk-api-key": this.apiKey },
+      });
+
+      if (!response.ok) {
+         throw new Error(`API request failed: ${response.statusText}`);
+      }
+
+      const json = await response.json();
+
+      if (
+         json &&
+         typeof json === "object" &&
+         "result" in json &&
+         json.result &&
+         typeof json.result === "object" &&
+         "data" in json.result
+      ) {
+         // The data from TRPC is already deserialized and in the correct format
+         const responseData = json.result.data;
+
+         // Extract the actual data from the TRPC response structure
+         // TRPC wraps the data with SuperJSON metadata
+         const actualData =
+            (responseData as { json?: unknown })?.json || responseData;
+
+         // Transform date strings back to Date objects for ContentSelect schemas
+         const transformedData = this.transformDates(actualData);
+
+         return schema.parse(transformedData);
+      }
+      throw new Error("Invalid API response format.");
+   }
+   async listContentByAgent(
+      params: z.input<typeof ListContentByAgentInputSchema>,
+   ): Promise<ContentSelect[]> {
+      try {
+         const validatedParams = ListContentByAgentInputSchema.parse(params);
+         return this._query(
+            "sdk.listContentByAgent",
+            validatedParams,
+            ContentSelectSchema.array(),
+         );
+      } catch (error) {
+         if (error instanceof z.ZodError) {
+            throw new Error(
+               `Invalid input for listContentByAgent: ${error.issues.map((e) => e.message).join(", ")}`,
+            );
+         }
+         throw error;
+      }
+   }
+
+   async getContentById(
+      params: z.input<typeof GetContentByIdInputSchema>,
+   ): Promise<ContentSelect> {
+      try {
+         const validatedParams = GetContentByIdInputSchema.parse(params);
+         return this._query(
+            "sdk.getContentById",
+            validatedParams,
+            ContentSelectSchema,
+         );
+      } catch (error) {
+         if (error instanceof z.ZodError) {
+            throw new Error(
+               `Invalid input for getContentById: ${error.issues.map((e) => e.message).join(", ")}`,
+            );
+         }
+         throw error;
+      }
+   }
+}
+
+export const createSdk = (config: SdkConfig): ContentaGenSDK => {
+   return new ContentaGenSDK(config);
+};
+export {
+   GetContentByIdInputSchema,
+   ListContentByAgentInputSchema,
+} from "@packages/database/schemas/agent";

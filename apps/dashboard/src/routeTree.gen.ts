@@ -19,10 +19,9 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-pas
 import { Route as AuthEmailVerificationRouteImport } from './routes/auth/email-verification'
 import { Route as DashboardProfileRouteImport } from './routes/_dashboard/profile'
 import { Route as DashboardHomeRouteImport } from './routes/_dashboard/home'
-import { Route as DashboardOrganizationIndexRouteImport } from './routes/_dashboard/organization/index'
+import { Route as DashboardApikeyRouteImport } from './routes/_dashboard/apikey'
 import { Route as DashboardContentIndexRouteImport } from './routes/_dashboard/content/index'
 import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
-import { Route as DashboardOrganizationCreateRouteImport } from './routes/_dashboard/organization/create'
 import { Route as DashboardContentIdRouteImport } from './routes/_dashboard/content/$id'
 import { Route as DashboardAgentsFlowRouteImport } from './routes/_dashboard/agents/_flow'
 import { Route as DashboardAgentsAgentIdIndexRouteImport } from './routes/_dashboard/agents/$agentId/index'
@@ -76,12 +75,11 @@ const DashboardHomeRoute = DashboardHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardOrganizationIndexRoute =
-  DashboardOrganizationIndexRouteImport.update({
-    id: '/organization/',
-    path: '/organization/',
-    getParentRoute: () => DashboardRoute,
-  } as any)
+const DashboardApikeyRoute = DashboardApikeyRouteImport.update({
+  id: '/apikey',
+  path: '/apikey',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardContentIndexRoute = DashboardContentIndexRouteImport.update({
   id: '/content/',
   path: '/content/',
@@ -92,12 +90,6 @@ const DashboardAgentsIndexRoute = DashboardAgentsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardAgentsRoute,
 } as any)
-const DashboardOrganizationCreateRoute =
-  DashboardOrganizationCreateRouteImport.update({
-    id: '/organization/create',
-    path: '/organization/create',
-    getParentRoute: () => DashboardRoute,
-  } as any)
 const DashboardContentIdRoute = DashboardContentIdRouteImport.update({
   id: '/content/$id',
   path: '/content/$id',
@@ -134,6 +126,7 @@ const DashboardAgentsAgentIdContentRequestRoute =
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
+  '/apikey': typeof DashboardApikeyRoute
   '/home': typeof DashboardHomeRoute
   '/profile': typeof DashboardProfileRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
@@ -142,10 +135,8 @@ export interface FileRoutesByFullPath {
   '/auth/sign-up': typeof AuthSignUpRoute
   '/agents': typeof DashboardAgentsFlowRouteWithChildren
   '/content/$id': typeof DashboardContentIdRoute
-  '/organization/create': typeof DashboardOrganizationCreateRoute
   '/agents/': typeof DashboardAgentsIndexRoute
   '/content': typeof DashboardContentIndexRoute
-  '/organization': typeof DashboardOrganizationIndexRoute
   '/agents/$agentId/edit': typeof DashboardAgentsAgentIdEditRoute
   '/agents/manual': typeof DashboardAgentsFlowManualRoute
   '/agents/$agentId': typeof DashboardAgentsAgentIdIndexRoute
@@ -153,6 +144,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
+  '/apikey': typeof DashboardApikeyRoute
   '/home': typeof DashboardHomeRoute
   '/profile': typeof DashboardProfileRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
@@ -161,9 +153,7 @@ export interface FileRoutesByTo {
   '/auth/sign-up': typeof AuthSignUpRoute
   '/agents': typeof DashboardAgentsIndexRoute
   '/content/$id': typeof DashboardContentIdRoute
-  '/organization/create': typeof DashboardOrganizationCreateRoute
   '/content': typeof DashboardContentIndexRoute
-  '/organization': typeof DashboardOrganizationIndexRoute
   '/agents/$agentId/edit': typeof DashboardAgentsAgentIdEditRoute
   '/agents/manual': typeof DashboardAgentsFlowManualRoute
   '/agents/$agentId': typeof DashboardAgentsAgentIdIndexRoute
@@ -173,6 +163,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_dashboard': typeof DashboardRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/_dashboard/apikey': typeof DashboardApikeyRoute
   '/_dashboard/home': typeof DashboardHomeRoute
   '/_dashboard/profile': typeof DashboardProfileRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
@@ -182,10 +173,8 @@ export interface FileRoutesById {
   '/_dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/_dashboard/agents/_flow': typeof DashboardAgentsFlowRouteWithChildren
   '/_dashboard/content/$id': typeof DashboardContentIdRoute
-  '/_dashboard/organization/create': typeof DashboardOrganizationCreateRoute
   '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
   '/_dashboard/content/': typeof DashboardContentIndexRoute
-  '/_dashboard/organization/': typeof DashboardOrganizationIndexRoute
   '/_dashboard/agents/$agentId/edit': typeof DashboardAgentsAgentIdEditRoute
   '/_dashboard/agents/_flow/manual': typeof DashboardAgentsFlowManualRoute
   '/_dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
@@ -195,6 +184,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/auth'
+    | '/apikey'
     | '/home'
     | '/profile'
     | '/auth/email-verification'
@@ -203,10 +193,8 @@ export interface FileRouteTypes {
     | '/auth/sign-up'
     | '/agents'
     | '/content/$id'
-    | '/organization/create'
     | '/agents/'
     | '/content'
-    | '/organization'
     | '/agents/$agentId/edit'
     | '/agents/manual'
     | '/agents/$agentId'
@@ -214,6 +202,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/apikey'
     | '/home'
     | '/profile'
     | '/auth/email-verification'
@@ -222,9 +211,7 @@ export interface FileRouteTypes {
     | '/auth/sign-up'
     | '/agents'
     | '/content/$id'
-    | '/organization/create'
     | '/content'
-    | '/organization'
     | '/agents/$agentId/edit'
     | '/agents/manual'
     | '/agents/$agentId'
@@ -233,6 +220,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_dashboard'
     | '/auth'
+    | '/_dashboard/apikey'
     | '/_dashboard/home'
     | '/_dashboard/profile'
     | '/auth/email-verification'
@@ -242,10 +230,8 @@ export interface FileRouteTypes {
     | '/_dashboard/agents'
     | '/_dashboard/agents/_flow'
     | '/_dashboard/content/$id'
-    | '/_dashboard/organization/create'
     | '/_dashboard/agents/'
     | '/_dashboard/content/'
-    | '/_dashboard/organization/'
     | '/_dashboard/agents/$agentId/edit'
     | '/_dashboard/agents/_flow/manual'
     | '/_dashboard/agents/$agentId/'
@@ -322,11 +308,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardHomeRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/organization/': {
-      id: '/_dashboard/organization/'
-      path: '/organization'
-      fullPath: '/organization'
-      preLoaderRoute: typeof DashboardOrganizationIndexRouteImport
+    '/_dashboard/apikey': {
+      id: '/_dashboard/apikey'
+      path: '/apikey'
+      fullPath: '/apikey'
+      preLoaderRoute: typeof DashboardApikeyRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/content/': {
@@ -342,13 +328,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/agents/'
       preLoaderRoute: typeof DashboardAgentsIndexRouteImport
       parentRoute: typeof DashboardAgentsRoute
-    }
-    '/_dashboard/organization/create': {
-      id: '/_dashboard/organization/create'
-      path: '/organization/create'
-      fullPath: '/organization/create'
-      preLoaderRoute: typeof DashboardOrganizationCreateRouteImport
-      parentRoute: typeof DashboardRoute
     }
     '/_dashboard/content/$id': {
       id: '/_dashboard/content/$id'
@@ -428,23 +407,21 @@ const DashboardAgentsRouteWithChildren = DashboardAgentsRoute._addFileChildren(
 )
 
 interface DashboardRouteChildren {
+  DashboardApikeyRoute: typeof DashboardApikeyRoute
   DashboardHomeRoute: typeof DashboardHomeRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardAgentsRoute: typeof DashboardAgentsRouteWithChildren
   DashboardContentIdRoute: typeof DashboardContentIdRoute
-  DashboardOrganizationCreateRoute: typeof DashboardOrganizationCreateRoute
   DashboardContentIndexRoute: typeof DashboardContentIndexRoute
-  DashboardOrganizationIndexRoute: typeof DashboardOrganizationIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardApikeyRoute: DashboardApikeyRoute,
   DashboardHomeRoute: DashboardHomeRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   DashboardAgentsRoute: DashboardAgentsRouteWithChildren,
   DashboardContentIdRoute: DashboardContentIdRoute,
-  DashboardOrganizationCreateRoute: DashboardOrganizationCreateRoute,
   DashboardContentIndexRoute: DashboardContentIndexRoute,
-  DashboardOrganizationIndexRoute: DashboardOrganizationIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(

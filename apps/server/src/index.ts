@@ -12,7 +12,6 @@ import { chromaClient, openRouterClient } from "./integrations/chromadb";
 import { bullAuth } from "./integrations/bull-auth-guard";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { ElysiaAdapter } from "@bull-board/elysia";
-
 import { createBullBoard } from "@bull-board/api";
 import { autoBrandKnowledgeQueue } from "@packages/workers/queues/auto-brand-knowledge";
 import { contentGenerationQueue } from "@packages/workers/queues/content-generation";
@@ -47,7 +46,7 @@ const trpcApi = createApi({
 const app = new Elysia()
    .use(
       cors({
-         allowedHeaders: ["Content-Type", "Authorization"],
+         allowedHeaders: ["Content-Type", "Authorization", "sdk-api-key"],
          credentials: true,
          methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
          origin: env.BETTER_AUTH_TRUSTED_ORIGINS.split(","),
@@ -56,15 +55,6 @@ const app = new Elysia()
    .use(ArcjetShield)
    .use(posthogPlugin)
    .mount(auth.handler)
-   .onBeforeHandle(({ request }) => {
-      const url = new URL(request.url);
-
-      if (url.pathname.startsWith("/ui")) {
-         return bullAuth(request);
-      }
-   })
-   .use(serverAdapter.registerPlugin())
-
    .all(
       "/trpc/*",
       async (opts) => {
@@ -84,6 +74,14 @@ const app = new Elysia()
          parse: "none",
       },
    )
+   .onBeforeHandle(({ request }) => {
+      const url = new URL(request.url);
+
+      if (url.pathname.startsWith("/ui")) {
+         return bullAuth(request);
+      }
+   })
+   .use(serverAdapter.registerPlugin())
    .listen(process.env.PORT ?? 9876);
 
 console.log(

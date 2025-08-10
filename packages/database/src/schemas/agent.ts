@@ -4,7 +4,6 @@ import {
    jsonb,
    uuid,
    text,
-   boolean,
    integer,
    timestamp,
    index,
@@ -86,11 +85,7 @@ export const agent = pgTable(
       userId: text("user_id")
          .notNull()
          .references(() => user.id, { onDelete: "cascade" }),
-
       personaConfig: jsonb("persona_config").$type<PersonaConfig>().notNull(),
-      systemPrompt: text("system_prompt").notNull(),
-      totalDrafts: integer("total_drafts").default(0),
-      totalPublished: integer("total_published").default(0),
       uploadedFiles: jsonb("uploaded_files")
          .$type<{ fileName: string; fileUrl: string; uploadedAt: string }[]>()
          .default([]),
@@ -125,3 +120,12 @@ export type LanguageConfig = z.infer<typeof LanguageConfigSchema>;
 export type BrandConfig = z.infer<typeof BrandConfigSchema>;
 export type PurposeChannel = z.infer<typeof PurposeChannelSchema>;
 export type PersonaConfig = z.infer<typeof PersonaConfigSchema>;
+export const ListContentByAgentInputSchema = z.object({
+   agentId: z.uuid("Invalid Agent ID format."),
+   limit: z.number().min(1).max(100).optional().default(10),
+   page: z.number().min(1).optional().default(1),
+});
+
+export const GetContentByIdInputSchema = z.object({
+   id: z.uuid("Invalid Content ID format."),
+});
