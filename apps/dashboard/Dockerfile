@@ -19,6 +19,9 @@ COPY packages/environment/package.json ./packages/environment/
 COPY packages/chroma-db/package.json ./packages/chroma-db/
 COPY packages/database/package.json ./packages/database/
 COPY packages/files/package.json ./packages/files/
+COPY packages/redis/package.json ./packages/redis/
+COPY packages/openrouter/package.json ./packages/openrouter/
+COPY packages/prompts/package.json ./packages/prompts/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/errors/package.json ./packages/errors/
