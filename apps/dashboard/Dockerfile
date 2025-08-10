@@ -22,6 +22,7 @@ COPY packages/files/package.json ./packages/files/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/errors/package.json ./packages/errors/
+COPY packages/workers/package.json ./packages/workers/
 # Install all dependencies (including devDependencies needed for the build step)
 RUN bun install 
 
@@ -61,6 +62,7 @@ COPY packages/files/package.json ./packages/files/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/errors/package.json ./packages/errors/
+COPY packages/workers/package.json ./packages/workers/
 # Install only production dependencies. This creates a lean, clean node_modules folder.
 RUN bun install 
 
