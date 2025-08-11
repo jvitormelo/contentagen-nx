@@ -6,7 +6,7 @@ export const POLAR_PLAN_SLUGS = {
 } as const;
 export const POLAR_PLAN_IDS = {
    [POLAR_PLAN_SLUGS.BASIC]: {
-      production: "61adf73c-3209-4346-96e3-31f370486c9a",
+      production: "cae61f16-602f-434f-9efc-e147cf3df027",
       sandbox: "61adf73c-3209-4346-96e3-31f370486c9a",
    },
    [POLAR_PLAN_SLUGS.TEAM]: {
