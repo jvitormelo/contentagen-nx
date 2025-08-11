@@ -91,8 +91,8 @@ export class ContentaGenSDK {
          // Safely extract json property if exists, or use responseData
          const actualData =
             typeof responseData === "object" &&
-            responseData !== null &&
-            "json" in responseData
+               responseData !== null &&
+               "json" in responseData
                ? (responseData as { json: unknown }).json
                : responseData;
          const transformedData = this.transformDates(actualData);
