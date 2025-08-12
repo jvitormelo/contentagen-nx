@@ -46,10 +46,10 @@ export const ContentStatusValues = ["draft", "approved", "generating"] as const;
 // Input schemas for API calls
 export const ListContentByAgentInputSchema = z.object({
    status: z
-      .enum(
-         ContentStatusValues,
-         { message: "Invalid content status. Must be one of: draft, approved, generating." }
-      )
+      .enum(ContentStatusValues, {
+         message:
+            "Invalid content status. Must be one of: draft, approved, generating.",
+      })
       .array(),
    agentId: z.uuid("Invalid Agent ID format."),
    limit: z.number().min(1).max(100).optional().default(10),
@@ -75,13 +75,13 @@ export const ContentSelectSchema = z.object({
    meta: ContentMetaSchema,
    request: ContentRequestSchema,
    stats: ContentStatsSchema,
-   createdAt: z.iso.datetime(),
-   updatedAt: z.iso.datetime(),
+   createdAt: z.date(),
+   updatedAt: z.date(),
 });
 
 // Exported types
 export type ContentStats = z.infer<typeof ContentStatsSchema>;
 export type ContentMeta = z.infer<typeof ContentMetaSchema>;
 export type ContentRequest = z.infer<typeof ContentRequestSchema>;
-export type ContentStatus = typeof ContentStatusValues[number];
+export type ContentStatus = (typeof ContentStatusValues)[number];
 export type ContentSelect = z.infer<typeof ContentSelectSchema>;
