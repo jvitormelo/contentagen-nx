@@ -1,6 +1,6 @@
 {
    "name": "@contentagen/sdk",
-   "version": "0.4.2",
+   "version": "0.4.4",
    "private": false,
    "type": "module",
    "exports": {
@@ -17,19 +17,18 @@
       "CHANGELOG.md"
    ],
    "scripts": {
-      "build": "tsc",
+      "build": "tsup",
       "check": "biome check --write ./src",
       "typecheck": "tsc --build --noEmit --emitDeclarationOnly false",
       "publish": "npm publish --access public"
    },
    "dependencies": {
-      "@packages/database": "workspace:*",
-      "superjson": "catalog:trpc",
-      "zod": "catalog:validation"
+      "superjson": "2.2.2",
+      "zod": "4.0.14"
    },
    "devDependencies": {
-      "@tooling/typescript": "workspace:*",
-      "typescript": "catalog:development"
+      "tsup": "^8.5.0",
+      "typescript": "5.8.3"
    },
    "publishConfig": {
       "access": "public"

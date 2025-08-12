@@ -1,15 +1,26 @@
 {
-   "extends": "@tooling/typescript/internal-package.json",
+   "$schema": "https://json.schemastore.org/tsconfig",
    "compilerOptions": {
+      "target": "ES2022",
+      "lib": ["ES2022"],
+      "module": "ES2022",
+      "moduleResolution": "bundler",
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "skipLibCheck": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
       "declaration": true,
       "declarationMap": true,
       "sourceMap": true,
       "outDir": "./dist",
-      "emitDeclarationOnly": false,
-      "rootDir": "./src"
+      "rootDir": "./src",
+      "noEmit": false,
+      "emitDeclarationOnly": false
    },
    "include": [
-      "src"
+      "src/**/*"
    ],
    "exclude": [
       "node_modules",

@@ -1,13 +1,12 @@
-import { createAuthClient } from "@packages/authentication/client";
 import SuperJSON from "superjson";
 import { z } from "zod";
-import type { ContentSelect } from "@packages/database/schemas/content";
+import type { ContentSelect } from "./types";
 import {
    ListContentByAgentInputSchema,
    GetContentByIdInputSchema,
    GetContentBySlugInputSchema,
    ContentSelectSchema,
-} from "@packages/database/schemas/content";
+} from "./types";
 
 export const ERROR_CODES = {
    MISSING_API_KEY: {
@@ -41,7 +40,6 @@ export interface SdkConfig {
 }
 
 export class ContentaGenSDK {
-   public auth;
    private trpcUrl: string;
    private apiKey: string;
 
@@ -52,7 +50,6 @@ export class ContentaGenSDK {
 
       const baseUrl = PRODUCTION_API_URL;
 
-      this.auth = createAuthClient({ apiBaseUrl: baseUrl });
       this.trpcUrl = `${baseUrl}/trpc`;
       this.apiKey = config.apiKey;
    }
@@ -93,8 +90,8 @@ export class ContentaGenSDK {
          // Safely extract json property if exists, or use responseData
          const actualData =
             typeof responseData === "object" &&
-            responseData !== null &&
-            "json" in responseData
+               responseData !== null &&
+               "json" in responseData
                ? (responseData as { json: unknown }).json
                : responseData;
          const transformedData = this.transformDates(actualData);
@@ -197,4 +194,4 @@ export {
    GetContentByIdInputSchema,
    ListContentByAgentInputSchema,
    GetContentBySlugInputSchema,
-} from "@packages/database/schemas/content";
+} from "./types";
