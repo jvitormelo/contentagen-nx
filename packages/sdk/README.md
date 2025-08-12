@@ -37,6 +37,13 @@ const item = await sdk.getContentById({ id: 'content-uuid' });
 console.log(item);
 ```
 
+### Get Content by Slug
+
+```ts
+const item = await sdk.getContentBySlug({ slug: 'your-content-slug' });
+console.log(item);
+```
+
 ## API Reference
 
 ### `createSdk(config: { apiKey: string })`
@@ -70,11 +77,26 @@ Fetches a content item by its unique ID.
   ```
 - Returns: `Promise<ContentSelect>`
 
+### `sdk.getContentBySlug(params)`
+Fetches a content item by its slug.
+- `params` (Zod schema):
+
+  ```ts
+  const GetContentBySlugInputSchema = z.object({
+    slug: z.string(),
+  });
+  ```
+- Returns: `Promise<ContentSelect>`
+
 ## Error Codes
 - `SDK_E001`: API key is missing
 - `SDK_E002`: API request failed
 - `SDK_E003`: Invalid API response
 - `SDK_E004`: Invalid input
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history and updates.
 
 ## License
 
