@@ -31,7 +31,7 @@ import {
    UserPlus,
    MoreHorizontal,
 } from "lucide-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState, useEffect, useMemo } from "react";
 import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { CreateOrganizationCredenza } from "../features/create-organization-credenza";
@@ -43,7 +43,7 @@ export function OrganizationPage() {
    const [inviteOpen, setInviteOpen] = useState(false);
    //TODO: mover o setOrganization para o databaseHooks com o betterAuth
 
-   const { data: org, isLoading: orgLoading } = useSuspenseQuery({
+   const { data: org, isLoading: orgLoading } = useQuery({
       queryKey: ["activeOrganization"],
       queryFn: async () => {
          const orgs = await betterAuthClient.organization.list();

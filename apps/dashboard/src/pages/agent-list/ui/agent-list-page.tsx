@@ -7,7 +7,7 @@ import { betterAuthClient, useTRPC } from "@/integrations/clients";
 export function AgentListPage() {
    const trpc = useTRPC();
    // Get organizationId from search params (TanStack Router v1)
-   const { data: org } = useSuspenseQuery({
+   const { data: org, isFetched } = useQuery({
       queryKey: ["activeOrganization"],
       queryFn: async () => {
          const orgs = await betterAuthClient.organization.list();
@@ -29,8 +29,8 @@ export function AgentListPage() {
    //TODO: mover o setOrganization para o databaseHooks com o betterAuth
    const { data } = useQuery(
       trpc.agent.list.queryOptions(
-         { organizationId: org?.id },
-         { enabled: !!org?.id },
+         { organizationId: isFetched ? (org?.id ?? "") : null },
+         { enabled: !!org?.id && isFetched },
       ),
    );
 

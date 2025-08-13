@@ -6,7 +6,7 @@ import {
 import { Outlet } from "@tanstack/react-router";
 import { DashboardLayout } from "@/layout/dashboard-layout";
 import { betterAuthClient, useTRPC } from "@/integrations/clients";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useIsomorphicLayoutEffect } from "@packages/ui/hooks/use-isomorphic-layout-effect";
 import { toast } from "sonner";
 export const Route = createFileRoute("/_dashboard")({
@@ -29,7 +29,7 @@ function RouteComponent() {
    );
    //TODO: mover o setOrganization para o databaseHooks com o betterAuth
 
-   useSuspenseQuery({
+   useQuery({
       queryKey: ["activeOrganization"],
       queryFn: async () => {
          const orgs = await betterAuthClient.organization.list();
