@@ -1,5 +1,4 @@
 import { betterAuthClient } from "@/integrations/clients";
-import { Building2 } from "lucide-react";
 import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
@@ -11,78 +10,67 @@ import {
    CredenzaDescription,
 } from "@packages/ui/components/credenza";
 import { useAppForm } from "@packages/ui/components/form";
-import { InfoItem } from "@packages/ui/components/info-item";
 import { Input } from "@packages/ui/components/input";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-export function CreateOrganizationCredenza({
+export function SendInvitationCredenza({
    open,
    onOpenChange,
+   organizationId,
 }: {
    open: boolean;
    onOpenChange: (open: boolean) => void;
+   organizationId: string;
 }) {
-   const [newOrg, setNewOrg] = useState<string>("");
    const [alertOpen, setAlertOpen] = useState(false);
+   const [inviteeEmail, setInviteeEmail] = useState("");
    const schema = z.object({
-      name: z.string().min(1, "Please enter a name"),
+      email: z.email("Please enter a valid email"),
    });
    const queryClient = useQueryClient();
-   const createOrganization = useCallback(
+
+   const sendInvitation = useCallback(
       async (values: z.infer<typeof schema>) => {
-         // Generate slug from name
-         const slugify = (await import("slugify")).default;
-         const slug = slugify(values.name, { lower: true, strict: true });
-         await betterAuthClient.organization.create(
+         await betterAuthClient.organization.inviteMember(
             {
-               name: values.name,
-               slug,
+               email: values.email,
+               role: "member",
+               organizationId,
             },
             {
-               onSuccess: async ({ data }) => {
-                  toast.success(`Organization created successfully`);
-                  if (data?.name) setNewOrg(data.name);
+               onSuccess: async () => {
+                  toast.success(`Invitation sent to ${values.email}`);
+                  setInviteeEmail(values.email);
                   setAlertOpen(true);
-                  // Set the new org as active
-                  await betterAuthClient.organization.setActive({
-                     organizationId: data.id,
-                     organizationSlug: data.slug,
-                  });
-                  // Invalidate queries for org and members
                   queryClient.invalidateQueries({
-                     queryKey: ["organizations"],
-                  });
-                  queryClient.invalidateQueries({
-                     queryKey: ["activeOrganization"],
-                  });
-                  queryClient.invalidateQueries({
-                     queryKey: ["organizationMembers"],
+                     queryKey: ["organizationInvitations"],
                   });
                },
                onError: (e) => {
-                  console.error("Error creating organization:", e);
-                  toast.error(`Failed to create organization`);
+                  console.error("Error sending invitation:", e);
+                  toast.error(`Failed to send invitation`);
                },
             },
          );
       },
-      [queryClient],
+      [organizationId, queryClient],
    );
 
    const form = useAppForm({
-      defaultValues: { name: "" },
+      defaultValues: { email: "" },
       validators: {
          onBlur: schema,
       },
       onSubmit: async ({ value, formApi }) => {
-         await createOrganization(value);
+         await sendInvitation(value);
          formApi.reset();
          onOpenChange(false);
       },
    });
+
    const handleSubmit = useCallback(
       (e: FormEvent) => {
          e.preventDefault();
@@ -92,27 +80,23 @@ export function CreateOrganizationCredenza({
       [form],
    );
 
-   const handleCopyOrgName = useCallback(() => {
-      if (newOrg) {
-         navigator.clipboard.writeText(newOrg);
-      }
-      setAlertOpen(false);
-      setNewOrg("");
-   }, [newOrg]);
-
    return (
       <>
          <Credenza open={open} onOpenChange={onOpenChange}>
             <CredenzaContent>
                <CredenzaHeader>
-                  <CredenzaTitle>Create organization</CredenzaTitle>
+                  <CredenzaTitle>Invite Member</CredenzaTitle>
+                  <CredenzaDescription>
+                     Enter the email address of the person you want to invite as
+                     a member.
+                  </CredenzaDescription>
                </CredenzaHeader>
-               <form onSubmit={(e) => handleSubmit(e)}>
+               <form onSubmit={handleSubmit}>
                   <CredenzaBody>
-                     <form.AppField name="name">
+                     <form.AppField name="email">
                         {(field) => (
                            <field.FieldContainer>
-                              <field.FieldLabel>Name</field.FieldLabel>
+                              <field.FieldLabel>Email</field.FieldLabel>
                               <Input
                                  id={field.name}
                                  name={field.name}
@@ -120,7 +104,7 @@ export function CreateOrganizationCredenza({
                                  onChange={(e) =>
                                     field.handleChange(e.target.value)
                                  }
-                                 placeholder="Enter a name for your organization"
+                                 placeholder="Enter email address"
                                  value={field.state.value}
                               />
                               <field.FieldMessage />
@@ -139,7 +123,7 @@ export function CreateOrganizationCredenza({
                               type="submit"
                               variant="default"
                            >
-                              Create Organization
+                              Send Invitation
                            </Button>
                         )}
                      </form.Subscribe>
@@ -151,28 +135,19 @@ export function CreateOrganizationCredenza({
             open={alertOpen}
             onOpenChange={(isOpen) => {
                setAlertOpen(isOpen);
-               if (!isOpen) setNewOrg("");
+               if (!isOpen) setInviteeEmail("");
             }}
          >
             <CredenzaContent>
                <CredenzaHeader>
-                  <CredenzaTitle>This is your organization name</CredenzaTitle>
+                  <CredenzaTitle>Invitation Sent</CredenzaTitle>
                   <CredenzaDescription>
-                     Please copy and store this organization name securely.
-                     <br />
-                     <strong>You will not be able to see it again.</strong>
+                     An invitation has been sent to {inviteeEmail}. They will
+                     receive an email with a link to join your organization.
                   </CredenzaDescription>
                </CredenzaHeader>
-               <CredenzaBody className="grid grid-cols-1 pb-0">
-                  <InfoItem
-                     icon={<Building2 />}
-                     label="Organization Name"
-                     value={newOrg}
-                     key={"org-name"}
-                  />
-               </CredenzaBody>
                <CredenzaFooter>
-                  <Button onClick={handleCopyOrgName}>Copy to clipboard</Button>
+                  <Button onClick={() => setAlertOpen(false)}>Close</Button>
                </CredenzaFooter>
             </CredenzaContent>
          </Credenza>
