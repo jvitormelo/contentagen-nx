@@ -70,7 +70,9 @@ export const getAuthOptions = (
             },
          }),
          openAPI(),
-         organization(),
+         organization({
+            organizationLimit: 1,
+         }),
          apiKey({
             rateLimit: {
                enabled: true,

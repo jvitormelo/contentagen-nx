@@ -85,6 +85,8 @@ export const ContentListResponseSchema = z.object({
       meta: true,
       imageUrl: true,
       status: true,
+      createdAt: true,
+      stats: true,
    }).array(),
    total: z.number(),
 });

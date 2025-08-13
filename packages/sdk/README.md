@@ -2,6 +2,12 @@
 
 A JavaScript/TypeScript SDK for accessing the ContentaGen API, providing authentication and content management utilities.
 
+## Table of Contents
+- [Usage](#usage)
+- [API Reference](#api-reference)
+- [Error Codes](#error-codes)
+- [Changelog](#changelog)
+
 ## Installation
 
 ```bash
@@ -50,16 +56,10 @@ const ListContentByAgentInputSchema = z.object({
   page: z.number().min(1).optional().default(1),
 });
 ```
+(see [Input Schema](#input-schema))
 
-#### Response Example
-```ts
-{
-  posts: [
-    { id, meta, imageUrl, status } // summary for each post
-  ],
-  total: 40 // total matching posts
-}
-```
+#### Response Format
+See [API Reference](#api-reference) for details on the response format.
 
 ### Get Content by ID
 
@@ -92,7 +92,15 @@ Fetches a list of content items for a given agent, with pagination support.
     page: z.number().min(1).optional().default(1),
   });
   ```
-- Returns: `Promise<ContentSelect[]>`
+- Returns: `Promise<{ posts: Array<{ id, meta, imageUrl, status, stats, createdAt }>, total: number }>`
+  - Each post object includes:
+    - `id`: string
+    - `meta`: metadata object
+    - `imageUrl`: string
+    - `status`: string
+    - `stats`: post stats object
+    - `createdAt`: ISO date string
+    - See [Response Example](#response-example).
 
 **Pagination:**
 Use `limit` to control the number of items per page, and `page` to select which page of results to fetch.
