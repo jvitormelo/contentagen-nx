@@ -7,7 +7,7 @@ import { ContentStatsCard, ContentDetailsCard } from "./request-details-cards";
 import { ContentQualityCard } from "./content-quality";
 import { useSubscription } from "@trpc/tanstack-react-query";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Skeleton } from "@packages/ui/components/skeleton";
 
 export function ContentRequestDetailsPage() {
@@ -21,16 +21,8 @@ export function ContentRequestDetailsPage() {
          id,
       }),
    );
-   // State to control subscription
-   const [subscriptionEnabled, setSubscriptionEnabled] = useState(true);
-
-   useEffect(() => {
-      if (data?.status === "draft") {
-         setSubscriptionEnabled(false);
-      } else {
-         setSubscriptionEnabled(true);
-      }
-   }, [data?.status]);
+   // Calculate subscription enabled state using useMemo
+   const isEnabled = useMemo(() => data?.status !== "draft", [data?.status]);
 
    useSubscription(
       trpc.content.onStatusChanged.subscriptionOptions(
@@ -46,7 +38,7 @@ export function ContentRequestDetailsPage() {
                   }),
                });
             },
-            enabled: subscriptionEnabled,
+            enabled: isEnabled,
          },
       ),
    );
