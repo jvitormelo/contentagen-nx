@@ -165,6 +165,7 @@
         "@packages/chroma-db": "workspace:*",
         "@packages/database": "workspace:*",
         "@packages/files": "workspace:*",
+        "@packages/server-events": "workspace:*",
         "@packages/workers": "workspace:*",
         "@trpc/client": "catalog:trpc",
         "@trpc/server": "catalog:trpc",
@@ -312,6 +313,7 @@
       "name": "@packages/posthog",
       "version": "0.0.0",
       "dependencies": {
+        "@packages/environment": "workspace:*",
         "posthog-js": "^1.259.0",
         "posthog-node": "^5.5.0",
       },
@@ -350,6 +352,14 @@
       "devDependencies": {
         "tsup": "^8.5.0",
         "typescript": "5.8.3",
+      },
+    },
+    "packages/server-events": {
+      "name": "@packages/server-events",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@tooling/typescript": "workspace:*",
+        "typescript": "catalog:development",
       },
     },
     "packages/tavily": {
@@ -441,6 +451,7 @@
         "@packages/payment": "workspace:*",
         "@packages/prompts": "workspace:*",
         "@packages/redis": "workspace:*",
+        "@packages/server-events": "workspace:*",
         "bullmq": "^5.56.9",
       },
       "devDependencies": {
@@ -1036,6 +1047,8 @@
     "@packages/prompts": ["@packages/prompts@workspace:packages/prompts"],
 
     "@packages/redis": ["@packages/redis@workspace:packages/redis"],
+
+    "@packages/server-events": ["@packages/server-events@workspace:packages/server-events"],
 
     "@packages/tavily": ["@packages/tavily@workspace:packages/tavily"],
 
