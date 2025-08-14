@@ -12,6 +12,8 @@ COPY apps/blog/package.json ./apps/blog/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/brand/package.json ./packages/brand/
 COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/enviroment/package.json ./packages/enviroment/
+
 COPY packages/database/package.json ./packages/database/
 COPY tooling/typescript/package.json ./tooling/typescript/
 # Install all dependencies (including devDependencies needed for the build step)
@@ -42,6 +44,8 @@ COPY apps/blog/package.json ./apps/blog/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/brand/package.json ./packages/brand/
 COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/enviroment/package.json ./packages/enviroment/
+
 COPY packages/sdk/package.json ./packages/sdk/
 COPY packages/database/package.json ./packages/database/
 COPY tooling/typescript/package.json ./tooling/typescript/
@@ -57,6 +61,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ARG ARCJET_KEY
 
+ARG CONTENTAGEN_API_KEY
+ARG CONTENTAGEN_AGENT_ID
 # Copy the pruned, production-only node_modules from the 'deps' stage.
 # This will solve the original 'module not found' error.
 COPY --from=deps /app/node_modules ./node_modules
