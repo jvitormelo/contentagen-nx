@@ -1,21 +1,23 @@
 {
    "dependencies": {
-      "@packages/posthog": "workspace:*",
       "@arcjet/astro": "catalog:security",
-      "@lucide/astro": "catalog:astro",
-      "@astrojs/ts-plugin": "catalog:astro",
-      "@astrojs/node": "catalog:astro",
       "@astrojs/check": "catalog:astro",
       "@astrojs/mdx": "^4.3.0",
+      "@astrojs/node": "catalog:astro",
       "@astrojs/react": "catalog:astro",
       "@astrojs/rss": "^4.0.11",
       "@astrojs/sitemap": "catalog:astro",
+      "@astrojs/ts-plugin": "catalog:astro",
+      "marked": "^16.1.2",
+      "slugify": "^1.6.6",
+      "@contentagen/sdk": "^0.4.9",
+      "@lucide/astro": "catalog:astro",
+      "@packages/posthog": "workspace:*",
       "@packages/ui": "workspace:*",
       "@tailwindcss/vite": "^4.1.8",
       "astro": "catalog:astro",
       "react": "catalog:react",
-      "react-dom": "catalog:react",
-      "@contentagen/sdk": "workspace:*"
+      "react-dom": "catalog:react"
    },
    "devDependencies": {
       "@tooling/typescript": "workspace:*",
