@@ -28,7 +28,8 @@ COPY . .
 # The build output will be in /app/apps/blog/dist
 ENV NODE_ENV=production
 ARG ARCJET_KEY
-
+ARG CONTENTAGEN_API_KEY
+ARG CONTENTAGEN_AGENT_ID
 RUN bun run --filter=blog build
 
 # ---
