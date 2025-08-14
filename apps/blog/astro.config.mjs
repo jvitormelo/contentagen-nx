@@ -24,6 +24,14 @@ export default defineConfig({
             access: "secret",
             context: "server",
          }),
+         CONTENTAGEN_API_KEY: envField.string({
+            access: "secret",
+            context: "server",
+         }),
+         CONTENTAGEN_AGENT_ID: envField.string({
+            access: "secret",
+            context: "server",
+         }),
       },
    },
    vite: {
