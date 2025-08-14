@@ -31,7 +31,7 @@ import {
    UserPlus,
    MoreHorizontal,
 } from "lucide-react";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect, useMemo } from "react";
 import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { CreateOrganizationCredenza } from "../features/create-organization-credenza";
@@ -235,7 +235,7 @@ export function OrganizationPage() {
          <SendInvitationCredenza
             open={inviteOpen}
             onOpenChange={setInviteOpen}
-            organizationId={org?.id}
+            organizationId={org?.id ?? ""}
          />
       </div>
    );

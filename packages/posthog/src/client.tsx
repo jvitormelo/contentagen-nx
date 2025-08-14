@@ -24,7 +24,6 @@ export function PostHogWrapper({ children }: { children: React.ReactNode }) {
          apiKey={posthogPublicKey}
          options={{
             ...getReactPosthogConfig(),
-            disable_session_recording: !isProduction,
          }}
       >
          {children}
