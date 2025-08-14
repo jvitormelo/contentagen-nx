@@ -48,7 +48,6 @@ COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
 COPY packages/errors/package.json ./packages/errors/
 
-COPY packages/sdk/package.json ./packages/sdk/
 COPY packages/database/package.json ./packages/database/
 COPY tooling/typescript/package.json ./tooling/typescript/
 # Install only production dependencies. This creates a lean, clean node_modules folder.
