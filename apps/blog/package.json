@@ -10,7 +10,7 @@
       "@astrojs/ts-plugin": "catalog:astro",
       "marked": "^16.1.2",
       "slugify": "^1.6.6",
-      "@contentagen/sdk": "^0.4.9",
+      "@contentagen/sdk": "0.4.10",
       "@lucide/astro": "catalog:astro",
       "@packages/posthog": "workspace:*",
       "@packages/ui": "workspace:*",

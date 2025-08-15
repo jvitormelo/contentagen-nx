@@ -25,7 +25,7 @@
         "@astrojs/rss": "^4.0.11",
         "@astrojs/sitemap": "catalog:astro",
         "@astrojs/ts-plugin": "catalog:astro",
-        "@contentagen/sdk": "^0.4.9",
+        "@contentagen/sdk": "0.4.10",
         "@lucide/astro": "catalog:astro",
         "@packages/posthog": "workspace:*",
         "@packages/ui": "workspace:*",
@@ -798,7 +798,7 @@
 
     "@connectrpc/connect-web": ["@connectrpc/connect-web@1.6.1", "", { "peerDependencies": { "@bufbuild/protobuf": "^1.10.0", "@connectrpc/connect": "1.6.1" } }, "sha512-GVfxQOmt3TtgTaKeXLS/EA2IHa3nHxwe2BCHT7X0Q/0hohM+nP5DDnIItGEjGrGdt3LTTqWqE4s70N4h+qIMlQ=="],
 
-    "@contentagen/sdk": ["@contentagen/sdk@0.4.9", "", { "dependencies": { "superjson": "2.2.2", "zod": "4.0.14" } }, "sha512-NchHwQgt28bi6DiSrPUT0YUEsjEipolif6tag2Y+PTZoWGYV3AnaEu2HdZMbq1e6i5JDUtV1tfSrFI2Rx1117g=="],
+    "@contentagen/sdk": ["@contentagen/sdk@0.4.10", "", { "dependencies": { "superjson": "2.2.2", "zod": "4.0.14" } }, "sha512-IyZgQqAFNfJj7u3uwBXcgBQEYgi5g37bLHu0CLc2RwKCcfyeNMoilYh7NDh8nLc23yUSPibXD604F6Uu9+9I9g=="],
 
     "@ctrl/tinycolor": ["@ctrl/tinycolor@4.1.0", "", {}, "sha512-WyOx8cJQ+FQus4Mm4uPIZA64gbk3Wxh0so5Lcii0aJifqwoVOlfFtorjLE0Hen4OYyHZMXDWqMmaQemBhgxFRQ=="],
 
