@@ -2,6 +2,7 @@
 # Stage 1: Install all dependencies and build the application
 FROM oven/bun:latest AS builder
 
+
 WORKDIR /app
 
 # Copy all package manifests and the lockfile first.

@@ -6,4 +6,3 @@ const EnvSchema = z.object({
 });
 export type ClientEnv = z.infer<typeof EnvSchema>;
 export const clientEnv: ClientEnv = parseEnv(import.meta.env, EnvSchema);
-export const isClientProduction = import.meta.env.PROD;
