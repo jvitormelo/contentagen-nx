@@ -16,6 +16,14 @@ import {
 import { Button } from "@packages/ui/components/button";
 import { MoreVertical } from "lucide-react";
 import { useCallback, useState, type FormEvent } from "react";
+// Removed Credenza imports since edit will be inline
+import { Input } from "@packages/ui/components/input";
+import type { ContentSelect } from "@packages/database/schemas/content";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTRPC } from "@/integrations/clients";
+import { toast } from "sonner";
+import { useAppForm } from "@packages/ui/components/form";
+import { z } from "zod";
 import {
    Credenza,
    CredenzaContent,
@@ -24,14 +32,7 @@ import {
    CredenzaBody,
    CredenzaFooter,
 } from "@packages/ui/components/credenza";
-import { Input } from "@packages/ui/components/input";
-import type { ContentSelect } from "@packages/database/schemas/content";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTRPC } from "@/integrations/clients";
-import { toast } from "sonner";
-import { useAppForm } from "@packages/ui/components/form";
-import { z } from "zod";
-import { TiptapEditor } from "@packages/ui/components/tiptap-editor";
+import { EditContentBody } from "../features/edit-content-body";
 
 export function GeneratedContentDisplay({
    content,
@@ -39,49 +40,11 @@ export function GeneratedContentDisplay({
    content: ContentSelect;
 }) {
    // New state for edit credenza
-   const [editBodyOpen, setEditBodyOpen] = useState(false);
+   // State for inline body editor
+   const [editingBody, setEditingBody] = useState(false);
 
    const trpc = useTRPC();
    const queryClient = useQueryClient();
-   const editBodyMutation = useMutation(
-      trpc.content.editBody.mutationOptions({
-         onError: (error) => {
-            console.error("Error editing content body:", error);
-            toast.error("Failed to edit content body. Please try again.");
-         },
-         onSuccess: () => {
-            toast.success("Content body edited successfully!");
-            queryClient.invalidateQueries({
-               queryKey: [
-                  trpc.content.list.queryKey(),
-                  trpc.content.get.queryKey({ id: content.id }),
-               ],
-            });
-         },
-      }),
-   );
-   // TanStack form for editing body
-   const editForm = useAppForm({
-      defaultValues: { body: content?.body ?? "" },
-      validators: {
-         onBlur: z.object({ body: z.string().min(1, "Body is required") }),
-      },
-      onSubmit: async ({ value, formApi }) => {
-         await editBodyMutation.mutateAsync({
-            id: content.id,
-            body: value.body,
-         });
-         formApi.reset();
-         await queryClient.invalidateQueries({
-            queryKey: trpc.content.get.queryKey({ id: content.id }),
-         });
-         await queryClient.invalidateQueries({
-            queryKey: trpc.content.list.queryKey(),
-         });
-
-         setEditBodyOpen(false);
-      },
-   });
    const addImageMutation = useMutation(
       trpc.content.addImageUrl.mutationOptions({
          onError: (error) => {
@@ -171,7 +134,7 @@ export function GeneratedContentDisplay({
                         >
                            Add Image URL
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setEditBodyOpen(true)}>
+                        <DropdownMenuItem onClick={() => setEditingBody(true)}>
                            Edit Content Body
                         </DropdownMenuItem>
                         <DropdownMenuItem
@@ -188,7 +151,14 @@ export function GeneratedContentDisplay({
                </CardAction>
             </CardHeader>
             <CardContent>
-               <Markdown content={content?.body} />
+               {editingBody ? (
+                  <EditContentBody
+                     content={content}
+                     setEditing={setEditingBody}
+                  />
+               ) : (
+                  <Markdown content={content?.body} />
+               )}
             </CardContent>
          </Card>
          <Credenza open={addImageUrlOpen} onOpenChange={setAddImageUrlOpen}>
@@ -233,55 +203,6 @@ export function GeneratedContentDisplay({
                            </Button>
                         )}
                      </form.Subscribe>
-                  </CredenzaFooter>
-               </form>
-            </CredenzaContent>
-         </Credenza>
-         <Credenza open={editBodyOpen} onOpenChange={setEditBodyOpen}>
-            <CredenzaContent>
-               <CredenzaHeader>
-                  <CredenzaTitle>Edit your content</CredenzaTitle>
-               </CredenzaHeader>
-               <form
-                  onSubmit={(e) => {
-                     e.preventDefault();
-                     e.stopPropagation();
-                     editForm.handleSubmit();
-                  }}
-               >
-                  <CredenzaBody>
-                     <editForm.AppField name="body">
-                        {(field) => (
-                           <field.FieldContainer>
-                              <field.FieldLabel>Content</field.FieldLabel>
-                              <TiptapEditor
-                                 className="max-h-96 overflow-y-scroll"
-                                 value={field.state.value}
-                                 onChange={field.handleChange}
-                                 onBlur={field.handleBlur}
-                                 placeholder="Edit your content..."
-                                 minHeight="300px"
-                                 error={field.state.meta.errors.length > 0}
-                              />
-                              <field.FieldMessage />
-                           </field.FieldContainer>
-                        )}
-                     </editForm.AppField>
-                  </CredenzaBody>
-                  <CredenzaFooter>
-                     <editForm.Subscribe>
-                        {(formState) => (
-                           <Button
-                              type="submit"
-                              variant="default"
-                              disabled={
-                                 !formState.canSubmit || formState.isSubmitting
-                              }
-                           >
-                              Save
-                           </Button>
-                        )}
-                     </editForm.Subscribe>
                   </CredenzaFooter>
                </form>
             </CredenzaContent>
