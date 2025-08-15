@@ -109,8 +109,6 @@ export async function listContents(
    dbClient: DatabaseInstance,
    agentIds: string[],
    status: Array<Exclude<Content["status"], null>>,
-   limit: number = 10,
-   page: number = 1,
 ) {
    try {
       return await dbClient.query.content.findMany({
@@ -142,7 +140,11 @@ export async function listContents(
 export async function getContentStatsLast30Days(
    dbClient: DatabaseInstance,
    agentIds: string[],
-   status: Array<Exclude<Content["status"], null>> = ["approved", "draft", "generating"],
+   status: Array<Exclude<Content["status"], null>> = [
+      "approved",
+      "draft",
+      "generating",
+   ],
 ): Promise<{ count: number; wordsCount: number }> {
    try {
       const now = new Date();
@@ -159,7 +161,9 @@ export async function getContentStatsLast30Days(
          },
       });
       const wordsCount = items.reduce((acc, item) => {
-         const wc = item.stats?.wordsCount ? parseInt(item.stats.wordsCount, 10) : 0;
+         const wc = item.stats?.wordsCount
+            ? parseInt(item.stats.wordsCount, 10)
+            : 0;
          return acc + wc;
       }, 0);
       return { count: items.length, wordsCount };
