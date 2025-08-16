@@ -118,8 +118,8 @@ export const getAuthOptions = (
          apiKey({
             rateLimit: {
                enabled: true,
-               timeWindow: 1000 * 60 * 60 * 24, // 1 day
-               maxRequests: 500, // 1000 requests per day
+               timeWindow: 1000 * 60 * 60, // 1 hour
+               maxRequests: 500, // 500 requests per hour
             },
             enableMetadata: true,
             apiKeyHeaders: "sdk-api-key",
