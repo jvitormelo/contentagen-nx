@@ -53,6 +53,14 @@ export const t = initTRPC
    });
 
 export const router = t.router;
+const loggerMiddleware = createMiddleware(async ({ path, type, next }) => {
+   console.log(`Request: ${type} ${path}`);
+   const start = Date.now();
+   const result = await next();
+   const durationMs = Date.now() - start;
+   console.log(`Response: ${type} ${path} - ${durationMs}ms`);
+   return result;
+});
 const isAuthed = t.middleware(async ({ ctx, next }) => {
    const resolvedCtx = await ctx;
    if (!resolvedCtx.session?.user) {
@@ -109,6 +117,8 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
    return result;
 });
 
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure
+   .use(loggerMiddleware)
+   .use(timingMiddleware);
 export const protectedProcedure = publicProcedure.use(isAuthed);
 export const sdkProcedure = publicProcedure.use(sdkAuth);
