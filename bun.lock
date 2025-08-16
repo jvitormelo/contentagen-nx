@@ -147,6 +147,7 @@
         "@packages/database": "workspace:*",
         "@packages/environment": "workspace:*",
         "@packages/files": "workspace:*",
+        "@packages/helpers": "workspace:*",
         "@packages/payment": "workspace:*",
         "@packages/posthog": "workspace:*",
         "@packages/transactional": "workspace:*",

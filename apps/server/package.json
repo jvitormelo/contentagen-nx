@@ -2,6 +2,7 @@
    "dependencies": {
       "@bull-board/elysia": "^6.12.0",
       "@elysiajs/cors": "catalog:server",
+      "@packages/helpers": "workspace:*",
       "@packages/api": "workspace:*",
       "@packages/arcjet": "workspace:*",
       "@packages/authentication": "workspace:*",
