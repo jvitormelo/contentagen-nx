@@ -48,7 +48,7 @@ const htmlBody = marked.parse(post.body);
           </div>
         )}
       </header>
-      <div class="prose prose-lg mx-auto">
+      <div class="prose  mx-auto">
         {htmlBody && <div set:html={htmlBody} />}
       </div>
     </div>
