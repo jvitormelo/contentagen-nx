@@ -21,11 +21,11 @@ export async function GET(context) {
       items: posts.map((post) => {
          return {
             title: post.meta.title,
-            description: post.meta.title,
+            description: post.meta.description,
+            keywords: post.meta.keywords,
             link: post.meta.slug,
             pubDate: post.createdAt,
          };
       }),
-      customData: `<language>en-us</language>`,
    });
 }

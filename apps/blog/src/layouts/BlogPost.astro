@@ -7,18 +7,14 @@ import FormattedDate from "../components/FormattedDate.astro";
 import { marked } from "marked";
 
 const { post } = Astro.props;
-// Remove the first markdown heading (title) from the body
-const cleanedBody = post.body
-   ? post.body.replace(/^# .+\n?/, "").replace(/^\s+/, "")
-   : "";
-const htmlBody = cleanedBody ? marked.parse(cleanedBody) : "";
+const htmlBody = marked.parse(post.body);
 ---
 
 <BaseHead
   title={post.meta?.title ?? ""}
-  description={post.body?.slice(0, 160) ?? ""}
+  description={post.meta?.description ?? ""}
   image={post.imageUrl}
-  keywords={post.meta?.tags}
+  keywords={post.meta?.keywords}
 />
 
 <Navbar />
