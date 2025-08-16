@@ -53,7 +53,7 @@ export const t = initTRPC
    });
 
 export const router = t.router;
-const loggerMiddleware = createMiddleware(async ({ path, type, next }) => {
+const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
    console.log(`Request: ${type} ${path}`);
    const start = Date.now();
    const result = await next();
