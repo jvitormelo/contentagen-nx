@@ -28,11 +28,11 @@ export async function getStaticPaths() {
   
   return allPosts.map((post) => ({
     params: { slug: post.meta?.slug },
-    props: { post },
   }));
 }
 
-const { post } = Astro.props;
+const { slug } = Astro.params;
+const post = await sdk.getContentBySlug({ slug: slug ?? "" });
 ---
 
 <BlogPost post={post} />
