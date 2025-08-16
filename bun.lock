@@ -25,7 +25,7 @@
         "@astrojs/rss": "^4.0.11",
         "@astrojs/sitemap": "catalog:astro",
         "@astrojs/ts-plugin": "catalog:astro",
-        "@contentagen/sdk": "^0.4.10",
+        "@contentagen/sdk": "0.4.10",
         "@lucide/astro": "catalog:astro",
         "@packages/posthog": "workspace:*",
         "@packages/ui": "workspace:*",
@@ -447,6 +447,7 @@
       "dependencies": {
         "@packages/chroma-db": "workspace:*",
         "@packages/files": "workspace:*",
+        "@packages/helpers": "workspace:*",
         "@packages/openrouter": "workspace:*",
         "@packages/payment": "workspace:*",
         "@packages/prompts": "workspace:*",
