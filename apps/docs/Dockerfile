@@ -13,7 +13,6 @@ COPY packages/ui/package.json ./packages/ui/
 COPY packages/brand/package.json ./packages/brand/
 COPY packages/posthog/package.json ./packages/posthog/
 COPY packages/environment/package.json ./packages/environment/
-
 COPY packages/errors/package.json ./packages/errors/
 COPY packages/database/package.json ./packages/database/
 # Install all dependencies (including devDependencies needed for the build step)
@@ -41,9 +40,11 @@ COPY bun.lock ./
 COPY package.json ./
 COPY apps/docs/package.json ./apps/docs/
 COPY packages/ui/package.json ./packages/ui/
-COPY tooling/typescript/package.json ./tooling/typescript/
-
+COPY packages/brand/package.json ./packages/brand/
 COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/environment/package.json ./packages/environment/
+COPY packages/errors/package.json ./packages/errors/
+COPY packages/database/package.json ./packages/database/
 # Install only production dependencies. This creates a lean, clean node_modules folder.
 RUN bun install 
 
