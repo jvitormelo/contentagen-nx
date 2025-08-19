@@ -22,7 +22,6 @@ export default defineConfig({
 
    integrations: [
       starlight({
-         prerender: false,
          customCss: ["./src/styles/global.css"],
          sidebar: [
             {
@@ -57,6 +56,10 @@ export default defineConfig({
       mode: "standalone",
    }),
    vite: {
+      ssr: {
+         noExternal: ["zod"],
+      },
+
       plugins: [
          tailwindcss(),
          arcjet({
