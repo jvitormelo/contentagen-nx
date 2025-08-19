@@ -77,13 +77,15 @@
             "msw-trpc": "^2.0.1"
          },
          "astro": {
+            "@astrojs/starlight": "0.35.2",
+            "@astrojs/starlight-tailwind": "4.0.1",
             "@astrojs/ts-plugin": "^1.10.4",
             "@astrojs/check": "^0.9.4",
             "@astrojs/node": "^9.2.2",
             "@astrojs/react": "^4.3.0",
             "@astrojs/sitemap": "^3.4.1",
             "@lucide/astro": "^0.511.0",
-            "astro": "5.10.0"
+            "astro": "5.13.0"
          },
          "tanstack": {
             "@tanstack/react-router-devtools": "1.130.8",

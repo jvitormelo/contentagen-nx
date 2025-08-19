@@ -19,8 +19,10 @@ export default defineConfig({
          }),
       },
    },
+
    integrations: [
       starlight({
+         prerender: false,
          customCss: ["./src/styles/global.css"],
          sidebar: [
             {
