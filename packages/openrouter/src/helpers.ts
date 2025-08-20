@@ -14,7 +14,7 @@ export const SMALL_MODELS = {
    glm: "z-ai/glm-4.5",
 };
 export const MODELS = {
-   small: "z-ai/glm-4.5",
+   small: "google/gemini-2.5-flash",
    medium: "google/gemini-2.5-flash",
 };
 export const REASONING_EFFORT = {
