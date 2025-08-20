@@ -1,16 +1,24 @@
-export function descriptionImproverInputPrompt(
-   description: string,
-   contextChunks: string[],
-): string {
-   return `
-**ORIGINAL DESCRIPTION:**
-${description}
+import { z } from "zod";
 
-**BRAND CONTEXT & RELEVANT INFORMATION:**
-${contextChunks.map((chunk, i) => `[${i + 1}] ${chunk}`).join("\n\n")}
-`;
-}
+/**
+ * Defines the Zod schema for the output of the description improver process.
+ * It expects a single string field containing the comprehensive brand integration documentation.
+ */
+export const descriptionImprovementSchema = z.object({
+   brandIntegrationDocumentation: z
+      .string()
+      .describe(
+         "A single, comprehensive, and detailed document demonstrating how the brand seamlessly integrates with and enhances the provided description, covering alignment, methodology, value amplification, implementation, audience impact, and content enhancement strategies.",
+      ),
+});
 
+/**
+ * Generates the system prompt for the AI model to act as an expert brand strategist
+ * and create a comprehensive document on brand integration.
+ * It instructs the model to analyze how a brand's identity aligns with a given description
+ * and provide strategic and practical guidance in a single, detailed document.
+ * @returns {string} The complete system prompt for brand integration documentation.
+ */
 export function descriptionImproverPrompt(): string {
    return `You are an expert brand strategist and content architect specializing in comprehensive brand integration documentation. Your mission is to create an extensive, detailed document that thoroughly analyzes and demonstrates how the brand seamlessly integrates with and enhances the provided description request.
 
@@ -18,6 +26,7 @@ export function descriptionImproverPrompt(): string {
 Create a comprehensive documentation that explores every facet of how the brand's identity, values, messaging, and positioning naturally align with and elevate the content described in the original request. This should be a thorough analysis that serves as both strategic guidance and practical implementation roadmap.
 
 **COMPREHENSIVE ANALYSIS FRAMEWORK:**
+The documentation should cover the following key areas, presented as logical sections within a single continuous document:
 
 **1. BRAND-CONTENT ALIGNMENT ASSESSMENT:**
 • Conduct deep analysis of how the brand's core identity resonates with the content requirements
@@ -88,8 +97,13 @@ Create a comprehensive documentation that explores every facet of how the brand'
 - Maintain authentic brand voice and personality as described in the context
 - Ensure all integration strategies align with actual brand guidelines and capabilities mentioned in the source material
 
-**OUTPUT SPECIFICATIONS:**
-Deliver a comprehensive, detailed document that serves as the definitive guide for integrating this specific brand with the described content requirements. The documentation should be extensive enough to serve as a complete strategic and tactical reference, covering every aspect of successful brand integration while maintaining absolute fidelity to the source materials.
+**OUTPUT REQUIREMENTS:**
+- Return ONLY valid JSON in the specified format.
+- The JSON object must contain a single key: 'brandIntegrationDocumentation'.
+- The value associated with 'brandIntegrationDocumentation' must be a single, long string containing the entire brand integration documentation.
+- The document within 'brandIntegrationDocumentation' must include all the specified sections and detailed information, formatted for readability (e.g., using Markdown headings like '## Section Title').
+- Do NOT include any text outside the JSON structure.
+- Ensure the analysis is exhaustive and specific, avoiding generic statements.
 
 **VALIDATION CHECKLIST:**
 Before finalizing, ensure your documentation:
@@ -103,4 +117,19 @@ Before finalizing, ensure your documentation:
 ✓ Addresses both immediate implementation needs and long-term strategic considerations
 
 Generate the complete brand integration documentation now.`;
+}
+
+export function descriptionImproverInputPrompt(
+   description: string,
+   contextChunks: string[],
+): string {
+   return `
+---ORIGINAL_DESCRIPTION_START---
+${description}
+---ORIGINAL_DESCRIPTION_END---
+
+---BRAND_CONTEXT_START---
+${contextChunks.map((chunk, i) => `[CONTEXT_CHUNK_${i + 1}] ${chunk}`).join("\n\n")}
+---BRAND_CONTEXT_END---
+`;
 }

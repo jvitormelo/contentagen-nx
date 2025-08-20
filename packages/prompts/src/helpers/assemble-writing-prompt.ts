@@ -14,14 +14,8 @@ import { strictGuidelinePrompt } from "../prompts/brand/strict_guideline";
 import { flexibleGuidelinePrompt } from "../prompts/brand/flexible_guideline";
 import { referenceOnlyPrompt } from "../prompts/brand/reference_only";
 import { creativeBlendPrompt } from "../prompts/brand/creative_blend";
-import { blogPostPrompt } from "../prompts/purpose/blog_post";
-import { linkedinPostPrompt } from "../prompts/purpose/linkedin_post";
-import { twitterThreadPrompt } from "../prompts/purpose/twitter_thread";
-import { instagramPostPrompt } from "../prompts/purpose/instagram_post";
-import { emailNewsletterPrompt } from "../prompts/purpose/email_newsletter";
-import { redditPostPrompt } from "../prompts/purpose/reddit_post";
-import { technicalDocumentationPrompt } from "../prompts/purpose/technical_documentation";
-import { searchSystemPrompt } from "../prompts/search/search-system";
+import { searchIntegrationSystemPrompt } from "../prompts/search/search-integrations";
+import { writingDraftSystemPrompt } from "../prompts/writing/writing-draft";
 
 // Type definitions for content request and options
 export interface ContentRequest {
@@ -73,38 +67,6 @@ export function createAudienceSection(config: PersonaConfig): string {
          return beginnersAudiencePrompt();
       case "customers":
          return customersAudiencePrompt();
-      default:
-         return "";
-   }
-}
-
-export function createFormattingSection(config: PersonaConfig): string {
-   if (!config.formatting?.style) {
-      return "";
-   }
-   switch (config.formatting.style) {
-      case "structured": {
-         let listStyle = "";
-         if (config.formatting.listStyle) {
-            listStyle =
-               config.formatting.listStyle === "bullets"
-                  ? "bullet points (•)"
-                  : "numbered lists (1, 2, 3)";
-         }
-         return structuredPrompt({ listStyle });
-      }
-      case "narrative":
-         return narrativePrompt();
-      case "list_based": {
-         let listStyle = "";
-         if (config.formatting.listStyle) {
-            listStyle =
-               config.formatting.listStyle === "bullets"
-                  ? "bullet points (•)"
-                  : "numbered lists (1, 2, 3)";
-         }
-         return listBasedPrompt({ listStyle });
-      }
       default:
          return "";
    }
@@ -203,40 +165,18 @@ export function createBrandSection(config: PersonaConfig): string {
    }
 }
 
-export function createPurposeSection(config: PersonaConfig): string {
-   switch (config.purpose) {
-      case "blog_post":
-         return blogPostPrompt();
-      case "linkedin_post":
-         return linkedinPostPrompt();
-      case "twitter_thread":
-         return twitterThreadPrompt();
-      case "instagram_post":
-         return instagramPostPrompt();
-      case "email_newsletter":
-         return emailNewsletterPrompt();
-      case "reddit_post":
-         return redditPostPrompt();
-      case "technical_documentation":
-         return technicalDocumentationPrompt();
-      default:
-         return "";
-   }
-}
-
 // Task section generator
 
 // Main system prompt generator
-export function generateSystemPrompt(config: PersonaConfig): string {
+export function generateWritingPrompt(config: PersonaConfig): string {
    const sections = [
       createMetadataSection(config),
-      createVoiceSection(config),
-      createAudienceSection(config),
-      createFormattingSection(config),
-      createLanguageSection(config),
       createBrandSection(config),
-      createPurposeSection(config),
-      searchSystemPrompt(),
+      createAudienceSection(config),
+      createLanguageSection(config),
+      createVoiceSection(config),
+      searchIntegrationSystemPrompt(),
+      writingDraftSystemPrompt(),
    ];
    return sections.filter(Boolean).join(`\n\n${"=".repeat(80)}\n\n`);
 }

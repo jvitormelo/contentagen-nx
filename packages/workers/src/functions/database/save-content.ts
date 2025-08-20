@@ -2,6 +2,7 @@ import { updateContent } from "@packages/database/repositories/content-repositor
 import { createDb } from "@packages/database/client";
 import { serverEnv } from "@packages/environment/server";
 import type { ContentMeta, ContentStats } from "@packages/database/schema";
+import { emitContentStatusChanged } from "@packages/server-events";
 
 const db = createDb({ databaseUrl: serverEnv.DATABASE_URL });
 
@@ -19,6 +20,13 @@ export async function runSaveContent(payload: {
          meta,
          status: "draft",
       });
+
+      // Emit final draft status
+      emitContentStatusChanged({
+         contentId,
+         status: "draft",
+      });
+
       return { contentId, content };
    } catch (error) {
       console.error("Error saving content to database:", error);

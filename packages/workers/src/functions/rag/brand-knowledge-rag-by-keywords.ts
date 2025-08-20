@@ -17,7 +17,7 @@ export async function runRagByKeywords(payload: {
       const collection = await ensureAgentKnowledgeCollection(chroma);
 
       const chunks = await queryCollection(collection, {
-         nResults: 50,
+         nResults: 30,
          where: {
             agentId: agentId,
          },

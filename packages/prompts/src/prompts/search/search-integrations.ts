@@ -1,4 +1,4 @@
-export function searchSystemPrompt(): string {
+export function searchIntegrationSystemPrompt(): string {
    return `# Web Search Results Integration Guide
 
 **How to Use Tavily Search Results:**

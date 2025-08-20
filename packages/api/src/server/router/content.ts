@@ -1,4 +1,4 @@
-import { contentGenerationQueue } from "@packages/workers/queues/content-generation";
+import { enqueueContentPlanningJob } from "@packages/workers/queues/content/content-planning-queue";
 import { listAgents } from "@packages/database/repositories/agent-repository";
 import {
    createContent,
@@ -13,8 +13,8 @@ import { z } from "zod";
 
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import {
-   contentEvent,
-   CONTENT_EVENTS,
+   eventEmitter,
+   EVENTS,
    type ContentStatusChangedPayload,
 } from "@packages/server-events";
 import { on } from "node:events";
@@ -44,8 +44,8 @@ export const contentRouter = router({
                });
             }
             // Optionally update status to 'generating'
-            await updateContent(db, input.id, { status: "generating" });
-            await contentGenerationQueue.add("content-generation-workflow", {
+            await updateContent(db, input.id, { status: "pending" });
+            await enqueueContentPlanningJob({
                agentId: content.agentId,
                contentId: content.id,
                contentRequest: content.request,
@@ -106,13 +106,9 @@ export const contentRouter = router({
    onStatusChanged: publicProcedure
       .input(z.object({ contentId: z.string().optional() }).optional())
       .subscription(async function* (opts) {
-         for await (const [payload] of on(
-            contentEvent,
-            CONTENT_EVENTS.statusChanged,
-            {
-               signal: opts.signal,
-            },
-         )) {
+         for await (const [payload] of on(eventEmitter, EVENTS.contentStatus, {
+            signal: opts.signal,
+         })) {
             const event = payload as ContentStatusChangedPayload;
             if (
                !opts.input?.contentId ||
@@ -198,7 +194,7 @@ export const contentRouter = router({
             const created = await createContent((await ctx).db, {
                ...input,
             });
-            await contentGenerationQueue.add("content-generation-workflow", {
+            await enqueueContentPlanningJob({
                agentId: input.agentId,
                contentId: created.id,
                contentRequest: {

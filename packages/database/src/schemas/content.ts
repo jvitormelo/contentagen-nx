@@ -58,9 +58,14 @@ export const ContentMetaSchema = z.object({
 export type ContentMeta = z.infer<typeof ContentMetaSchema>;
 
 export const contentStatusEnum = pgEnum("content_status", [
+   "pending",
    "draft",
    "approved",
-   "generating",
+   "planning",
+   "researching",
+   "writing",
+   "editing",
+   "analyzing",
 ]);
 
 export const content = pgTable(
@@ -72,7 +77,7 @@ export const content = pgTable(
          .references(() => agent.id, { onDelete: "cascade" }),
       imageUrl: text("image_url"),
       body: text("body").notNull().default(""),
-      status: contentStatusEnum("status").default("generating"),
+      status: contentStatusEnum("status").default("pending"),
       meta: jsonb("meta").$type<ContentMeta>().default({}),
       request: jsonb("request").$type<ContentRequest>().notNull(),
       stats: jsonb("stats").$type<ContentStats>().default({}),
@@ -102,7 +107,7 @@ export const ListContentByAgentInputSchema = z.object({
    status: z
       .enum(
          contentStatusEnum.enumValues,
-         "Invalid content status. Must be one of: draft, approved, generating.",
+         "Invalid content status. Must be one of: draft, approved.",
       )
       .array(),
    agentId: z.array(z.uuid("Invalid Agent ID format.")),
