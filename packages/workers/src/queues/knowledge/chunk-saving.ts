@@ -27,7 +27,7 @@ export async function enqueueChunkSavingJobsBulk(jobs: ChunkSavingJob[]) {
       jobs.map((job) => ({
          name: "chunk-saving",
          data: job,
-      }))
+      })),
    );
 }
 

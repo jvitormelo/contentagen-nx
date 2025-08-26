@@ -24,7 +24,7 @@ export interface ContentWritingJobResult {
    userId: string;
 }
 
-import { enqueueContentEditingJob } from "./content-editing-queue";
+import { enqueueContentGrammarCheckJob } from "./content-grammar-checker-queue";
 import { runWriteContentDraft } from "../../functions/writing/write-content-draft";
 import { registerGracefulShutdown } from "../../helpers";
 
@@ -59,15 +59,15 @@ export async function runContentWriting(
          userId,
       });
       const jobResult = { draft, contentRequest, agentId, contentId, userId };
-      await enqueueContentEditingJob({
-         personaConfig,
-         keywords,
-         searchSources,
-         agentId,
-         contentId,
-         contentRequest,
-         draft,
+      await enqueueContentGrammarCheckJob({
          userId,
+         contentId,
+         agentId,
+         contentRequest,
+         personaConfig,
+         draft,
+         searchSources,
+         keywords,
       });
       return jobResult;
    } catch (error) {

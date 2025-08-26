@@ -23,7 +23,7 @@ export interface ContentEditingJobResult {
    editedDraft: string;
 }
 
-import { enqueueContentGrammarCheckJob } from "./content-grammar-checker-queue";
+import { enqueueContentPostProcessingJob } from "./content-post-processing-queue";
 import { runEditContentDraft } from "../../functions/writing/edit-content-draft";
 import { registerGracefulShutdown } from "../../helpers";
 
@@ -31,7 +31,6 @@ export async function runContentEditing(
    payload: ContentEditingJobData,
 ): Promise<ContentEditingJobResult> {
    const {
-      personaConfig,
       agentId,
       contentId,
       keywords,
@@ -55,15 +54,14 @@ export async function runContentEditing(
       });
       console.info("[ContentEditing] Content edited", editedDraft);
 
-      await enqueueContentGrammarCheckJob({
-         userId,
-         contentId,
+      await enqueueContentPostProcessingJob({
          agentId,
-         contentRequest,
-         personaConfig,
-         draft: editedDraft,
-         searchSources,
          keywords,
+         searchSources,
+         contentId,
+         userId,
+         contentRequest,
+         editedDraft,
       });
       return { contentId, agentId, userId, contentRequest, editedDraft };
    } catch (error) {

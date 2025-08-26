@@ -5,7 +5,7 @@ import { createRedisClient } from "@packages/redis";
 import { updateContentStatus } from "../../functions/database/update-content-status";
 import { registerGracefulShutdown } from "../../helpers";
 import { runGrammarChecker } from "../../functions/writing/grammar-checker";
-import { enqueueContentPostProcessingJob } from "./content-post-processing-queue";
+import { enqueueContentEditingJob } from "./content-editing-queue";
 
 export interface ContentGrammarCheckJobData {
    userId: string;
@@ -45,14 +45,15 @@ async function runGrammarCheckContent(
          userId,
       });
 
-      await enqueueContentPostProcessingJob({
+      await enqueueContentEditingJob({
          searchSources: payload.searchSources,
          keywords: payload.keywords,
          agentId,
          contentId,
          userId,
          contentRequest,
-         editedDraft: correctedDraft,
+         personaConfig,
+         draft: correctedDraft,
       });
 
       return { correctedDraft, contentRequest, agentId, contentId, userId };

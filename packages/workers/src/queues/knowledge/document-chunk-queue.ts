@@ -47,7 +47,7 @@ export async function enqueueDocumentChunkJobsBulk(jobs: DocumentChunkJob[]) {
       jobs.map((job) => ({
          name: "document-chunk",
          data: job,
-      }))
+      })),
    );
 }
 

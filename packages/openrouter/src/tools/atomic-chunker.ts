@@ -4,22 +4,22 @@ import { tool } from "ai";
 import { z } from "zod";
 import { createOpenrouterClient } from "../client";
 const inputSchema = z.object({
-  text: z
-    .string()
-    .describe(
-      "The long text to be split into atomic chunks optimized for knowledge distillation.",
-    ),
+   text: z
+      .string()
+      .describe(
+         "The long text to be split into atomic chunks optimized for knowledge distillation.",
+      ),
 });
 const outputSchema = z.object({
-  chunks: z
-    .array(z.string())
-    .describe(
-      "Array of atomic, distillation-ready content chunks, each with a single conceptual focus and optimized for downstream processing.",
-    ),
+   chunks: z
+      .array(z.string())
+      .describe(
+         "Array of atomic, distillation-ready content chunks, each with a single conceptual focus and optimized for downstream processing.",
+      ),
 });
 
 function chunkingPrompt(): string {
-  return `You are a strategic text segmentation specialist working in partnership with a downstream knowledge distillation system. Your role is to create focused, distillation-ready chunks that will be optimized for vector embeddings and retrieval.
+   return `You are a strategic text segmentation specialist working in partnership with a downstream knowledge distillation system. Your role is to create focused, distillation-ready chunks that will be optimized for vector embeddings and retrieval.
 
 **PIPELINE INTEGRATION STRATEGY:**
 Your chunks will be processed by a distillation agent that will:
@@ -98,7 +98,7 @@ Better to create 10 precise, atomic chunks than 3 comprehensive ones. The distil
 }
 
 function chunkingInputPrompt(text: string): string {
-  return `
+   return `
 ---TEXT_TO_CHUNK_START---
 ${text}
 ---TEXT_TO_CHUNK_END---
@@ -106,18 +106,18 @@ ${text}
 }
 const client = createOpenrouterClient(serverEnv.OPENAI_API_KEY);
 export const atomicChunker = tool({
-  outputSchema,
-  inputSchema,
-  name: "atomic_chunker",
-  description:
-    "Splits a text into many small, atomic chunks optimized for knowledge distillation.",
-  execute: async ({ text }) => {
-    const { object } = await generateOpenRouterObject(
-      client,
-      { model: "small" },
-      outputSchema,
-      { system: chunkingPrompt(), prompt: chunkingInputPrompt(text) },
-    );
-    return object as z.infer<typeof outputSchema>;
-  },
+   outputSchema,
+   inputSchema,
+   name: "atomic_chunker",
+   description:
+      "Splits a text into many small, atomic chunks optimized for knowledge distillation.",
+   execute: async ({ text }) => {
+      const { object } = await generateOpenRouterObject(
+         client,
+         { model: "small" },
+         outputSchema,
+         { system: chunkingPrompt(), prompt: chunkingInputPrompt(text) },
+      );
+      return object as z.infer<typeof outputSchema>;
+   },
 });

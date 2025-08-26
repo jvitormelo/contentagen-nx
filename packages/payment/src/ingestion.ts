@@ -42,7 +42,7 @@ export const createAiUsageMetadata = (params: {
    effort: keyof typeof MODELS;
 }) => {
    const creditsDebited = calculateCreditsDebited(
-      params.inputTokens + params.outputTokens
+      params.inputTokens + params.outputTokens,
    );
    return {
       usage_type: USAGE_TYPE.LLM,
