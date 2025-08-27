@@ -1,4 +1,5 @@
 import cors from "@elysiajs/cors";
+
 import { Elysia } from "elysia";
 import { serverEnv as env } from "@packages/environment/server";
 import { ArcjetShield } from "./integrations/arcjet";

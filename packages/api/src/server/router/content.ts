@@ -399,10 +399,11 @@ export const contentRouter = router({
       .query(async ({ ctx, input }) => {
          try {
             if (!input.slug || !input.agentId) {
-               throw new TRPCError({
+               new TRPCError({
                   code: "BAD_REQUEST",
                   message: "Slug and Agent ID are required.",
                });
+               return [];
             }
             const resolvedCtx = await ctx;
             const collection = await getCollection(
