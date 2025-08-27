@@ -2,7 +2,7 @@ import { ideas } from "../schemas/ideas";
 import type { IdeaSelect, IdeaInsert } from "../schemas/ideas";
 import type { DatabaseInstance } from "../client";
 import { DatabaseError, NotFoundError } from "@packages/errors";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 export async function createIdea(
    dbClient: DatabaseInstance,
@@ -97,6 +97,7 @@ export async function listAllIdeasPaginated(
    dbClient: DatabaseInstance,
    page: number = 1,
    limit: number = 10,
+   agentIds: string[],
 ) {
    try {
       const offset = (page - 1) * limit;
@@ -107,6 +108,7 @@ export async function listAllIdeasPaginated(
          with: {
             agent: true,
          },
+         where: inArray(ideas.agentId, agentIds),
       });
       const totalRes = await dbClient.query.ideas.findMany({});
       return { items, total: totalRes.length };

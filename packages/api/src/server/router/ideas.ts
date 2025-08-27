@@ -14,6 +14,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { listAllIdeasPaginated } from "@packages/database/repositories/ideas-repository";
+import { listAgents } from "@packages/database/repositories/agent-repository";
 
 import { createContent } from "@packages/database/repositories/content-repository";
 import { enqueueContentPlanningJob } from "@packages/workers/queues/content/content-planning-queue";
@@ -29,10 +30,26 @@ export const ideasRouter = router({
       .query(async ({ ctx, input }) => {
          const resolvedCtx = await ctx;
          try {
+            const userId = resolvedCtx.session?.user.id;
+            const organizationId =
+               resolvedCtx.session?.session?.activeOrganizationId;
+            if (!userId) {
+               throw new TRPCError({
+                  code: "UNAUTHORIZED",
+                  message: "User must be authenticated to list ideas.",
+               });
+            }
+            const agents = await listAgents(resolvedCtx.db, {
+               userId,
+               organizationId: organizationId ?? "",
+            });
+            const agentIds = agents.map((agent) => agent.id);
+            if (agentIds.length === 0) return { items: [], total: 0 };
             const all = await listAllIdeasPaginated(
                resolvedCtx.db,
                input.page,
                input.limit,
+               agentIds,
             );
             return all;
          } catch (err) {
