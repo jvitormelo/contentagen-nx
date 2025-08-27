@@ -1,7 +1,11 @@
 import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { GeneratedContentDisplay } from "./generated-content-display";
 import { useTRPC } from "@/integrations/clients";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {
+   useQuery,
+   useQueryClient,
+   useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { ContentStatsCard, ContentDetailsCard } from "./request-details-cards";
 import { ContentQualityCard } from "./content-quality";
@@ -23,11 +27,16 @@ export function ContentRequestDetailsPage() {
    );
 
    // Fetch related slugs if slug and agentId are available
-   const { data: relatedSlugs } = useSuspenseQuery(
-      trpc.content.getRelatedSlugs.queryOptions({
-         slug: data?.meta?.slug ?? "",
-         agentId: data.agentId,
-      }),
+   const { data: relatedSlugs } = useQuery(
+      trpc.content.getRelatedSlugs.queryOptions(
+         {
+            slug: data?.meta?.slug ?? "",
+            agentId: data.agentId,
+         },
+         {
+            enabled: Boolean(data?.meta?.slug && data.agentId),
+         },
+      ),
    );
 
    // Calculate subscription enabled state using useMemo
