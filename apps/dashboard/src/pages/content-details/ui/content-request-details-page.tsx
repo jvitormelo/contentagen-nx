@@ -27,7 +27,7 @@ export function ContentRequestDetailsPage() {
    );
 
    // Fetch related slugs if slug and agentId are available
-   const { data: relatedSlugs } = useQuery(
+   const { data: relatedSlugs = [] } = useQuery(
       trpc.content.getRelatedSlugs.queryOptions(
          {
             slug: data?.meta?.slug ?? "",
