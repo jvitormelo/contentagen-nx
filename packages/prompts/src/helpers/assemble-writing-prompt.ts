@@ -6,13 +6,14 @@ import { generalPublicAudiencePrompt } from "../prompts/audience/general_public"
 import { professionalsAudiencePrompt } from "../prompts/audience/professionals";
 import { beginnersAudiencePrompt } from "../prompts/audience/beginners";
 import { customersAudiencePrompt } from "../prompts/audience/customers";
-import { languageCorrectionBasePrompt } from "../prompts/language/base";
+import { LanguageBasePrompt } from "../prompts/language/language-base";
 import { strictGuidelinePrompt } from "../prompts/brand/strict_guideline";
 import { flexibleGuidelinePrompt } from "../prompts/brand/flexible_guideline";
 import { referenceOnlyPrompt } from "../prompts/brand/reference_only";
 import { creativeBlendPrompt } from "../prompts/brand/creative_blend";
 import { searchIntegrationSystemPrompt } from "../prompts/search/search-integrations";
 import { writingDraftSystemPrompt } from "../prompts/writing/writing-draft";
+import { languageCorrectionBasePrompt } from "../prompts/language/language-corrections";
 
 // Type definitions for content request and options
 export interface ContentRequest {
@@ -69,7 +70,10 @@ export function createAudienceSection(config: PersonaConfig): string {
    }
 }
 
-export function createLanguageSection(config: PersonaConfig): string {
+export function createLanguageSection(
+   config: PersonaConfig,
+   shouldReturnJson?: boolean,
+): string {
    if (!config.language?.primary) {
       return "";
    }
@@ -130,7 +134,16 @@ export function createLanguageSection(config: PersonaConfig): string {
             break;
       }
    }
-   return languageCorrectionBasePrompt({
+   if (shouldReturnJson) {
+      return languageCorrectionBasePrompt({
+         languageDisplay,
+         languageRules,
+         culturalNotes,
+         language: languageDisplay,
+      });
+   }
+
+   return LanguageBasePrompt({
       languageDisplay,
       languageRules,
       culturalNotes,

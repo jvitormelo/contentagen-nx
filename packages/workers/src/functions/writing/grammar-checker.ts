@@ -5,7 +5,7 @@ import {
    languageCorrectionInputPrompt,
    languageCorrectionSchema,
    type LanguageCorrectionSchema,
-} from "@packages/prompts/prompt/language/base";
+} from "@packages/prompts/prompt/language/language-corrections";
 import { enqueueBillingLlmIngestionJob } from "../../queues/billing-llm-ingestion-queue";
 import { createLanguageSection } from "@packages/prompts/helpers/assemble-writing-prompt";
 import type { PersonaConfig } from "@packages/database/schema";
@@ -25,7 +25,7 @@ export async function runGrammarChecker(payload: {
          },
          languageCorrectionSchema,
          {
-            system: createLanguageSection(personaConfig),
+            system: createLanguageSection(personaConfig, true),
             prompt: languageCorrectionInputPrompt(text, language),
          },
       );
