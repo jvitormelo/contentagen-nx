@@ -69,6 +69,7 @@ export const ideaGenerationWorker = new Worker<IdeaGenerationJobData>(
             brandContext,
             webSnippets,
             keywords,
+            personaConfig: agent.personaConfig,
          });
 
          // 6. Persist each idea to DB and emit event
