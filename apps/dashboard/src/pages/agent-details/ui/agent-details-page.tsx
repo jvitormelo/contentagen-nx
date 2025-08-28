@@ -3,6 +3,7 @@ import { AgentDetailsKnowledgeBaseCard } from "./agent-details-knowledge-base-ca
 import { AgentPersonaCard } from "./agent-persona-card";
 import { FileViewerModal } from "./file-viewer-modal";
 import { AgentStatsCard } from "./agent-stats-card";
+import { AgentIdeasCard } from "./agent-ideas-card";
 import useAgentDetails from "../lib/use-agent-details";
 import useFileViewer from "../lib/use-file-viewer";
 import { Suspense, useMemo } from "react";
@@ -39,6 +40,10 @@ export function AgentDetailsPage() {
          { agentId },
          {
             async onData(data) {
+               await queryClient.invalidateQueries({
+                  queryKey: trpc.agent.get.queryKey({ id: agentId }),
+               });
+
                if (data.status === "failed") {
                   toast.error(data.message || "Brand knowledge job failed");
                   return;
@@ -47,13 +52,11 @@ export function AgentDetailsPage() {
                   toast.success(
                      data.message || "Brand knowledge job completed",
                   );
+
                   return;
                }
 
                toast.info(data.message || `Status: ${data.status}`);
-               await queryClient.invalidateQueries({
-                  queryKey: trpc.agent.get.queryKey({ id: agentId }),
-               });
             },
             enabled: isRunning,
          },
@@ -82,12 +85,15 @@ export function AgentDetailsPage() {
                      }
                   />
                </div>
-               <div className="col-span-1 ">
+               <div className="col-span-1 space-y-4">
                   <AgentDetailsKnowledgeBaseCard
                      uploadedFiles={uploadedFiles}
                      onViewFile={open}
                      agentId={agentId}
                   />
+               </div>
+               <div className="md:col-span-3">
+                  <AgentIdeasCard />
                </div>
             </div>
             <FileViewerModal
