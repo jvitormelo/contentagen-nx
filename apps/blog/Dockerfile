@@ -7,7 +7,21 @@ ARG CONTENTAGEN_AGENT_ID
 
 WORKDIR /app
 
-# Copy everything needed for the build
+# Copy dependency files first for better caching
+COPY bun.lock package.json ./
+COPY apps/blog/package.json ./apps/blog/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/brand/package.json ./packages/brand/
+COPY packages/posthog/package.json ./packages/posthog/
+COPY packages/environment/package.json ./packages/environment/
+COPY packages/errors/package.json ./packages/errors/
+COPY packages/database/package.json ./packages/database/
+COPY tooling/typescript/package.json ./tooling/typescript/
+
+# Install dependencies
+RUN bun install
+
+# Copy source code
 COPY . .
 
 # Set environment variables for build
@@ -16,8 +30,7 @@ ENV ARCJET_KEY=$ARCJET_KEY
 ENV CONTENTAGEN_API_KEY=$CONTENTAGEN_API_KEY
 ENV CONTENTAGEN_AGENT_ID=$CONTENTAGEN_AGENT_ID
 
-# Install dependencies and build
-RUN bun install
+# Build the blog
 RUN bun run --filter=blog build
 
 # Production stage
