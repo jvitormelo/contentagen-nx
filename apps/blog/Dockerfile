@@ -40,7 +40,9 @@ FROM nginx:alpine AS runtime
 COPY --from=build /app/apps/blog/dist /usr/share/nginx/html
 
 # Expose port 80
-EXPOSE 80
+ARG PORT=4322
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
