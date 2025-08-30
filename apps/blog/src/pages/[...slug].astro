@@ -2,6 +2,17 @@
 import { sdk, agentId } from "../contentagen";
 import BlogPost from "../layouts/BlogPost.astro";
 
+export async function getStaticPaths() {
+  const response = await sdk.listContentByAgent({
+    agentId: [agentId],
+    status: ["approved"],
+  });
+
+  return response.posts.map((post) => ({
+    params: { slug: post.meta.slug },
+  }));
+}
+
 const { slug } = Astro.params;
 const post = await sdk.getContentBySlug({ slug: slug ?? "", agentId });
 ---
