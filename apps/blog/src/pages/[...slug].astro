@@ -45,4 +45,4 @@ export async function getStaticPaths() {
 const { post, author, relatedPosts } = Astro.props;
 ---
 
-<BlogPost post={post} />
+<BlogPost post={post} author={author} relatedPosts={relatedPosts}  />
