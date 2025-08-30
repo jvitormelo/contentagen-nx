@@ -4,12 +4,15 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
 import arcjet, { detectBot, shield, tokenBucket } from "@arcjet/astro";
-
+import node from "@astrojs/node";
 export default defineConfig({
    integrations: [mdx(), sitemap(), react()],
    site: "https://blog.contentagen.com",
 
-   output: "static",
+   adapter: node({
+      mode: "standalone",
+   }),
+   output: "server",
    env: {
       validateSecrets: true,
       schema: {
@@ -27,6 +30,10 @@ export default defineConfig({
          }),
       },
    },
+   server: {
+      host: "0.0.0.0",
+   },
+
    vite: {
       plugins: [
          tailwindcss(),
