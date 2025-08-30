@@ -37,7 +37,7 @@ RUN bun run --filter=blog build
 FROM nginx:alpine AS runtime
 
 # Copy custom nginx configuration
-COPY apps/blog/nginx.conf /etc/nginx/nginx.conf
+COPY apps/blog/nginx.conf /etc/nginx/nginx.conf.template
 
 # Copy built files
 COPY --from=build /app/apps/blog/dist /usr/share/nginx/html
