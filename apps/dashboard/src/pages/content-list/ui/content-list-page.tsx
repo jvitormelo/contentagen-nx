@@ -1,19 +1,60 @@
 import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { ContentRequestCard } from "./content-card";
+import { LoadingContentCard } from "./loading-content-card";
+import { ContentListToolbar } from "./content-list-toolbar";
 import { useTRPC } from "@/integrations/clients";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useSubscription } from "@trpc/tanstack-react-query";
 import { toast } from "sonner";
 import { useMemo } from "react";
-import { CreateContentCredenza } from "../features/create-content-credenza";
 import { useState, useCallback } from "react";
-import { Button } from "@packages/ui/components/button";
 
+const getStatusDisplay = (status: string | null) => {
+   if (!status)
+      return { label: "Unknown", progress: 0, variant: "secondary" as const };
+
+   const statusConfig = {
+      pending: { label: "Pending", progress: 0, variant: "secondary" as const },
+      planning: {
+         label: "Planning",
+         progress: 15,
+         variant: "default" as const,
+      },
+      researching: {
+         label: "Researching",
+         progress: 35,
+         variant: "default" as const,
+      },
+      writing: { label: "Writing", progress: 60, variant: "default" as const },
+      editing: { label: "Editing", progress: 80, variant: "default" as const },
+      analyzing: {
+         label: "Analyzing",
+         progress: 95,
+         variant: "default" as const,
+      },
+      draft: { label: "Draft", progress: 100, variant: "default" as const },
+      approved: {
+         label: "Approved",
+         progress: 100,
+         variant: "destructive" as const,
+      },
+   };
+
+   return (
+      statusConfig[status as keyof typeof statusConfig] || {
+         label: status,
+         progress: 0,
+         variant: "secondary" as const,
+      }
+   );
+};
+//TODO: criar um component padrao para paginacao + toolbar, bulk actions de aprovar, deletar ou rejeitar
 export function ContentListPage() {
    const trpc = useTRPC();
    const queryClient = useQueryClient();
    const [page, setPage] = useState(1);
-   const [limit] = useState(7);
+   const [limit] = useState(8);
+
    const { data } = useSuspenseQuery(
       trpc.content.listAllContent.queryOptions({
          status: [
@@ -25,11 +66,14 @@ export function ContentListPage() {
             "writing",
             "editing",
             "analyzing",
+            "grammar_checking",
          ],
          page,
          limit,
       }),
    );
+
+   // Filter content by selected agent on client side since API doesn't support it
 
    const hasGeneratingContent = useMemo(
       () =>
@@ -45,7 +89,7 @@ export function ContentListPage() {
                   "analyzing",
                ].includes(item.status),
          ) || false,
-      [data?.items],
+      [data],
    );
 
    useSubscription(
@@ -65,6 +109,7 @@ export function ContentListPage() {
                         "writing",
                         "editing",
                         "analyzing",
+                        "grammar_checking",
                      ],
                      page,
                      limit,
@@ -80,42 +125,55 @@ export function ContentListPage() {
       return Math.ceil(data.total / limit);
    }, [data.total, limit]);
 
-   const handlePrevPage = useCallback(() => {
-      setPage((p) => Math.max(1, p - 1));
+   const handlePageChange = useCallback((newPage: number) => {
+      setPage(newPage);
    }, []);
 
-   const handleNextPage = useCallback(() => {
-      setPage((p) => Math.min(totalPages, p + 1));
-   }, [totalPages]);
-
    return (
-      <main className="h-full w-full flex flex-col gap-4">
+      <main className="h-full w-full flex flex-col gap-6 p-4">
          <TalkingMascot message="Here you can manage all your content requests. Create, edit, or explore your requests below!" />
-         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <CreateContentCredenza />
-            {data.items.map((item) => (
-               <ContentRequestCard key={item.id} request={item} />
-            ))}
+         <ContentListToolbar
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+         />
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {data.items.map((item) => {
+               const isGenerating =
+                  item.status &&
+                  [
+                     "pending",
+                     "planning",
+                     "researching",
+                     "writing",
+                     "editing",
+                     "analyzing",
+                  ].includes(item.status);
+
+               if (isGenerating) {
+                  const statusInfo = getStatusDisplay(item.status);
+                  return (
+                     <LoadingContentCard
+                        key={item.id}
+                        status={item.status}
+                        progress={statusInfo.progress}
+                     />
+                  );
+               }
+
+               return <ContentRequestCard key={item.id} request={item} />;
+            })}
          </div>
-         <div className="flex justify-center items-center gap-4">
-            <Button
-               disabled={page === 1}
-               onClick={handlePrevPage}
-               variant="outline"
-            >
-               Previous
-            </Button>
-            <span>
-               Page {page} of {totalPages}
-            </span>
-            <Button
-               disabled={page === totalPages}
-               onClick={handleNextPage}
-               variant="outline"
-            >
-               Next
-            </Button>
-         </div>
+         {data.items.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+               <p className="text-lg">
+                  No content found matching your filters.
+               </p>
+               <p className="text-sm mt-2">
+                  Try adjusting your filter criteria or create new content.
+               </p>
+            </div>
+         )}
       </main>
    );
 }

@@ -1,179 +1,147 @@
-import { Button } from "@packages/ui/components/button";
 import {
    Card,
-   CardAction,
    CardContent,
    CardDescription,
    CardFooter,
    CardHeader,
    CardTitle,
 } from "@packages/ui/components/card";
-import { InfoItem } from "@packages/ui/components/info-item";
+import { Checkbox } from "@packages/ui/components/checkbox";
 import {
-   DropdownMenu,
-   DropdownMenuTrigger,
-   DropdownMenuContent,
-   DropdownMenuItem,
-} from "@packages/ui/components/dropdown-menu";
-import { Link } from "@tanstack/react-router";
-import { Activity, MoreHorizontal } from "lucide-react";
-import { Skeleton } from "@packages/ui/components/skeleton";
-import { Progress } from "@packages/ui/components/progress";
+   Credenza,
+   CredenzaContent,
+   CredenzaHeader,
+   CredenzaTitle,
+   CredenzaDescription,
+   CredenzaTrigger,
+} from "@packages/ui/components/credenza";
+import { Trash2, Eye, Check } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { Badge } from "@packages/ui/components/badge";
 import type { RouterOutput } from "@packages/api/client";
 import { AgentWriterCard } from "@/widgets/agent-display-card/ui/agent-writter-card";
-import { Separator } from "@packages/ui/components/separator";
 import { useTRPC } from "@/integrations/clients";
-import { agent } from "@packages/database/schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
-
-const getStatusDisplay = (status: string | null) => {
-   if (!status)
-      return { label: "Unknown", progress: 0, variant: "secondary" as const };
-
-   const statusConfig = {
-      pending: { label: "Pending", progress: 0, variant: "secondary" as const },
-      planning: {
-         label: "Planning",
-         progress: 15,
-         variant: "default" as const,
-      },
-      researching: {
-         label: "Researching",
-         progress: 35,
-         variant: "default" as const,
-      },
-      writing: { label: "Writing", progress: 60, variant: "default" as const },
-      editing: { label: "Editing", progress: 80, variant: "default" as const },
-      analyzing: {
-         label: "Analyzing",
-         progress: 95,
-         variant: "default" as const,
-      },
-      draft: { label: "Draft", progress: 100, variant: "default" as const },
-      approved: {
-         label: "Approved",
-         progress: 100,
-         variant: "destructive" as const,
-      },
-   };
-
-   return (
-      statusConfig[status as keyof typeof statusConfig] || {
-         label: status,
-         progress: 0,
-         variant: "secondary" as const,
-      }
-   );
-};
-
-const isGeneratingStatus = (status: string | null) => {
-   return (
-      status &&
-      [
-         "pending",
-         "planning",
-         "researching",
-         "writing",
-         "editing",
-         "analyzing",
-      ].includes(status)
-   );
-};
+import { useState } from "react";
+import { SquaredIconButton } from "@packages/ui/components/squared-icon-button";
 
 export function ContentRequestCard({
    request,
+   isSelected = false,
+   onSelectionChange,
+   onView,
+   onDelete,
+   onApprove,
 }: {
    request: RouterOutput["content"]["listAllContent"]["items"][0];
+   isSelected?: boolean;
+   onSelectionChange?: (id: string, selected: boolean) => void;
+   onView?: (id: string) => void;
+   onDelete?: (id: string) => void;
+   onApprove?: (id: string) => void;
 }) {
-   const statusInfo = getStatusDisplay(request.status);
-   const isGenerating = isGeneratingStatus(request.status);
-
    const trpc = useTRPC();
-   const { data } = useSuspenseQuery(
+   const navigate = useNavigate();
+   const { data: profilePhoto } = useSuspenseQuery(
       trpc.agentFile.getProfilePhoto.queryOptions({
-         agentId: request.agent.id,
+         agentId: request.agent?.id,
       }),
    );
+
+   const [isCredenzaOpen, setIsCredenzaOpen] = useState(false);
+
+   const handleView = () => {
+      navigate({
+         to: "/content/$id",
+         params: { id: request.id },
+      });
+      onView?.(request.id);
+      setIsCredenzaOpen(false);
+   };
+
+   const handleDelete = () => {
+      onDelete?.(request.id);
+      setIsCredenzaOpen(false);
+   };
+
+   const handleApprove = () => {
+      onApprove?.(request.id);
+      setIsCredenzaOpen(false);
+   };
+
    return (
-      <Card>
-         {isGenerating ? (
-            <>
+      <Credenza open={isCredenzaOpen} onOpenChange={setIsCredenzaOpen}>
+         <CredenzaTrigger asChild>
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
                <CardHeader>
-                  <Skeleton className="h-6 w-2/3 mb-2" />
-                  <Skeleton className="h-4 w-3/4 mb-4" />
-               </CardHeader>
-               <CardContent className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                     <div className="flex justify-between text-sm">
-                        <span className="capitalize font-medium">
-                           {request.status}
-                        </span>
-                        <span>{statusInfo.progress}%</span>
+                  <div className="flex items-start justify-between">
+                     <div className="flex-1 min-w-0">
+                        <CardTitle className="line-clamp-1">
+                           {request.meta?.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2 mt-1">
+                           {request.meta?.description ?? "No description found"}
+                        </CardDescription>
                      </div>
-                     <Progress value={statusInfo.progress} className="w-full" />
+                     <div data-checkbox className="ml-2">
+                        <Checkbox
+                           checked={isSelected}
+                           onCheckedChange={(checked) =>
+                              onSelectionChange?.(
+                                 request.id,
+                                 checked as boolean,
+                              )
+                           }
+                           onClick={(e) => e.stopPropagation()}
+                        />
+                     </div>
                   </div>
-                  <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                     <div className="animate-spin rounded-full h-3 w-3 border-2 border-primary border-t-transparent" />
-                     <span>Generating content...</span>
-                  </div>
-               </CardContent>
-               <CardFooter className="flex flex-col gap-2">
-                  <Separator />
-                  <Skeleton className="h-5 w-1/2 mb-2" />
-                  <Skeleton className="h-16 w-full" />
-               </CardFooter>
-            </>
-         ) : (
-            <>
-               <CardHeader>
-                  <CardTitle className="line-clamp-1">
-                     {request.meta?.title}
-                  </CardTitle>
-                  <CardAction>
-                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                           <DropdownMenuItem asChild>
-                              <Link
-                                 params={{ id: request.id }}
-                                 to={`/content/$id`}
-                              >
-                                 View Content
-                              </Link>
-                           </DropdownMenuItem>
-                        </DropdownMenuContent>
-                     </DropdownMenu>
-                  </CardAction>
-                  <CardDescription className="line-clamp-1">
-                     {request.meta?.description ?? "No description found"}
-                  </CardDescription>
                </CardHeader>
-               <CardContent className="grid grid-cols-1 gap-2">
-                  <InfoItem
-                     icon={<Activity className="h-4 w-4" />}
-                     label="Status"
-                     value={statusInfo.label}
-                  />
-               </CardContent>
-               <CardFooter className="flex flex-col gap-2">
-                  <Separator />
-                  <span className="w-full text-sm text-muted-foreground text-start">
-                     Written By:
-                  </span>
+               <CardContent>
                   <AgentWriterCard
-                     photo={data?.data}
-                     name={request.agent.personaConfig.metadata.name}
+                     photo={profilePhoto?.data}
+                     name={
+                        request.agent?.personaConfig.metadata.name || "Unknown"
+                     }
                      description={
-                        request.agent.personaConfig.metadata.description
+                        request.agent?.personaConfig.metadata.description ||
+                        "No description"
                      }
                   />
+               </CardContent>
+               <CardFooter className="flex items-center justify-between">
+                  <Badge variant="outline">
+                     {new Date(request.createdAt).toLocaleDateString()}
+                  </Badge>
+                  <Badge className="text-xs">{request.status}</Badge>
                </CardFooter>
-            </>
-         )}
-      </Card>
+            </Card>
+         </CredenzaTrigger>
+         <CredenzaContent>
+            <CredenzaHeader>
+               <CredenzaTitle>{request.meta?.title || "Content"}</CredenzaTitle>
+               <CredenzaDescription>
+                  {request.meta?.description || "No description available"}
+               </CredenzaDescription>
+            </CredenzaHeader>
+            <div className="flex flex-col gap-3 py-4">
+               <div className="flex gap-2 justify-center">
+                  <SquaredIconButton onClick={handleView}>
+                     <Eye className="h-4 w-4" />
+                  </SquaredIconButton>
+
+                  {request.status !== "approved" && (
+                     <SquaredIconButton onClick={handleApprove}>
+                        <Check className="h-4 w-4" />
+                     </SquaredIconButton>
+                  )}
+
+                  <SquaredIconButton destructive onClick={handleDelete}>
+                     <Trash2 className="h-4 w-4" />
+                  </SquaredIconButton>
+               </div>
+            </div>
+         </CredenzaContent>
+      </Credenza>
    );
 }
