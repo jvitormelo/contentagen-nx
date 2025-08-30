@@ -5,35 +5,9 @@ import Footer from "../components/Footer.astro";
 import BaseHead from "../components/BaseHead.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import { marked } from "marked";
-import { sdk, agentId } from "../contentagen";
 
-const { post } = Astro.props;
+const { post, author, relatedPosts } = Astro.props;
 const htmlBody = marked.parse(post.body);
-
-// Fetch author information
-const author = await sdk.getAuthorByAgentId({ agentId });
-
-// Fetch related posts
-const relatedSlugs = await sdk.getRelatedSlugs({
-  slug: post.meta?.slug ?? "",
-  agentId
-});
-
-const relatedPosts = [];
-for (const slug of relatedSlugs.slice(0, 3)) {
-  try {
-    const relatedPost = await sdk.getContentBySlug({
-      slug,
-      agentId
-    });
-    if (relatedPost.status === "approved") {
-      relatedPosts.push(relatedPost);
-    }
-  } catch (error) {
-    // Skip posts that can't be fetched
-    console.error(`Error fetching related post ${slug}:`, error);
-  }
-}
 ---
 
 <BaseHead

@@ -10,11 +10,38 @@ export async function getStaticPaths() {
 
   return response.posts.map((post) => ({
     params: { slug: post.meta.slug },
+    props: {
+      post,
+      author: await sdk.getAuthorByAgentId({ agentId }),
+      relatedPosts: await getRelatedPosts(post.meta?.slug ?? ""),
+    },
   }));
 }
 
-const { slug } = Astro.params;
-const post = await sdk.getContentBySlug({ slug: slug ?? "", agentId });
+async function getRelatedPosts(currentSlug: string) {
+  const relatedSlugs = await sdk.getRelatedSlugs({
+    slug: currentSlug,
+    agentId
+  });
+
+  const relatedPosts = [];
+  for (const slug of relatedSlugs.slice(0, 3)) {
+    try {
+      const relatedPost = await sdk.getContentBySlug({
+        slug,
+        agentId
+      });
+      if (relatedPost.status === "approved") {
+        relatedPosts.push(relatedPost);
+      }
+    } catch (error) {
+      console.error(`Error fetching related post ${slug}:`, error);
+    }
+  }
+  return relatedPosts;
+}
+
+const { post, author, relatedPosts } = Astro.props;
 ---
 
 <BlogPost post={post} />
