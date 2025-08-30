@@ -26,20 +26,35 @@ export async function getStaticPaths() {
       return relatedPosts;
    }
 
+   // First get the list of approved posts (without full content)
    const response = await sdk.listContentByAgent({
       agentId: [agentId],
       status: ["approved"],
    });
    const author = await sdk.getAuthorByAgentId({ agentId });
-   const relatedPosts = await getRelatedPosts(post.meta?.slug ?? "");
-   return response.posts.map((post) => ({
-      params: { slug: post.meta.slug },
-      props: {
-         post,
-         author,
-         relatedPosts,
-      },
-   }));
+
+   // Fetch full content for each post and related posts in parallel
+   const postsWithRelated = await Promise.all(
+      response.posts.map(async (postMeta) => {
+         // Get the full post content by slug
+         const fullPost = await sdk.getContentBySlug({
+            slug: postMeta.meta.slug,
+            agentId,
+         });
+
+         const relatedPosts = await getRelatedPosts(postMeta.meta.slug);
+         return {
+            params: { slug: postMeta.meta.slug },
+            props: {
+               post: fullPost,
+               author,
+               relatedPosts,
+            },
+         };
+      }),
+   );
+
+   return postsWithRelated;
 }
 
 const { post, author, relatedPosts } = Astro.props;
