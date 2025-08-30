@@ -36,14 +36,17 @@ RUN bun run --filter=blog build
 # Production stage
 FROM nginx:alpine AS runtime
 
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf.template
+
 # Copy built files
 COPY --from=build /app/apps/blog/dist /usr/share/nginx/html
 
-# Expose port 80
+# Expose port
 ARG PORT=4322
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Substitute environment variables in nginx config and start nginx
+CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"]
 
