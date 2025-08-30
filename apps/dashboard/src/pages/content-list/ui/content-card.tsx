@@ -14,6 +14,7 @@ import {
    CredenzaTitle,
    CredenzaDescription,
    CredenzaTrigger,
+   CredenzaBody,
 } from "@packages/ui/components/credenza";
 import { Trash2, Eye, Check } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -124,23 +125,17 @@ export function ContentRequestCard({
                   {request.meta?.description || "No description available"}
                </CredenzaDescription>
             </CredenzaHeader>
-            <div className="flex flex-col gap-3 py-4">
-               <div className="flex gap-2 justify-center">
-                  <SquaredIconButton onClick={handleView}>
-                     <Eye className="h-4 w-4" />
-                  </SquaredIconButton>
+            <CredenzaBody className="grid grid-cols-2 gap-2">
+               <SquaredIconButton onClick={handleView}>
+                  <Eye className="h-4 w-4" />
+                  View your content details
+               </SquaredIconButton>
 
-                  {request.status !== "approved" && (
-                     <SquaredIconButton onClick={handleApprove}>
-                        <Check className="h-4 w-4" />
-                     </SquaredIconButton>
-                  )}
-
-                  <SquaredIconButton destructive onClick={handleDelete}>
-                     <Trash2 className="h-4 w-4" />
-                  </SquaredIconButton>
-               </div>
-            </div>
+               <SquaredIconButton destructive onClick={handleDelete}>
+                  <Trash2 className="h-4 w-4" />
+                  Delete this content
+               </SquaredIconButton>
+            </CredenzaBody>
          </CredenzaContent>
       </Credenza>
    );
