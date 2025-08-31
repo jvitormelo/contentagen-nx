@@ -1,106 +1,22 @@
+import { Suspense } from "react";
 import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
-import { ContentRequestCard } from "./content-card";
-import { LoadingContentCard } from "./loading-content-card";
+import { ContentCardsList } from "./content-cards-list";
+import { ContentCardsSkeleton } from "./content-cards-skeleton";
 import { ContentListToolbar } from "./content-list-toolbar";
+import {
+   ContentListProvider,
+   useContentList,
+} from "../lib/content-list-context";
 import { useTRPC } from "@/integrations/clients";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useSubscription } from "@trpc/tanstack-react-query";
 import { toast } from "sonner";
-import { useMemo } from "react";
-import { useState, useCallback } from "react";
-import type { RouterInput } from "@packages/api/client";
 
-const getStatusDisplay = (status: string | null) => {
-   if (!status)
-      return { label: "Unknown", progress: 0, variant: "secondary" as const };
-
-   const statusConfig = {
-      pending: { label: "Pending", progress: 0, variant: "secondary" as const },
-      planning: {
-         label: "Planning",
-         progress: 15,
-         variant: "default" as const,
-      },
-      researching: {
-         label: "Researching",
-         progress: 35,
-         variant: "default" as const,
-      },
-      writing: { label: "Writing", progress: 60, variant: "default" as const },
-      editing: { label: "Editing", progress: 80, variant: "default" as const },
-      analyzing: {
-         label: "Analyzing",
-         progress: 95,
-         variant: "default" as const,
-      },
-      draft: { label: "Draft", progress: 100, variant: "default" as const },
-      approved: {
-         label: "Approved",
-         progress: 100,
-         variant: "destructive" as const,
-      },
-   };
-
-   return (
-      statusConfig[status as keyof typeof statusConfig] || {
-         label: status,
-         progress: 0,
-         variant: "secondary" as const,
-      }
-   );
-};
 //TODO: criar um component padrao para paginacao + toolbar, bulk actions de aprovar, deletar ou rejeitar
-export function ContentListPage() {
+function ContentListPageContent() {
    const trpc = useTRPC();
    const queryClient = useQueryClient();
-   const [page, setPage] = useState(1);
-   const [limit] = useState(8);
-   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-
-   type Statuses = RouterInput["content"]["listAllContent"]["status"];
-   const { data: agents } = useSuspenseQuery(trpc.agent.list.queryOptions());
-   const [selectedStatuses, setSelectedStatuses] = useState<Statuses>([]);
-   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
-   const allStatuses: Statuses = [
-      "draft",
-      "approved",
-      "pending",
-      "planning",
-      "researching",
-      "writing",
-      "editing",
-      "analyzing",
-      "grammar_checking",
-   ];
-
-   const filteredStatuses: Statuses =
-      selectedStatuses.length > 0 ? selectedStatuses : allStatuses;
-
-   const { data } = useSuspenseQuery(
-      trpc.content.listAllContent.queryOptions({
-         status: filteredStatuses,
-         page,
-         limit,
-         ...(selectedAgents.length > 0 && { agentIds: selectedAgents }),
-      }),
-   );
-
-   const hasGeneratingContent = useMemo(
-      () =>
-         data?.items?.some(
-            (item) =>
-               item.status &&
-               [
-                  "pending",
-                  "planning",
-                  "researching",
-                  "writing",
-                  "editing",
-                  "analyzing",
-               ].includes(item.status),
-         ) || false,
-      [data],
-   );
+   const { page, limit, hasGeneratingContent } = useContentList();
 
    useSubscription(
       trpc.content.onStatusChanged.subscriptionOptions(
@@ -131,126 +47,41 @@ export function ContentListPage() {
       ),
    );
 
-   const totalPages = useMemo(() => {
-      return Math.ceil(data.total / limit);
-   }, [data.total, limit]);
-
-   const handlePageChange = useCallback((newPage: number) => {
-      setPage(newPage);
-   }, []);
-
-   const handleSelectionChange = useCallback(
-      (id: string, selected: boolean) => {
-         setSelectedItems((prev) => {
-            const newSet = new Set(prev);
-            if (selected) {
-               newSet.add(id);
-            } else {
-               newSet.delete(id);
-            }
-            return newSet;
-         });
-      },
-      [],
-   );
-
-   const selectableItems = useMemo(() => {
-      return data.items.filter(
-         (item) =>
-            ![
-               "pending",
-               "planning",
-               "researching",
-               "writing",
-               "editing",
-               "analyzing",
-            ].includes(item.status || ""),
-      );
-   }, [data.items]);
-
-   const allSelectableSelected = useMemo(() => {
-      const selectableIds = selectableItems.map((item) => item.id);
-      return (
-         selectableIds.length > 0 &&
-         selectableIds.every((id) => selectedItems.has(id))
-      );
-   }, [selectableItems, selectedItems]);
-
-   const handleSelectAll = useCallback(() => {
-      const selectableIds = selectableItems.map((item) => item.id);
-
-      setSelectedItems((prev) => {
-         if (allSelectableSelected) {
-            // If all selectable items are selected, deselect all
-            return new Set();
-         } else {
-            // Select all selectable items
-            return new Set([...prev, ...selectableIds]);
-         }
-      });
-   }, [selectableItems, allSelectableSelected]);
-
    return (
       <main className="h-full w-full flex flex-col gap-4 p-4">
-         <TalkingMascot message="Here you can manage all your content requests. Create, edit, or explore your requests below!" />
-         <ContentListToolbar
-            page={page}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            onSelectAll={handleSelectAll}
-            selectedItemsCount={selectedItems.size}
-            allSelected={allSelectableSelected}
-            selectedStatuses={selectedStatuses}
-            selectedAgents={selectedAgents}
-            onStatusesChange={setSelectedStatuses}
-            onAgentsChange={setSelectedAgents}
-            agents={agents}
-            selectedItems={selectedItems}
-         />
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {data.items.map((item) => {
-               const isGenerating =
-                  item.status &&
-                  [
-                     "pending",
-                     "planning",
-                     "researching",
-                     "writing",
-                     "editing",
-                     "analyzing",
-                  ].includes(item.status);
-
-               if (isGenerating) {
-                  const statusInfo = getStatusDisplay(item.status);
-                  return (
-                     <LoadingContentCard
-                        key={item.id}
-                        status={item.status}
-                        progress={statusInfo.progress}
-                     />
-                  );
-               }
-
-               return (
-                  <ContentRequestCard
-                     key={item.id}
-                     request={item}
-                     isSelected={selectedItems.has(item.id)}
-                     onSelectionChange={handleSelectionChange}
-                  />
-               );
-            })}
-         </div>
-         {data.items.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-               <p className="text-lg">
-                  No content found matching your filters.
-               </p>
-               <p className="text-sm mt-2">
-                  Try adjusting your filter criteria or create new content.
-               </p>
-            </div>
-         )}
+         <TalkingMascot message="Here you can manage all your content, Create, Delete, or explore it below!" />
+         <ContentListToolbar />
+         <Suspense fallback={<ContentCardsSkeleton />}>
+            <ContentCardsList />
+         </Suspense>
       </main>
+   );
+}
+
+export function ContentListPage() {
+   const trpc = useTRPC();
+   const { data: agents } = useSuspenseQuery(trpc.agent.list.queryOptions());
+   const { data } = useSuspenseQuery(
+      trpc.content.listAllContent.queryOptions({
+         status: [
+            "draft",
+            "approved",
+            "pending",
+            "planning",
+            "researching",
+            "writing",
+            "editing",
+            "analyzing",
+            "grammar_checking",
+         ],
+         page: 1,
+         limit: 8,
+      }),
+   );
+
+   return (
+      <ContentListProvider data={data} agents={agents}>
+         <ContentListPageContent />
+      </ContentListProvider>
    );
 }
