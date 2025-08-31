@@ -5,6 +5,8 @@ import {
    getContentById,
    updateContent,
    deleteContent,
+   deleteBulkContent,
+   approveBulkContent,
    listContents,
 } from "@packages/database/repositories/content-repository";
 import { NotFoundError, DatabaseError } from "@packages/errors";
@@ -76,6 +78,7 @@ export const contentRouter = router({
             status: ContentSelectSchema.shape.status.array().min(1),
             limit: z.number().min(1).max(100).optional().default(10),
             page: z.number().min(1).optional().default(1),
+            agentIds: z.array(z.string()).optional(),
          }),
       )
       .query(async ({ ctx, input }) => {
@@ -93,8 +96,16 @@ export const contentRouter = router({
             userId,
             organizationId: organizationId ?? "",
          });
-         const agentIds = agents.map((agent) => agent.id);
+         const allUserAgentIds = agents.map((agent) => agent.id);
+         if (allUserAgentIds.length === 0) return { items: [], total: 0 };
+
+         // If agentIds provided, filter to only those belonging to the user
+         const agentIds = input.agentIds
+            ? input.agentIds.filter((id) => allUserAgentIds.includes(id))
+            : allUserAgentIds;
+
          if (agentIds.length === 0) return { items: [], total: 0 };
+
          const filteredStatus = input.status.filter(
             (s): s is NonNullable<typeof s> => s !== null,
          );
@@ -258,6 +269,178 @@ export const contentRouter = router({
 
             await deleteContent((await ctx).db, id);
             return { success: true };
+         } catch (err) {
+            if (err instanceof NotFoundError) {
+               throw new TRPCError({ code: "NOT_FOUND", message: err.message });
+            }
+            if (err instanceof DatabaseError) {
+               throw new TRPCError({
+                  code: "INTERNAL_SERVER_ERROR",
+                  message: err.message,
+               });
+            }
+            throw err;
+         }
+      }),
+   bulkDelete: protectedProcedure
+      .input(z.object({ ids: z.array(z.string()).min(1) }))
+      .mutation(async ({ ctx, input }) => {
+         try {
+            const { ids } = input;
+            if (!ids || ids.length === 0) {
+               throw new TRPCError({
+                  code: "BAD_REQUEST",
+                  message: "At least one content ID is required.",
+               });
+            }
+
+            const resolvedCtx = await ctx;
+            const userId = resolvedCtx.session?.user.id;
+            const organizationId =
+               resolvedCtx.session?.session?.activeOrganizationId;
+
+            if (!userId) {
+               throw new TRPCError({
+                  code: "UNAUTHORIZED",
+                  message: "User must be authenticated to delete content.",
+               });
+            }
+
+            // Get all agents belonging to the user to verify ownership
+            const agents = await listAgents(resolvedCtx.db, {
+               userId,
+               organizationId: organizationId ?? "",
+            });
+            const allUserAgentIds = agents.map((agent) => agent.id);
+
+            if (allUserAgentIds.length === 0) {
+               throw new TRPCError({
+                  code: "FORBIDDEN",
+                  message: "No agents found for this user.",
+               });
+            }
+
+            // Verify that all content items belong to user's agents
+            const contents = await listContents(
+               resolvedCtx.db,
+               allUserAgentIds,
+               [
+                  "approved",
+                  "draft",
+                  "pending",
+                  "planning",
+                  "researching",
+                  "writing",
+                  "editing",
+                  "analyzing",
+                  "grammar_checking",
+               ], // Include all possible statuses
+            );
+
+            const userContentIds = contents.map((content) => content.id);
+            const unauthorizedIds = ids.filter(
+               (id) => !userContentIds.includes(id),
+            );
+
+            if (unauthorizedIds.length > 0) {
+               throw new TRPCError({
+                  code: "FORBIDDEN",
+                  message: `You don't have permission to delete content items: ${unauthorizedIds.join(", ")}`,
+               });
+            }
+
+            // Perform bulk delete
+            const result = await deleteBulkContent(resolvedCtx.db, ids);
+            return {
+               success: true,
+               deletedCount: result.deletedCount,
+            };
+         } catch (err) {
+            if (err instanceof NotFoundError) {
+               throw new TRPCError({ code: "NOT_FOUND", message: err.message });
+            }
+            if (err instanceof DatabaseError) {
+               throw new TRPCError({
+                  code: "INTERNAL_SERVER_ERROR",
+                  message: err.message,
+               });
+            }
+            throw err;
+         }
+      }),
+   bulkApprove: protectedProcedure
+      .input(z.object({ ids: z.array(z.string()).min(1) }))
+      .mutation(async ({ ctx, input }) => {
+         try {
+            const { ids } = input;
+            if (!ids || ids.length === 0) {
+               throw new TRPCError({
+                  code: "BAD_REQUEST",
+                  message: "At least one content ID is required.",
+               });
+            }
+
+            const resolvedCtx = await ctx;
+            const userId = resolvedCtx.session?.user.id;
+            const organizationId =
+               resolvedCtx.session?.session?.activeOrganizationId;
+
+            if (!userId) {
+               throw new TRPCError({
+                  code: "UNAUTHORIZED",
+                  message: "User must be authenticated to approve content.",
+               });
+            }
+
+            // Get all agents belonging to the user to verify ownership
+            const agents = await listAgents(resolvedCtx.db, {
+               userId,
+               organizationId: organizationId ?? "",
+            });
+            const allUserAgentIds = agents.map((agent) => agent.id);
+
+            if (allUserAgentIds.length === 0) {
+               throw new TRPCError({
+                  code: "FORBIDDEN",
+                  message: "No agents found for this user.",
+               });
+            }
+
+            // Verify that all content items belong to user's agents and are in draft status
+            const contents = await listContents(
+               resolvedCtx.db,
+               allUserAgentIds,
+               ["draft"], // Only draft content can be approved
+            );
+
+            const userDraftContentIds = contents.map((content) => content.id);
+            const unauthorizedIds = ids.filter(
+               (id) => !userDraftContentIds.includes(id),
+            );
+
+            if (unauthorizedIds.length > 0) {
+               throw new TRPCError({
+                  code: "FORBIDDEN",
+                  message: `You don't have permission to approve content items: ${unauthorizedIds.join(", ")}`,
+               });
+            }
+
+            // Perform bulk approve
+            const result = await approveBulkContent(resolvedCtx.db, ids);
+
+            // Emit status change events for each approved content
+            for (const content of contents.filter((c) => ids.includes(c.id))) {
+               eventEmitter.emit(EVENTS.contentStatus, {
+                  contentId: content.id,
+                  status: "approved",
+                  agentId: content.agent.id,
+               } as ContentStatusChangedPayload);
+            }
+
+            return {
+               success: true,
+               approvedCount: result.approvedCount,
+            };
          } catch (err) {
             if (err instanceof NotFoundError) {
                throw new TRPCError({ code: "NOT_FOUND", message: err.message });
