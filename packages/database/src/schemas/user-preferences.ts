@@ -17,22 +17,28 @@ import { z } from "zod";
 import { user } from "./auth";
 
 export const preferenceCategoryEnum = pgEnum("preference_category", [
-   "global_writing_style", // User-level writing preferences that apply across all agents
-   "notification_settings", // User notification preferences
-   "productivity", // Workflow and productivity preferences
-   "general", // Other user preferences
+   "global_writing_style",
+   "workflow",
 ]);
 
 export type PreferenceCategory =
    (typeof preferenceCategoryEnum.enumValues)[number];
 
+// Workflow preferences structure
+export const WorkflowPreferencesSchema = z.object({
+   notifyMissingImages: z.boolean().default(false),
+});
+
+export type WorkflowPreferences = z.infer<typeof WorkflowPreferencesSchema>;
+
+// Union type for all possible preference values
 export const PreferenceValueSchema = z.union([
    z.string(),
-   z.number(),
    z.boolean(),
-   z.array(z.string()),
-   z.object({}).catchall(z.any()),
+   WorkflowPreferencesSchema,
 ]);
+
+export type PreferenceValue = z.infer<typeof PreferenceValueSchema>;
 
 export const userPreference = pgTable(
    "user_preference",
@@ -42,6 +48,7 @@ export const userPreference = pgTable(
          .notNull()
          .references(() => user.id, { onDelete: "cascade" }),
       category: preferenceCategoryEnum("category").notNull(),
+      key: text("key"),
       value: jsonb("value").$type<PreferenceValue>().notNull(),
       createdAt: timestamp("created_at")
          .$defaultFn(() => new Date())
@@ -53,9 +60,15 @@ export const userPreference = pgTable(
    (table) => [
       index("user_preference_user_id_idx").on(table.userId),
       index("user_preference_category_idx").on(table.category),
+      index("user_preference_key_idx").on(table.key),
       index("user_preference_user_category_idx").on(
          table.userId,
          table.category,
+      ),
+      index("user_preference_user_category_key_idx").on(
+         table.userId,
+         table.category,
+         table.key,
       ),
    ],
 );
@@ -73,5 +86,3 @@ export type UserPreferenceInsert = typeof userPreference.$inferInsert;
 export const UserPreferenceInsertSchema = createInsertSchema(userPreference);
 export const UserPreferenceSelectSchema = createSelectSchema(userPreference);
 export const UserPreferenceUpdateSchema = createUpdateSchema(userPreference);
-
-export type PreferenceValue = z.infer<typeof PreferenceValueSchema>;
