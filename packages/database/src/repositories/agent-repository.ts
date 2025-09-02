@@ -3,7 +3,7 @@ import { agent } from "../schemas/agent";
 import type { AgentSelect, AgentInsert } from "../schemas/agent";
 import type { DatabaseInstance } from "../client";
 import { DatabaseError, NotFoundError } from "@packages/errors";
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 
 export async function createAgent(
    dbClient: DatabaseInstance,
@@ -136,22 +136,33 @@ export async function getTotalAgents(
    { userId, organizationId }: { userId?: string; organizationId?: string },
 ): Promise<number> {
    try {
-      let whereClause;
       if (userId && organizationId) {
-         whereClause = or(
-            eq(agent.userId, userId),
-            eq(agent.organizationId, organizationId),
-         );
-      } else if (userId) {
-         whereClause = eq(agent.userId, userId);
-      } else if (organizationId) {
-         whereClause = eq(agent.organizationId, organizationId);
-      } else {
-         return 0;
+         const result = await dbClient
+            .select({ value: sql<number>`cast(count(*) as int)` })
+            .from(agent)
+            .where(
+               or(
+                  eq(agent.userId, userId),
+                  eq(agent.organizationId, organizationId),
+               ),
+            );
+         return result[0]?.value ?? 0;
       }
-
-      const result = await dbClient.$count(agent, whereClause);
-      return result;
+      if (userId) {
+         const result = await dbClient
+            .select({ value: sql<number>`cast(count(*) as int)` })
+            .from(agent)
+            .where(eq(agent.userId, userId));
+         return result[0]?.value ?? 0;
+      }
+      if (organizationId) {
+         const result = await dbClient
+            .select({ value: sql<number>`cast(count(*) as int)` })
+            .from(agent)
+            .where(eq(agent.organizationId, organizationId));
+         return result[0]?.value ?? 0;
+      }
+      return 0;
    } catch (err) {
       throw new DatabaseError(
          `Failed to get total agents: ${(err as Error).message}`,

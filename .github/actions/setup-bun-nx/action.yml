@@ -17,7 +17,3 @@ runs:
       with:
         main-branch-name: master
 
-    - name: Connect to Nx Cloud
-      run: npx nx connect
-      shell: bash
-

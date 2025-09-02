@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { useParams } from "@tanstack/react-router";
 import { useTRPC } from "@/integrations/clients";
 import { toast } from "sonner";
 import {
@@ -19,20 +18,19 @@ import {
    DropzoneEmptyState,
 } from "@packages/ui/components/dropzone";
 import { Button } from "@packages/ui/components/button";
+import type { ContentSelect } from "@packages/database/schemas/content";
 
-import type { AgentSelect } from "@packages/database/schema";
-
-interface ManageAgentPhotoProps {
-   agent: AgentSelect;
+interface UploadContentImageProps {
+   content: ContentSelect;
    open?: boolean;
    onOpenChange?: (open: boolean) => void;
 }
 
-export function ManageAgentPhoto({
-   agent: _agent,
+export function UploadContentImage({
+   content,
    open,
    onOpenChange,
-}: ManageAgentPhotoProps) {
+}: UploadContentImageProps) {
    const isControlled = open !== undefined && onOpenChange !== undefined;
    const [internalOpen, setInternalOpen] = useState(false);
 
@@ -40,29 +38,28 @@ export function ManageAgentPhoto({
    const setIsOpen = isControlled ? onOpenChange : setInternalOpen;
    const [selectedFile, setSelectedFile] = useState<File | null>(null);
    const [filePreview, setFilePreview] = useState<string | undefined>();
-   const { agentId } = useParams({ from: "/_dashboard/agents/$agentId/" });
    const queryClient = useQueryClient();
    const trpc = useTRPC();
 
-   // Fetch the profile photo using the streaming route
-   const { data: profilePhotoData } = useQuery(
-      trpc.agentFile.getProfilePhoto.queryOptions({
-         agentId,
+   // Fetch the current content image using the streaming route
+   const { data: currentImageData } = useQuery(
+      trpc.content.getImage.queryOptions({
+         id: content.id,
       }),
    );
 
-   // Determine what image to display: new preview, existing photo, or nothing
-   const displayImage = filePreview || profilePhotoData?.data;
+   // Determine what image to display: new preview, existing image, or nothing
+   const displayImage = filePreview || currentImageData?.data;
 
-   const uploadPhotoMutation = useMutation(
-      trpc.agentFile.uploadProfilePhoto.mutationOptions({
+   const uploadImageMutation = useMutation(
+      trpc.content.uploadImage.mutationOptions({
          onSuccess: async () => {
-            toast.success("Profile photo updated successfully!");
+            toast.success("Image uploaded successfully!");
             await queryClient.invalidateQueries({
-               queryKey: trpc.agent.get.queryKey({ id: agentId }),
+               queryKey: trpc.content.get.queryKey({ id: content.id }),
             });
             await queryClient.invalidateQueries({
-               queryKey: trpc.agentFile.getProfilePhoto.queryKey({ agentId }),
+               queryKey: trpc.content.getImage.queryKey({ id: content.id }),
             });
             setIsOpen(false);
             setSelectedFile(null);
@@ -70,7 +67,7 @@ export function ManageAgentPhoto({
          },
          onError: (error) => {
             console.error("Upload error:", error);
-            toast.error("Failed to upload profile photo");
+            toast.error("Failed to upload image");
          },
       }),
    );
@@ -85,9 +82,9 @@ export function ManageAgentPhoto({
          return;
       }
 
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-         toast.error("File size must be less than 5MB");
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+         toast.error("File size must be less than 10MB");
          return;
       }
 
@@ -124,26 +121,26 @@ export function ManageAgentPhoto({
             reader.readAsDataURL(selectedFile);
          });
 
-         await uploadPhotoMutation.mutateAsync({
-            agentId,
+         await uploadImageMutation.mutateAsync({
+            id: content.id,
             fileName: selectedFile.name,
             fileBuffer: base64,
             contentType: selectedFile.type,
          });
       } catch (error) {
          console.error("Upload failed:", error);
-         toast.error("Failed to upload photo");
+         toast.error("Failed to upload image");
       }
    };
 
    return (
       <Credenza open={isOpen} onOpenChange={setIsOpen}>
-         <CredenzaContent>
+         <CredenzaContent className="sm:max-w-md">
             <CredenzaHeader>
-               <CredenzaTitle>Manage Agent Photo</CredenzaTitle>
+               <CredenzaTitle>Upload Content Image</CredenzaTitle>
                <CredenzaDescription>
-                  Upload a new profile photo for your agent. The image will be
-                  displayed in your agent's profile.
+                  Upload an image for your content. The image will be displayed
+                  with your generated content.
                </CredenzaDescription>
             </CredenzaHeader>
             <CredenzaBody className="space-y-4">
@@ -152,18 +149,18 @@ export function ManageAgentPhoto({
                   accept={{
                      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
                   }}
-                  maxSize={5 * 1024 * 1024} // 5MB
+                  maxSize={10 * 1024 * 1024} // 10MB
                   maxFiles={1}
                   onDrop={handleFileSelect}
-                  disabled={uploadPhotoMutation.isPending}
+                  disabled={uploadImageMutation.isPending}
                   src={selectedFile ? [selectedFile] : undefined}
                >
                   <DropzoneEmptyState>
-                     {profilePhotoData?.data && (
+                     {currentImageData?.data && (
                         <img
-                           alt="profile"
-                           className="  object-contain"
-                           src={profilePhotoData.data}
+                           alt="content-photo"
+                           className="h-full w-full object-contain"
+                           src={currentImageData.data}
                         />
                      )}
                   </DropzoneEmptyState>
@@ -184,11 +181,11 @@ export function ManageAgentPhoto({
                </CredenzaClose>
                <Button
                   onClick={handleUpload}
-                  disabled={!selectedFile || uploadPhotoMutation.isPending}
+                  disabled={!selectedFile || uploadImageMutation.isPending}
                >
-                  {uploadPhotoMutation.isPending
+                  {uploadImageMutation.isPending
                      ? "Uploading..."
-                     : "Upload Photo"}
+                     : "Upload Image"}
                </Button>
             </CredenzaFooter>
          </CredenzaContent>

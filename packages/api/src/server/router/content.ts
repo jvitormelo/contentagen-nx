@@ -12,6 +12,19 @@ import {
 import { NotFoundError, DatabaseError } from "@packages/errors";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { uploadFile, streamFileForProxy } from "@packages/files/client";
+import { compressImage } from "@packages/files/image-helper";
+
+const ContentImageUploadInput = z.object({
+   id: z.uuid(),
+   fileName: z.string(),
+   fileBuffer: z.base64(), // base64 encoded
+   contentType: z.string(),
+});
+
+const ContentImageStreamInput = z.object({
+   id: z.uuid(),
+});
 
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import {
@@ -161,6 +174,95 @@ export const contentRouter = router({
                });
             }
             throw err;
+         }
+      }),
+   uploadImage: protectedProcedure
+      .input(ContentImageUploadInput)
+      .mutation(async ({ ctx, input }) => {
+         try {
+            const { id, fileName, fileBuffer } = input;
+
+            // Validate base64 format
+            if (!fileBuffer || fileBuffer.length === 0) {
+               throw new TRPCError({
+                  code: "BAD_REQUEST",
+                  message: "Invalid or empty file data",
+               });
+            }
+
+            // Sanitize fileName to prevent directory traversal
+            const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+            const key = `content/${id}/image/${sanitizedFileName}`;
+
+            let buffer: Buffer;
+            try {
+               buffer = Buffer.from(fileBuffer, "base64");
+            } catch (error) {
+               throw new TRPCError({
+                  code: "BAD_REQUEST",
+                  message: "Invalid base64 data",
+               });
+            }
+
+            // Compress the image
+            const compressedBuffer = await compressImage(buffer, {
+               format: "webp",
+               quality: 80,
+            });
+
+            const bucketName = (await ctx).minioBucket;
+            const minioClient = (await ctx).minioClient;
+
+            // Upload to S3/Minio
+            const url = await uploadFile(
+               key,
+               compressedBuffer,
+               "image/webp",
+               bucketName,
+               minioClient,
+            );
+
+            // Update content imageUrl with the file key
+            const db = (await ctx).db;
+            await updateContent(db, id, { imageUrl: key });
+
+            return { url, success: true };
+         } catch (err) {
+            console.error("Error uploading content image:", err);
+            throw new TRPCError({
+               code: "INTERNAL_SERVER_ERROR",
+               message: "Failed to upload image",
+            });
+         }
+      }),
+   getImage: protectedProcedure
+      .input(ContentImageStreamInput)
+      .query(async ({ ctx, input }) => {
+         try {
+            const db = (await ctx).db;
+            const content = await getContentById(db, input.id);
+
+            if (!content?.imageUrl) {
+               return null;
+            }
+
+            const bucketName = (await ctx).minioBucket;
+            const key = content.imageUrl;
+
+            const { buffer, contentType } = await streamFileForProxy(
+               key,
+               bucketName,
+               (await ctx).minioClient,
+            );
+
+            const base64 = buffer.toString("base64");
+            return {
+               data: `data:${contentType};base64,${base64}`,
+               contentType,
+            };
+         } catch (error) {
+            console.error("Error fetching content image:", error);
+            return null;
          }
       }),
    editBody: protectedProcedure

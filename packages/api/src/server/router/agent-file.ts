@@ -1,4 +1,5 @@
 import { listFiles, uploadFile } from "@packages/files/client";
+import { compressImage } from "@packages/files/image-helper";
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import {
@@ -28,16 +29,23 @@ export const agentFileRouter = router({
    uploadProfilePhoto: protectedProcedure
       .input(AgentProfilePhotoUploadInput)
       .mutation(async ({ ctx, input }) => {
-         const { agentId, fileName, fileBuffer, contentType } = input;
+         const { agentId, fileName, fileBuffer } = input;
          const key = `${agentId}/profile-photo/${fileName}`;
          const buffer = Buffer.from(fileBuffer, "base64");
+
+         // Compress the image
+         const compressedBuffer = await compressImage(buffer, {
+            format: "webp",
+            quality: 80,
+         });
+
          const bucketName = (await ctx).minioBucket;
          const minioClient = (await ctx).minioClient;
          // Upload to S3/Minio
          const url = await uploadFile(
             key,
-            buffer,
-            contentType,
+            compressedBuffer,
+            "image/webp",
             bucketName,
             minioClient,
          );
