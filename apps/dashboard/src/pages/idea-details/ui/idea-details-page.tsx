@@ -28,9 +28,6 @@ export function IdeaDetailsPage() {
                <IdeaDetailsQuickActions idea={idea} />
                <IdeaContentCard idea={idea} />
                <IdeaMetaCard idea={idea} />
-
-            </div>
-            <div className="col-span-1 md:col-span-3">
             </div>
          </div>
       </main>

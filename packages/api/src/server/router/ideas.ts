@@ -240,13 +240,17 @@ export const ideasRouter = router({
          // 3. Create content
          const content = await createContent(db, {
             agentId: idea.agentId,
-            request: { description: idea.content.description },
+            request: {
+               description: `${idea.content.title}\n\n${idea.content.description}`,
+            },
          });
          // 4. Enqueue job
          await enqueueContentPlanningJob({
             agentId: idea.agentId,
             contentId: content.id,
-            contentRequest: { description: idea.content.description },
+            contentRequest: {
+               description: `${idea.content.title}\n\n${idea.content.description}`,
+            },
          });
          return { success: true, content };
       }),
