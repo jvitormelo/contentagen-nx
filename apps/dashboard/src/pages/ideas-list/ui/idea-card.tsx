@@ -52,16 +52,23 @@ export function IdeaCard({
       setIsCredenzaOpen(false);
    };
 
+   const isGenerating =
+      idea.status === "pending" &&
+      (idea.content.title.includes("Generating") ||
+         idea.content.description.includes("Generating"));
+
    return (
       <Credenza open={isCredenzaOpen} onOpenChange={setIsCredenzaOpen}>
          <CredenzaTrigger asChild>
-            <Card className="cursor-pointer">
+            <Card
+               className={`cursor-pointer ${isGenerating ? "border-blue-500 bg-blue-50/50" : ""}`}
+            >
                <CardHeader>
-                  <CardTitle className="line-clamp-1">
-                     Idea #{idea.id.slice(-8)}
+                  <CardTitle className="line-clamp-1 ">
+                     {idea.content.title}
                   </CardTitle>
                   <CardDescription className="line-clamp-2">
-                     {idea.content}
+                     {idea.content.description}
                   </CardDescription>
                   <CardAction>
                      <Checkbox
@@ -85,21 +92,29 @@ export function IdeaCard({
                   />
                </CardContent>
                <CardFooter className="flex items-center justify-between">
-                  <Badge variant="outline">
-                     {idea.createdAt
-                        ? new Date(idea.createdAt).toLocaleDateString()
-                        : "Unknown"}
-                  </Badge>
-                  <Badge className="text-xs">
-                     {formatValueForDisplay(idea.status ?? "")}
+                  <div className="flex items-center gap-2">
+                     <Badge variant="outline">
+                        {idea.createdAt
+                           ? new Date(idea.createdAt).toLocaleDateString()
+                           : "Unknown"}
+                     </Badge>
+                  </div>
+                  <Badge
+                     className={`text-xs ${isGenerating ? "bg-blue-500" : ""}`}
+                  >
+                     {isGenerating
+                        ? "Generating"
+                        : formatValueForDisplay(idea.status ?? "")}
                   </Badge>
                </CardFooter>
             </Card>
          </CredenzaTrigger>
          <CredenzaContent>
             <CredenzaHeader>
-               <CredenzaTitle>Idea #{idea.id.slice(-8)}</CredenzaTitle>
-               <CredenzaDescription>{idea.content}</CredenzaDescription>
+               <CredenzaTitle>{idea.content.title}</CredenzaTitle>
+               <CredenzaDescription>
+                  {idea.content.description}
+               </CredenzaDescription>
             </CredenzaHeader>
             <CredenzaBody className="grid grid-cols-1 gap-2">
                <SquaredIconButton onClick={handleViewDetails}>
