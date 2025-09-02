@@ -1,0 +1,57 @@
+name: 📝 General Issue
+description: For questions, documentation issues, or other general topics
+title: "[GENERAL] "
+labels: ["question", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📝 General Issue
+
+        For questions, documentation issues, or other topics that don't fit bug reports or feature requests.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What type of issue is this?
+      options:
+        - Question
+        - Documentation Issue
+        - Security Concern
+        - Performance Issue
+        - Configuration Problem
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe your issue or question in detail.
+      placeholder: "Please provide as much detail as possible..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context or background information.
+      placeholder: "What were you trying to do? What did you expect?"
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment (if applicable)
+      description: What environment are you running in?
+      placeholder: "e.g., Node.js 18, Chrome 120, Ubuntu 22.04"
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any additional information, logs, or screenshots.
+      placeholder: "Add any other relevant information here."

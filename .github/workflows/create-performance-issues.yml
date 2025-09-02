@@ -1,0 +1,294 @@
+name: Create Performance & Accessibility Issues
+
+on:
+  schedule:
+    # Run bi-weekly on Fridays at 11 AM UTC
+    - cron: '0 11 * * 5'
+  workflow_dispatch:
+    inputs:
+      check_type:
+        description: 'Type of check to perform'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - performance
+          - accessibility
+          - bundle-size
+
+jobs:
+  performance-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Check bundle size
+        id: bundle-size
+        if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'bundle-size' || github.event_name != 'workflow_dispatch' }}
+        run: |
+          echo "Checking bundle sizes..."
+
+          # Get bundle sizes (this is a simplified check - you might want to use a dedicated tool)
+          if [ -d "dist" ] || [ -d "build" ]; then
+            BUNDLE_DIR=$(find . -name "dist" -o -name "build" | head -1)
+            if [ -n "$BUNDLE_DIR" ]; then
+              echo "bundle_size=$(du -sh "$BUNDLE_DIR" | cut -f1)" >> $GITHUB_OUTPUT
+              echo "bundle_files=$(find "$BUNDLE_DIR" -type f | wc -l)" >> $GITHUB_OUTPUT
+              echo "bundle_complete=true" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Performance analysis
+        id: performance-analysis
+        if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'performance' || github.event_name != 'workflow_dispatch' }}
+        run: |
+          echo "Analyzing performance metrics..."
+
+          # Check for potential performance issues in code
+          PERFORMANCE_ISSUES=$(grep -r -i "settimeout\|setinterval\|addeventlistener\|queryselectorall\|getelementsby" --include="*.js" --include="*.ts" --include="*.tsx" src/ 2>/dev/null | wc -l)
+          LARGE_FILES=$(find src/ -name "*.js" -o -name "*.ts" -o -name "*.tsx" | xargs wc -l | awk '$1 > 500 {print $2 ": " $1 " lines"}' | wc -l)
+
+          echo "performance_issues=$PERFORMANCE_ISSUES" >> $GITHUB_OUTPUT
+          echo "large_files=$LARGE_FILES" >> $GITHUB_OUTPUT
+          echo "performance_complete=true" >> $GITHUB_OUTPUT
+
+      - name: Accessibility check
+        id: accessibility-check
+        if: ${{ github.event.inputs.check_type == 'all' || github.event.inputs.check_type == 'accessibility' || github.event_name != 'workflow_dispatch' }}
+        run: |
+          echo "Checking for accessibility issues..."
+
+          # Basic accessibility checks
+          MISSING_ALT=$(grep -r "img\|Image" --include="*.tsx" --include="*.jsx" src/ | grep -v "alt=" | wc -l)
+          MISSING_LABEL=$(grep -r "input\|select\|textarea" --include="*.tsx" --include="*.jsx" src/ | grep -v "aria-label\|htmlFor\|id=" | wc -l)
+          MISSING_LANG=$(grep -r "<html" --include="*.tsx" --include="*.jsx" src/ | grep -v "lang=" | wc -l)
+
+          echo "missing_alt=$MISSING_ALT" >> $GITHUB_OUTPUT
+          echo "missing_label=$MISSING_LABEL" >> $GITHUB_OUTPUT
+          echo "missing_lang=$MISSING_LANG" >> $GITHUB_OUTPUT
+          echo "accessibility_complete=true" >> $GITHUB_OUTPUT
+
+      - name: Create performance issue
+        if: ${{ steps.performance-analysis.outputs.performance_complete == 'true' && (steps.performance-analysis.outputs.performance_issues != '0' || steps.performance-analysis.outputs.large_files != '0') }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const performanceIssues = parseInt('${{ steps.performance-analysis.outputs.performance_issues }}');
+            const largeFiles = parseInt('${{ steps.performance-analysis.outputs.large_files }}');
+
+            if (performanceIssues === 0 && largeFiles === 0) {
+              console.log('No performance issues found');
+              return;
+            }
+
+            // Check if performance issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['performance', 'automated'],
+              state: 'open'
+            });
+
+            if (existingIssues.data.length > 0) {
+              console.log('Performance issue already exists');
+              return;
+            }
+
+            const issueBody = `## ⚡ Performance Issues Detected
+
+            **Performance Patterns Found:** ${performanceIssues}
+            **Large Files (>500 lines):** ${largeFiles}
+            **Last Updated:** ${new Date().toISOString().split('T')[0]}
+
+            ### Potential Performance Issues:
+            - **Performance-related code patterns:** ${performanceIssues} instances found
+              - setTimeout/setInterval usage
+              - Event listener attachments
+              - DOM queries
+            - **Large files:** ${largeFiles} files exceed 500 lines
+
+            ### Recommendations:
+            1. **Code Splitting:** Consider splitting large files into smaller modules
+            2. **Lazy Loading:** Implement lazy loading for non-critical components
+            3. **Memoization:** Use React.memo, useMemo, and useCallback where appropriate
+            4. **Bundle Analysis:** Analyze bundle size and remove unused dependencies
+            5. **Image Optimization:** Compress and optimize images
+            6. **Caching:** Implement proper caching strategies
+
+            ### Next Steps:
+            1. Review large files and consider refactoring
+            2. Audit performance-related code patterns
+            3. Run performance profiling tools (Lighthouse, WebPageTest)
+            4. Implement performance optimizations incrementally
+            5. Monitor Core Web Vitals
+
+            ---
+            *This issue was automatically created by the performance analysis check.*
+            `;
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `⚡ Performance Optimization Needed (${performanceIssues} patterns, ${largeFiles} large files)`,
+              body: issueBody,
+              labels: ['performance', 'automated', 'enhancement']
+            });
+
+            console.log(`Created performance issue: ${issue.data.html_url}`);
+
+      - name: Create accessibility issue
+        if: ${{ steps.accessibility-check.outputs.accessibility_complete == 'true' && (steps.accessibility-check.outputs.missing_alt != '0' || steps.accessibility-check.outputs.missing_label != '0' || steps.accessibility-check.outputs.missing_lang != '0') }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const missingAlt = parseInt('${{ steps.accessibility-check.outputs.missing_alt }}');
+            const missingLabel = parseInt('${{ steps.accessibility-check.outputs.missing_label }}');
+            const missingLang = parseInt('${{ steps.accessibility-check.outputs.missing_lang }}');
+
+            if (missingAlt === 0 && missingLabel === 0 && missingLang === 0) {
+              console.log('No accessibility issues found');
+              return;
+            }
+
+            // Check if accessibility issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['accessibility', 'automated'],
+              state: 'open'
+            });
+
+            if (existingIssues.data.length > 0) {
+              console.log('Accessibility issue already exists');
+              return;
+            }
+
+            const issueBody = `## ♿ Accessibility Issues Detected
+
+            **Missing Alt Text:** ${missingAlt}
+            **Missing Labels:** ${missingLabel}
+            **Missing Language Attribute:** ${missingLang}
+            **Last Updated:** ${new Date().toISOString().split('T')[0]}
+
+            ### Accessibility Issues Found:
+            - **Images without alt text:** ${missingAlt} instances
+            - **Form elements without labels:** ${missingLabel} instances
+            - **Missing language attribute:** ${missingLang} instances
+
+            ### WCAG Guidelines to Address:
+            1. **1.1.1 Non-text Content:** All images need descriptive alt text
+            2. **2.4.6 Headings and Labels:** Form elements need proper labels
+            3. **3.1.1 Language of Page:** HTML element needs lang attribute
+
+            ### Next Steps:
+            1. Add alt text to all images
+            2. Associate labels with form elements using htmlFor or aria-labelledby
+            3. Add lang attribute to html element
+            4. Test with screen readers (NVDA, JAWS, VoiceOver)
+            5. Run automated accessibility tools (axe, lighthouse, wave)
+            6. Consider color contrast and keyboard navigation
+
+            ### Tools to help:
+            - **Lighthouse:** Built-in Chrome DevTools accessibility audit
+            - **axe DevTools:** Browser extension for accessibility testing
+            - **WAVE:** Web accessibility evaluation tool
+            - **NVDA:** Free screen reader for Windows
+
+            ---
+            *This issue was automatically created by the accessibility check.*
+            `;
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `♿ Accessibility Improvements Needed (${missingAlt + missingLabel + missingLang} issues)`,
+              body: issueBody,
+              labels: ['accessibility', 'automated', 'enhancement']
+            });
+
+            console.log(`Created accessibility issue: ${issue.data.html_url}`);
+
+      - name: Create bundle size issue
+        if: ${{ steps.bundle-size.outputs.bundle_complete == 'true' && steps.bundle-size.outputs.bundle_size }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const bundleSize = '${{ steps.bundle-size.outputs.bundle_size }}';
+            const bundleFiles = '${{ steps.bundle-size.outputs.bundle_files }}';
+
+            if (!bundleSize) {
+              console.log('No bundle size information available');
+              return;
+            }
+
+            // Check if bundle size issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['bundle-size', 'automated'],
+              state: 'open'
+            });
+
+            if (existingIssues.data.length > 0) {
+              console.log('Bundle size issue already exists');
+              return;
+            }
+
+            const issueBody = `## 📦 Bundle Size Analysis
+
+            **Bundle Size:** ${bundleSize}
+            **Number of Files:** ${bundleFiles}
+            **Last Updated:** ${new Date().toISOString().split('T')[0]}
+
+            ### Bundle Analysis:
+            - **Total Size:** ${bundleSize}
+            - **File Count:** ${bundleFiles} files
+
+            ### Optimization Opportunities:
+            1. **Code Splitting:** Split code into smaller chunks
+            2. **Tree Shaking:** Remove unused code
+            3. **Compression:** Enable gzip/brotli compression
+            4. **Image Optimization:** Compress images and use modern formats
+            5. **Dependency Analysis:** Remove unused dependencies
+            6. **Lazy Loading:** Load components on demand
+
+            ### Tools to help:
+            - **webpack-bundle-analyzer:** Visualize bundle composition
+            - **bundle-analyzer:** GitHub action for bundle analysis
+            - **compression-webpack-plugin:** Enable compression
+            - **image-webpack-loader:** Optimize images
+
+            ### Next Steps:
+            1. Analyze bundle composition
+            2. Identify largest dependencies
+            3. Implement code splitting strategies
+            4. Set up performance budgets
+            5. Monitor bundle size over time
+
+            ---
+            *This issue was automatically created by the bundle size analysis.*
+            `;
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📦 Bundle Size Optimization (${bundleSize})`,
+              body: issueBody,
+              labels: ['bundle-size', 'automated', 'enhancement']
+            });
+
+            console.log(`Created bundle size issue: ${issue.data.html_url}`);

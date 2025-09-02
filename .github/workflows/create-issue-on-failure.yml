@@ -1,0 +1,79 @@
+name: Create Issue on Failure
+
+on:
+  workflow_run:
+    workflows: ["check", "typecheck"]
+    types:
+      - completed
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Create issue on failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflow = context.payload.workflow_run;
+            const runId = workflow.id;
+            const conclusion = workflow.conclusion;
+            const workflowName = workflow.name;
+
+            // Check if an issue already exists for this workflow run
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['automated', 'ci-failure'],
+              state: 'open'
+            });
+
+            const existingIssue = existingIssues.data.find(issue =>
+              issue.title.includes(`Workflow ${workflowName} failed`) &&
+              issue.body.includes(`Run #${runId}`)
+            );
+
+            if (existingIssue) {
+              console.log('Issue already exists for this failure');
+              return;
+            }
+
+            // Get workflow run details
+            const runDetails = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+
+            const issueBody = `
+            ## 🚨 CI Failure Alert
+
+            **Workflow:** ${workflowName}
+            **Status:** ${conclusion}
+            **Run:** #${runId}
+            **Triggered by:** ${workflow.triggering_actor.login}
+            **Branch:** ${workflow.head_branch}
+            **Commit:** ${workflow.head_sha}
+
+            ### Details
+            - **Repository:** ${context.repo.owner}/${context.repo.repo}
+            - **Workflow URL:** ${workflow.html_url}
+            - **Run URL:** ${runDetails.data.html_url}
+
+            ### Next Steps
+            1. Check the workflow logs for detailed error information
+            2. Investigate the root cause of the failure
+            3. Fix any issues found
+            4. Re-run the workflow if needed
+
+            ---
+            *This issue was automatically created by GitHub Actions when a workflow failed.*
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 ${workflowName} failed - Run #${runId}`,
+              body: issueBody,
+              labels: ['automated', 'ci-failure', 'bug']
+            });

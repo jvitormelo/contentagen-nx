@@ -1,0 +1,191 @@
+name: Dependency Check
+
+on:
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for outdated dependencies
+        id: outdated
+        run: |
+          echo "outdated_packages=$(npm outdated --json || echo '{}')" >> $GITHUB_OUTPUT
+
+      - name: Check for security vulnerabilities
+        id: audit
+        run: |
+          echo "audit_result=$(npm audit --audit-level moderate --json || echo '{}')" >> $GITHUB_OUTPUT
+
+      - name: Create issue for outdated dependencies
+        if: steps.outdated.outputs.outdated_packages != '{}'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outdated = JSON.parse('${{ steps.outdated.outputs.outdated_packages }}');
+
+            if (Object.keys(outdated).length === 0) {
+              console.log('No outdated dependencies found');
+              return;
+            }
+
+            // Check if an issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['automated', 'dependencies'],
+              state: 'open'
+            });
+
+            const existingIssue = existingIssues.data.find(issue =>
+              issue.title.includes('Outdated Dependencies')
+            );
+
+            if (existingIssue) {
+              console.log('Outdated dependencies issue already exists');
+              return;
+            }
+
+            let issueBody = `## 📦 Outdated Dependencies Alert
+
+            The following dependencies have newer versions available:
+
+            | Package | Current | Latest | Type |
+            |---------|---------|--------|------|
+            `;
+
+            for (const [pkg, info] of Object.entries(outdated)) {
+              issueBody += `| ${pkg} | ${info.current} | ${info.latest} | ${info.type} |\n`;
+            }
+
+            issueBody += `
+
+            ### Recommended Actions
+            1. Review the changelog for each package
+            2. Test compatibility with your application
+            3. Update dependencies gradually
+            4. Run tests after each update
+
+            ### Commands to update
+            \`\`\`bash
+            # Update all dependencies
+            npm update
+
+            # Update specific package
+            npm update <package-name>
+
+            # Update to latest major version (be careful!)
+            npm install <package-name>@latest
+            \`\`\`
+
+            ---
+            *This issue was automatically created by GitHub Actions during the weekly dependency check.*
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '📦 Outdated Dependencies - Weekly Check',
+              body: issueBody,
+              labels: ['automated', 'dependencies', 'maintenance']
+            });
+
+      - name: Create issue for security vulnerabilities
+        if: steps.audit.outputs.audit_result != '{}'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const audit = JSON.parse('${{ steps.audit.outputs.audit_result }}');
+
+            if (!audit.vulnerabilities || Object.keys(audit.vulnerabilities).length === 0) {
+              console.log('No security vulnerabilities found');
+              return;
+            }
+
+            // Check if an issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['automated', 'security'],
+              state: 'open'
+            });
+
+            const existingIssue = existingIssues.data.find(issue =>
+              issue.title.includes('Security Vulnerabilities')
+            );
+
+            if (existingIssue) {
+              console.log('Security vulnerabilities issue already exists');
+              return;
+            }
+
+            let issueBody = `## 🔒 Security Vulnerabilities Alert
+
+            Security vulnerabilities have been detected in your dependencies:
+
+            ### Summary
+            - **Total vulnerabilities:** ${audit.metadata.vulnerabilities.total || 0}
+            - **Critical:** ${audit.metadata.vulnerabilities.critical || 0}
+            - **High:** ${audit.metadata.vulnerabilities.high || 0}
+            - **Moderate:** ${audit.metadata.vulnerabilities.moderate || 0}
+            - **Low:** ${audit.metadata.vulnerabilities.low || 0}
+
+            ### Affected Packages
+            `;
+
+            for (const [pkg, info] of Object.entries(audit.vulnerabilities)) {
+              issueBody += `#### ${pkg}
+              - **Severity:** ${info.severity}
+              - **Via:** ${info.via.join(', ')}
+              - **Effects:** ${info.effects.join(', ')}
+              - **Range:** ${info.range}
+              - **Fix Available:** ${info.fixAvailable ? 'Yes' : 'No'}
+              \n`;
+            }
+
+            issueBody += `
+
+            ### Recommended Actions
+            1. Review the security advisories for each vulnerability
+            2. Update affected packages to secure versions
+            3. Run \`npm audit fix\` to automatically fix issues where possible
+            4. Test your application thoroughly after updates
+
+            ### Commands to fix
+            \`\`\`bash
+            # Check detailed audit information
+            npm audit
+
+            # Attempt automatic fixes
+            npm audit fix
+
+            # Force fix (use with caution)
+            npm audit fix --force
+            \`\`\`
+
+            ---
+            *This issue was automatically created by GitHub Actions during the weekly security check.*
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔒 Security Vulnerabilities Detected',
+              body: issueBody,
+              labels: ['automated', 'security', 'critical']
+            });
