@@ -1,5 +1,10 @@
 import { enqueueContentPlanningJob } from "@packages/workers/queues/content/content-planning-queue";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import {
+   protectedProcedure,
+   publicProcedure,
+   router,
+   organizationProcedure,
+} from "../trpc";
 import {
    eventEmitter,
    EVENTS,
@@ -16,6 +21,7 @@ import {
    addToCollection,
    getCollection,
    queryCollection,
+   deleteFromCollection,
 } from "@packages/chroma-db/helpers";
 import { listAgents } from "@packages/database/repositories/agent-repository";
 import {
@@ -46,7 +52,7 @@ const ContentImageStreamInput = z.object({
 });
 
 export const contentRouter = router({
-   regenerate: protectedProcedure
+   regenerate: organizationProcedure
       .input(ContentInsertSchema.pick({ id: true }))
       .mutation(async ({ ctx, input }) => {
          try {
@@ -148,7 +154,7 @@ export const contentRouter = router({
             }
          }
       }),
-   addImageUrl: protectedProcedure
+   addImageUrl: organizationProcedure
       .input(ContentUpdateSchema.pick({ id: true, imageUrl: true }))
       .mutation(async ({ ctx, input }) => {
          try {
@@ -176,7 +182,7 @@ export const contentRouter = router({
             throw err;
          }
       }),
-   uploadImage: protectedProcedure
+   uploadImage: organizationProcedure
       .input(ContentImageUploadInput)
       .mutation(async ({ ctx, input }) => {
          try {
@@ -294,7 +300,7 @@ export const contentRouter = router({
             throw err;
          }
       }),
-   create: protectedProcedure
+   create: organizationProcedure
       .input(
          ContentInsertSchema.pick({
             agentId: true, // agentId is required for creation
@@ -370,7 +376,24 @@ export const contentRouter = router({
                });
             }
 
-            await deleteContent((await ctx).db, id);
+            const db = (await ctx).db;
+            const content = await getContentById(db, id);
+
+            // Delete related slug from ChromaDB if it exists
+            if (content.meta?.slug) {
+               const chromaClient = (await ctx).chromaClient;
+               const collection = await getCollection(
+                  chromaClient,
+                  "RelatedSlugs",
+               );
+               // Delete documents matching the slug and agentId
+               await deleteFromCollection(collection, {
+                  where: { agentId: content.agentId },
+                  whereDocument: { $contains: content.meta.slug },
+               });
+            }
+
+            await deleteContent(db, id);
             return { success: true };
          } catch (err) {
             if (err instanceof NotFoundError) {
@@ -452,6 +475,48 @@ export const contentRouter = router({
                });
             }
 
+            // Get content items to be deleted for slug cleanup
+            const contentsToDelete = contents.filter((content) =>
+               ids.includes(content.id),
+            );
+
+            // Delete related slugs from ChromaDB
+            const slugsToDelete = contentsToDelete
+               .map((content) => content.meta?.slug)
+               .filter(
+                  (slug): slug is string => slug !== null && slug !== undefined,
+               );
+
+            if (slugsToDelete.length > 0) {
+               const chromaClient = resolvedCtx.chromaClient;
+               const collection = await getCollection(
+                  chromaClient,
+                  "RelatedSlugs",
+               );
+
+               // Delete slugs for each agent
+               const agentSlugMap = new Map<string, string[]>();
+               contentsToDelete.forEach((content) => {
+                  if (content.meta?.slug) {
+                     const agentId = content.agent.id;
+                     if (!agentSlugMap.has(agentId)) {
+                        agentSlugMap.set(agentId, []);
+                     }
+                     agentSlugMap.get(agentId)?.push(content.meta.slug);
+                  }
+               });
+
+               // Delete slugs for each agent
+               agentSlugMap.forEach(async (slugs, agentId) => {
+                  for (const slug of slugs) {
+                     await deleteFromCollection(collection, {
+                        where: { agentId },
+                        whereDocument: { $contains: slug },
+                     });
+                  }
+               });
+            }
+
             // Perform bulk delete
             const result = await deleteBulkContent(resolvedCtx.db, ids);
             return {
@@ -471,7 +536,7 @@ export const contentRouter = router({
             throw err;
          }
       }),
-   bulkApprove: protectedProcedure
+   bulkApprove: organizationProcedure
       .input(z.object({ ids: z.array(z.string()).min(1) }))
       .mutation(async ({ ctx, input }) => {
          try {
@@ -655,7 +720,8 @@ export const contentRouter = router({
          }
       }),
 
-   approve: protectedProcedure
+   approve: organizationProcedure
+
       .input(ContentInsertSchema.pick({ id: true }))
       .mutation(async ({ ctx, input }) => {
          try {

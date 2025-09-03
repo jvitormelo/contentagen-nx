@@ -13,8 +13,9 @@ import {
 } from "@packages/ui/components/card";
 import { Progress } from "@packages/ui/components/progress";
 import { Skeleton } from "@packages/ui/components/skeleton";
-import { AlertCircle, Crown, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useCallback } from "react";
+import { SubscriptionPricingCards } from "@/widgets/subscription/ui/subscription-pricing-cards";
 
 export function ProfilePageBilling() {
    const trpc = useTRPC();
@@ -23,16 +24,8 @@ export function ProfilePageBilling() {
    );
    const activeSubscription = customerState?.activeSubscriptions[0];
    const activeMeter = customerState?.activeMeters[0];
-   console.log(activeMeter);
-   console.log(activeSubscription);
    const handleManageSubscription = useCallback(async () => {
       return await betterAuthClient.customer.portal();
-   }, []);
-
-   const goToCheckout = useCallback(async () => {
-      return await betterAuthClient.checkout({
-         slug: "basic",
-      });
    }, []);
 
    if (isLoading) {
@@ -109,11 +102,8 @@ export function ProfilePageBilling() {
                   You don't have an active subscription plan.
                </CardDescription>
             </CardHeader>
-            <CardContent>
-               <Button onClick={goToCheckout}>
-                  <Crown />
-                  Go to Premium
-               </Button>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <SubscriptionPricingCards />
             </CardContent>
          </Card>
       );
