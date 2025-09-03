@@ -152,11 +152,11 @@ const hasOrganizationAccess = t.middleware(async ({ ctx, next }) => {
 
    const userId = resolvedCtx.session.user.id;
 
-   // First check if user is part of an organization
+   // Check if user is part of an organization
    const memberWithOrg = await findMemberByUserId(resolvedCtx.db, userId);
 
    if (memberWithOrg) {
-      // User is part of organization - check if organization owner has subscription
+      // Find the organization owner
       const ownerMember = await resolvedCtx.db.query.member.findFirst({
          where: (member, { eq, and }) =>
             and(
@@ -189,8 +189,40 @@ const hasOrganizationAccess = t.middleware(async ({ ctx, next }) => {
             session: { ...resolvedCtx.session },
          },
       });
-   } else {
-      // User is not part of any organization - check their own subscription
+   }
+
+   // User is not part of any organization - check their own subscription
+   const customerState = await resolvedCtx.auth.api.state({
+      headers: resolvedCtx.headers,
+   });
+
+   if (!customerState.activeSubscriptions) {
+      throw new TRPCError({
+         code: "FORBIDDEN",
+         message: "Active subscription required",
+      });
+   }
+
+   return next({
+      ctx: {
+         session: { ...resolvedCtx.session },
+         customerState,
+      },
+   });
+});
+
+const hasOrganizationOwnerAccess = t.middleware(async ({ ctx, next }) => {
+   const resolvedCtx = await ctx;
+
+   if (!resolvedCtx.session?.user) {
+      throw new TRPCError({ code: "FORBIDDEN" });
+   }
+
+   const userId = resolvedCtx.session.user.id;
+
+   const memberWithOrg = await findMemberByUserId(resolvedCtx.db, userId);
+
+   if (!memberWithOrg) {
       const customerState = await resolvedCtx.auth.api.state({
          headers: resolvedCtx.headers,
       });
@@ -199,6 +231,73 @@ const hasOrganizationAccess = t.middleware(async ({ ctx, next }) => {
          throw new TRPCError({
             code: "FORBIDDEN",
             message: "Active subscription required",
+         });
+      }
+
+      return next({
+         ctx: {
+            session: { ...resolvedCtx.session },
+         },
+      });
+   }
+
+   // Check if user is the owner of the organization
+   const isOwner = await isOrganizationOwner(
+      resolvedCtx.db,
+      userId,
+      memberWithOrg.organizationId,
+   );
+
+   if (!isOwner) {
+      throw new TRPCError({
+         code: "FORBIDDEN",
+         message: "User is not the owner of the organization",
+      });
+   }
+
+   const customerState = await resolvedCtx.auth.api.state({
+      headers: resolvedCtx.headers,
+   });
+
+   if (!customerState.activeSubscriptions) {
+      throw new TRPCError({
+         code: "FORBIDDEN",
+         message: "Active subscription required",
+      });
+   }
+
+   return next({
+      ctx: {
+         session: { ...resolvedCtx.session },
+      },
+   });
+});
+
+export const hasGenerationCredits = t.middleware(async ({ ctx, next }) => {
+   const resolvedCtx = await ctx;
+
+   if (!resolvedCtx.session?.user) {
+      throw new TRPCError({ code: "FORBIDDEN" });
+   }
+
+   const userId = resolvedCtx.session.user.id;
+
+   const memberWithOrg = await findMemberByUserId(resolvedCtx.db, userId);
+
+   if (!memberWithOrg) {
+      const customerState = await resolvedCtx.auth.api.state({
+         headers: resolvedCtx.headers,
+      });
+
+      const hasBalance = customerState.activeMeters?.some(
+         (meter) => meter.creditedUnits > 0 && meter.balance > 0,
+      );
+
+      if (!hasBalance) {
+         throw new TRPCError({
+            code: "FORBIDDEN",
+            message:
+               "Insufficient generation credits. Please upgrade your plan or purchase more credits.",
          });
       }
 
@@ -209,69 +308,45 @@ const hasOrganizationAccess = t.middleware(async ({ ctx, next }) => {
          },
       });
    }
-});
 
-const hasOrganizationOwnerAccess = t.middleware(async ({ ctx, next }) => {
-   const resolvedCtx = await ctx;
+   const ownerMember = await resolvedCtx.db.query.member.findFirst({
+      where: (member, { eq, and }) =>
+         and(
+            eq(member.organizationId, memberWithOrg.organizationId),
+            eq(member.role, "owner"),
+         ),
+   });
 
-   // First ensure user is authenticated
-   if (!resolvedCtx.session?.user) {
-      throw new TRPCError({ code: "FORBIDDEN" });
-   }
-
-   const userId = resolvedCtx.session.user.id;
-
-   const memberWithOrg = await findMemberByUserId(resolvedCtx.db, userId);
-
-   if (memberWithOrg) {
-      // Check if user is the owner of the organization
-      const isOwner = await isOrganizationOwner(
-         resolvedCtx.db,
-         userId,
-         memberWithOrg.organizationId,
-      );
-
-      if (!isOwner) {
-         throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "User is not the owner of the organization",
-         });
-      }
-
-      const customerState = await resolvedCtx.auth.api.state({
-         headers: resolvedCtx.headers,
-      });
-
-      if (!customerState.activeSubscriptions) {
-         throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "Active subscription required",
-         });
-      }
-      return next({
-         ctx: {
-            session: { ...resolvedCtx.session },
-         },
-      });
-   } else {
-      // User is not part of any organization - check their own subscription
-      const customerState = await resolvedCtx.auth.api.state({
-         headers: resolvedCtx.headers,
-      });
-
-      if (!customerState.activeSubscriptions) {
-         throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "Active subscription required",
-         });
-      }
-
-      return next({
-         ctx: {
-            session: { ...resolvedCtx.session },
-         },
+   if (!ownerMember) {
+      throw new TRPCError({
+         code: "FORBIDDEN",
+         message: "Organization has no owner",
       });
    }
+
+   const customerStateToCheck = await getCustomerState(
+      resolvedCtx.polarClient,
+      ownerMember.userId,
+   );
+
+   const hasBalance = customerStateToCheck.activeMeters?.some(
+      (meter) => meter.creditedUnits > 0 && meter.balance > 0,
+   );
+
+   if (!hasBalance) {
+      throw new TRPCError({
+         code: "FORBIDDEN",
+         message:
+            "Insufficient generation credits. Please upgrade your plan or purchase more credits.",
+      });
+   }
+
+   return next({
+      ctx: {
+         session: { ...resolvedCtx.session },
+         customerState: customerStateToCheck,
+      },
+   });
 });
 
 export const publicProcedure = t.procedure
@@ -287,3 +362,6 @@ export const organizationProcedure = protectedProcedure.use(
 export const organizationOwnerProcedure = protectedProcedure.use(
    hasOrganizationOwnerAccess,
 );
+
+// Generation credits procedure
+export const generationProcedure = protectedProcedure.use(hasGenerationCredits);

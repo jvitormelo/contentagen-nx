@@ -10,6 +10,7 @@ import {
    IdeaUpdateSchema,
 } from "@packages/database/schemas/ideas";
 import {
+   hasGenerationCredits,
    protectedProcedure,
    publicProcedure,
    router,
@@ -222,6 +223,8 @@ export const ideasRouter = router({
       }),
 
    approve: organizationProcedure
+      .use(hasGenerationCredits)
+
       .input(z.object({ id: z.string() }))
       .mutation(async ({ ctx, input }) => {
          const resolvedCtx = await ctx;
@@ -261,6 +264,8 @@ export const ideasRouter = router({
       }),
 
    bulkApprove: organizationProcedure
+      .use(hasGenerationCredits)
+
       .input(z.object({ ids: z.array(z.string()).min(1) }))
       .mutation(async ({ ctx, input }) => {
          const resolvedCtx = await ctx;

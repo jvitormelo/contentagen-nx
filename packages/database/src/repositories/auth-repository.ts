@@ -9,7 +9,6 @@ export async function findMemberByUserId(
       const result = await dbClient.query.member.findFirst({
          where: (member, { eq }) => eq(member.userId, userId),
       });
-      if (!result) throw new NotFoundError("User not found");
       return result;
    } catch (err) {
       if (err instanceof NotFoundError) throw err;
