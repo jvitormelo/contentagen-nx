@@ -22,7 +22,7 @@ export function DashboardHomePage() {
          {
             title: "Words Written (30d)",
             description: "Words generated in last 30 days",
-            value: data.wordCount30d,
+            value: data.wordCount30d?.toLocaleString() ?? "0",
          },
          {
             title: "Content Generated (30d)",

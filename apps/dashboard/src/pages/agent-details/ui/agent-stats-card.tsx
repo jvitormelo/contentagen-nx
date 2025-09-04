@@ -45,7 +45,7 @@ export function AgentStatsCard() {
          {
             label: "Total Words Written",
             description: "Cumulative words written across all content.",
-            value: data.wordsWritten?.toString() ?? "0",
+            value: data.wordsWritten?.toLocaleString() ?? "0",
          },
          {
             label: "Avg. Quality Score",
