@@ -44,8 +44,8 @@ FROM nginx:alpine AS runner
 COPY --from=builder /app/apps/blog/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration and entrypoint script
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY entrypoint.sh /entrypoint.sh
+COPY apps/blog/nginx.conf /etc/nginx/nginx.conf
+COPY apps/blog/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Set and expose the port. Default to 4322 if not provided.
