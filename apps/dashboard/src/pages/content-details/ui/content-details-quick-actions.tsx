@@ -8,6 +8,7 @@ import {
    Upload,
    Share,
    Lock,
+   Eye,
 } from "lucide-react";
 import {
    Card,
@@ -28,6 +29,7 @@ import { useState } from "react";
 import type { ContentSelect } from "@packages/database/schema";
 import { ContentDeleteConfirmationCredenza } from "../../content-list/features/content-delete-confirmation-credenza";
 import { UploadContentImage } from "./upload-content-image";
+import { BlogPreviewCredenza } from "./blog-preview-credenza";
 
 export function ContentDetailsQuickActions({
    content,
@@ -41,6 +43,7 @@ export function ContentDetailsQuickActions({
    const queryClient = useQueryClient();
    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
    const [uploadImageOpen, setUploadImageOpen] = useState(false);
+   const [blogPreviewOpen, setBlogPreviewOpen] = useState(false);
 
    const regenerateMutation = useMutation(
       trpc.content.regenerate.mutationOptions({
@@ -123,7 +126,14 @@ export function ContentDetailsQuickActions({
       toggleShareMutation.mutate({ id: content.id });
    };
 
-   const actions = [
+   interface ActionItem {
+      icon: React.ComponentType<{ className?: string }>;
+      label: string;
+      onClick: () => void;
+      disabled: boolean;
+   }
+
+   const actions: ActionItem[] = [
       {
          icon: RotateCcw,
          label: "Regenerate Content",
@@ -140,6 +150,12 @@ export function ContentDetailsQuickActions({
          icon: Upload,
          label: "Upload Image",
          onClick: () => setUploadImageOpen(true),
+         disabled: false,
+      },
+      {
+         icon: Eye,
+         label: "Blog Preview",
+         onClick: () => setBlogPreviewOpen(true),
          disabled: false,
       },
       {
@@ -203,6 +219,11 @@ export function ContentDetailsQuickActions({
             content={content}
             open={uploadImageOpen}
             onOpenChange={setUploadImageOpen}
+         />
+         <BlogPreviewCredenza
+            content={content}
+            open={blogPreviewOpen}
+            onOpenChange={setBlogPreviewOpen}
          />
       </>
    );
