@@ -12,12 +12,19 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useSubscription } from "@trpc/tanstack-react-query";
 import { toast } from "sonner";
 import { useMissingImagesNotification } from "../lib/use-missing-images-notification";
+import { useSearch } from "@tanstack/react-router";
 
 //TODO: criar um component padrao para paginacao + toolbar, bulk actions de aprovar, deletar ou rejeitar
 function ContentListPageContent() {
    const trpc = useTRPC();
    const queryClient = useQueryClient();
-   const { page, limit, hasGeneratingContent } = useContentList();
+   const {
+      page,
+      limit,
+      hasGeneratingContent,
+      filteredStatuses,
+      selectedAgents,
+   } = useContentList();
 
    // Initialize missing images notification hook
    useMissingImagesNotification();
@@ -30,19 +37,12 @@ function ContentListPageContent() {
                toast.success(`Content status updated to ${statusData.status}`);
                queryClient.invalidateQueries({
                   queryKey: trpc.content.listAllContent.queryKey({
-                     status: [
-                        "draft",
-                        "approved",
-                        "pending",
-                        "planning",
-                        "researching",
-                        "writing",
-                        "editing",
-                        "analyzing",
-                        "grammar_checking",
-                     ],
+                     status: filteredStatuses,
                      page,
                      limit,
+                     ...(selectedAgents.length > 0 && {
+                        agentIds: selectedAgents,
+                     }),
                   }),
                });
             },
@@ -64,6 +64,7 @@ function ContentListPageContent() {
 
 export function ContentListPage() {
    const trpc = useTRPC();
+   const search = useSearch({ from: "/_dashboard/content/" });
    const { data: agents } = useSuspenseQuery(trpc.agent.list.queryOptions());
    const { data } = useSuspenseQuery(
       trpc.content.listAllContent.queryOptions({
@@ -78,7 +79,7 @@ export function ContentListPage() {
             "analyzing",
             "grammar_checking",
          ],
-         page: 1,
+         page: search.page,
          limit: 8,
       }),
    );
