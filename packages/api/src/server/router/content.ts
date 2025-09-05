@@ -617,6 +617,50 @@ export const contentRouter = router({
                approvableIds,
             );
 
+            // Save related slugs for approved content into ChromaDB
+            try {
+               const chromaClient = resolvedCtx.chromaClient;
+               const collection = await getCollection(
+                  chromaClient,
+                  "RelatedSlugs",
+               );
+
+               // Build a map of agentId -> Set<slug> to dedupe per agent
+               const agentSlugMap = new Map<string, Set<string>>();
+               for (const c of approvableContents) {
+                  const slug = c.meta?.slug;
+                  const agentId = c.agent?.id;
+                  if (!slug || !agentId) continue;
+                  if (!agentSlugMap.has(agentId))
+                     agentSlugMap.set(agentId, new Set());
+                  agentSlugMap.get(agentId)!.add(slug);
+               }
+
+               // Persist slugs per agent
+               for (const [agentId, slugSet] of agentSlugMap.entries()) {
+                  const slugs = Array.from(slugSet);
+                  if (slugs.length === 0) continue;
+                  try {
+                     await addToCollection(collection, {
+                        documents: slugs,
+                        ids: slugs.map(() => crypto.randomUUID()),
+                        metadatas: slugs.map(() => ({ agentId })),
+                     });
+                  } catch (err) {
+                     console.error(
+                        `Failed to save related slugs for agent ${agentId}:`,
+                        err,
+                     );
+                     // continue — do not block approval flow
+                  }
+               }
+            } catch (err) {
+               console.error(
+                  "Failed to persist related slugs during bulk approve:",
+                  err,
+               );
+            }
+
             // Emit status change events for each approved content
             for (const content of approvableContents) {
                eventEmitter.emit(EVENTS.contentStatus, {
