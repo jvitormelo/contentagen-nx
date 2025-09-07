@@ -6,6 +6,7 @@ import {
    timestamp,
    index,
    pgEnum,
+   integer,
 } from "drizzle-orm/pg-core";
 import { agent } from "./agent";
 import { z } from "zod";
@@ -15,6 +16,7 @@ import {
    createUpdateSchema,
 } from "drizzle-zod";
 import { relations } from "drizzle-orm";
+import { contentVersion } from "./content-version";
 
 export const ContentRequestSchema = z.object({
    description: z.string().min(1, "Description is required"),
@@ -85,6 +87,7 @@ export const content = pgTable(
       meta: jsonb("meta").$type<ContentMeta>().default({}),
       request: jsonb("request").$type<ContentRequest>().notNull(),
       stats: jsonb("stats").$type<ContentStats>().default({}),
+      currentVersion: integer("current_version").default(0),
       createdAt: timestamp("created_at")
          .$defaultFn(() => new Date())
          .notNull(),
@@ -94,11 +97,12 @@ export const content = pgTable(
    },
    (table) => [index("content_agent_id_idx").on(table.agentId)],
 );
-export const contentRelations = relations(content, ({ one }) => ({
+export const contentRelations = relations(content, ({ one, many }) => ({
    agent: one(agent, {
       fields: [content.agentId],
       references: [agent.id],
    }),
+   versions: many(contentVersion),
 }));
 
 export type ContentStatus = (typeof contentStatusEnum.enumValues)[number];

@@ -33,13 +33,20 @@ import {
    deleteBulkContent,
    approveBulkContent,
    listContents,
+   updateContentCurrentVersion,
 } from "@packages/database/repositories/content-repository";
+import {
+   createContentVersion,
+   getAllVersionsByContentId,
+   getNextVersionNumber,
+} from "@packages/database/repositories/content-version-repository";
 import { canModifyContent } from "@packages/database";
 import { NotFoundError, DatabaseError } from "@packages/errors";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { uploadFile, streamFileForProxy } from "@packages/files/client";
 import { compressImage } from "@packages/files/image-helper";
+import { createDiff, createLineDiff } from "@packages/helpers/text";
 
 const ContentImageUploadInput = z.object({
    id: z.uuid(),
@@ -199,6 +206,25 @@ export const contentRouter = router({
                });
             }
 
+            // Get current content to check for existing image
+            const db = (await ctx).db;
+            const currentContent = await getContentById(db, id);
+
+            // Delete old image if it exists
+            if (currentContent?.imageUrl) {
+               try {
+                  const bucketName = (await ctx).minioBucket;
+                  const minioClient = (await ctx).minioClient;
+                  await minioClient.removeObject(
+                     bucketName,
+                     currentContent.imageUrl,
+                  );
+               } catch (error) {
+                  console.error("Error deleting old content image:", error);
+                  // Continue with upload even if deletion fails
+               }
+            }
+
             // Sanitize fileName to prevent directory traversal
             const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
             const key = `content/${id}/image/${sanitizedFileName}`;
@@ -223,7 +249,6 @@ export const contentRouter = router({
             const bucketName = (await ctx).minioBucket;
             const minioClient = (await ctx).minioClient;
 
-            // Upload to S3/Minio
             const url = await uploadFile(
                key,
                compressedBuffer,
@@ -233,7 +258,6 @@ export const contentRouter = router({
             );
 
             // Update content imageUrl with the file key
-            const db = (await ctx).db;
             await updateContent(db, id, { imageUrl: key });
 
             return { url, success: true };
@@ -276,7 +300,11 @@ export const contentRouter = router({
          }
       }),
    editBody: protectedProcedure
-      .input(ContentUpdateSchema.pick({ id: true, body: true }))
+      .input(
+         ContentUpdateSchema.pick({ id: true, body: true }).extend({
+            baseVersion: z.number().optional(), // Optional version to compare against
+         }),
+      )
       .mutation(async ({ ctx, input }) => {
          try {
             const db = (await ctx).db;
@@ -286,10 +314,73 @@ export const contentRouter = router({
                   message: "Content ID and body are required.",
                });
             }
+
+            // Get the current content to calculate diff
+            const currentContent = await getContentById(db, input.id);
+            if (!currentContent) {
+               throw new TRPCError({
+                  code: "NOT_FOUND",
+                  message: "Content not found.",
+               });
+            }
+
+            // Get the user ID
+            const userId = (await ctx).session?.user.id;
+            if (!userId) {
+               throw new TRPCError({
+                  code: "UNAUTHORIZED",
+                  message: "User must be authenticated to edit content.",
+               });
+            }
+
+            // Calculate diff from specified base version or latest version
+            let diff = null;
+            let lineDiff = null;
+            const changedFields: string[] = [];
+
+            try {
+               let baseVersionBody = "";
+
+               // For now, we'll use the current content as the base for comparison
+               // TODO: Implement proper content reconstruction from diffs for historical comparison
+               baseVersionBody = currentContent.body;
+
+               diff = createDiff(baseVersionBody, input.body);
+               lineDiff = createLineDiff(baseVersionBody, input.body);
+
+               // Track which fields changed (only body in this case)
+               if (input.body !== baseVersionBody) {
+                  changedFields.push("body");
+               }
+            } catch (err) {
+               // If no base version exists, diff will be null
+               console.log("No base version found for diff calculation");
+            }
+
+            // Get next version number
+            const versionNumber = await getNextVersionNumber(db, input.id);
+
+            // Create new version
+            await createContentVersion(db, {
+               contentId: input.id,
+               userId,
+               version: versionNumber,
+               meta: {
+                  diff: diff,
+                  lineDiff: lineDiff,
+                  changedFields,
+               },
+            });
+
+            // Update the content's current version
+            await updateContentCurrentVersion(db, input.id, versionNumber);
+
+            // Update the content
             const updated = await updateContent(db, input.id, {
                body: input.body,
             });
-            return { success: true, content: updated };
+
+            return { success: true, content: updated, version: versionNumber };
          } catch (err) {
             if (err instanceof NotFoundError) {
                throw new TRPCError({ code: "NOT_FOUND", message: err.message });
@@ -322,9 +413,25 @@ export const contentRouter = router({
                   message: "User must be authenticated to create content.",
                });
             }
-            const created = await createContent((await ctx).db, {
-               ...input,
+            const db = (await ctx).db;
+            const created = await db.transaction(async (tx) => {
+               const c = await createContent(tx, {
+                  ...input,
+                  currentVersion: 1, // Set initial version
+               });
+               await createContentVersion(tx, {
+                  contentId: c.id,
+                  userId,
+                  version: 1,
+                  meta: {
+                     diff: null, // No diff for initial version
+                     lineDiff: null,
+                     changedFields: [],
+                  },
+               });
+               return c;
             });
+
             await enqueueContentPlanningJob({
                agentId: input.agentId,
                contentId: created.id,
@@ -942,6 +1049,63 @@ export const contentRouter = router({
                );
 
             return slugs;
+         } catch (err) {
+            if (err instanceof NotFoundError) {
+               throw new TRPCError({ code: "NOT_FOUND", message: err.message });
+            }
+            if (err instanceof DatabaseError) {
+               throw new TRPCError({
+                  code: "INTERNAL_SERVER_ERROR",
+                  message: err.message,
+               });
+            }
+            throw err;
+         }
+      }),
+   getVersions: protectedProcedure
+      .input(z.object({ contentId: z.string() }))
+      .query(async ({ ctx, input }) => {
+         try {
+            if (!input.contentId) {
+               throw new TRPCError({
+                  code: "BAD_REQUEST",
+                  message: "Content ID is required.",
+               });
+            }
+
+            const resolvedCtx = await ctx;
+            const userId = resolvedCtx.session?.user.id;
+            const organizationId =
+               resolvedCtx.session?.session?.activeOrganizationId;
+
+            if (!userId) {
+               throw new TRPCError({
+                  code: "UNAUTHORIZED",
+                  message: "User must be authenticated to view versions.",
+               });
+            }
+
+            // Check if user can access this content
+            const canAccess = await canModifyContent(
+               resolvedCtx.db,
+               input.contentId,
+               userId,
+               organizationId ?? "",
+            );
+
+            if (!canAccess) {
+               throw new TRPCError({
+                  code: "FORBIDDEN",
+                  message:
+                     "You don't have permission to view versions for this content.",
+               });
+            }
+
+            const versions = await getAllVersionsByContentId(
+               resolvedCtx.db,
+               input.contentId,
+            );
+            return versions;
          } catch (err) {
             if (err instanceof NotFoundError) {
                throw new TRPCError({ code: "NOT_FOUND", message: err.message });
