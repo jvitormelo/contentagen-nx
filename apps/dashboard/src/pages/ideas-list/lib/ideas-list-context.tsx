@@ -29,9 +29,6 @@ interface IdeasListContextType {
    data?: RouterOutput["ideas"]["listAllIdeas"];
    selectableItems: RouterOutput["ideas"]["listAllIdeas"]["items"];
 
-   // Real-time updates
-   updateIdeaStatus: (ideaId: string, status: string, message?: string) => void;
-
    // Filtering state
    agentId?: string;
 
@@ -64,7 +61,6 @@ export function IdeasListProvider({
    const [page, setPage] = useState(1);
    const [limit] = useState(8);
    const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-   const [ideasData, setIdeasData] = useState(data);
    // const trpc = useTRPC();
 
    const totalPages = useMemo(() => {
@@ -91,30 +87,10 @@ export function IdeasListProvider({
    );
 
    const selectableItems = useMemo(() => {
-      return ideasData?.items.filter((item) => item.status === "pending") || [];
-   }, [ideasData?.items]);
+      return data?.items.filter((item) => item.status === "pending") || [];
+   }, [data?.items]);
 
    // Real-time updates
-   const updateIdeaStatus = useCallback((ideaId: string, status: string) => {
-      setIdeasData((prevData) => {
-         if (!prevData) return prevData;
-         return {
-            ...prevData,
-            items: prevData.items.map((item) =>
-               item.id === ideaId ? { ...item, status: status as any } : item,
-            ),
-         };
-      });
-   }, []);
-
-   // TODO: Add real-time subscription once TRPC client is regenerated
-   // useSubscription(
-   //    trpc.ideas.onStatusChanged.subscriptionOptions(undefined, {
-   //       onData: (event: any) => {
-   //          updateIdeaStatus(event.ideaId, event.status, event.message);
-   //       },
-   //    }),
-   // );
 
    const allSelected = useMemo(() => {
       const selectableIds = selectableItems.map(
@@ -162,18 +138,17 @@ export function IdeasListProvider({
       selectedItemsCount: selectedItems.size,
 
       // Data
-      data: ideasData,
+      data,
       selectableItems,
 
       // Real-time updates
-      updateIdeaStatus,
 
       // Filtering
       agentId,
 
       // Constants
       limit,
-      total: ideasData?.total || 0,
+      total: data?.total ?? 0,
    };
 
    return React.createElement(IdeasListContext.Provider, { value }, children);
