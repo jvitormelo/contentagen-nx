@@ -1,26 +1,24 @@
-## Live Demos
+# ContentaGen
 
--   **Dashboard**: `https://app.contentagen.com` 
--   **Blog Example**: `https://blog.contentagen.com` - A live blog powered entirely by the sdk
--   
-## 📂 Project Structure
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Tech Stack](https://img.shields.io/badge/Tech%20Stack-Nx%20%7C%20ElysiaJS%20%7C%20React%20%7C%20Astro-informational)](#-tech-stack)
+[![Node Version](https://img.shields.io/badge/Node-%3E%3D18-brightgreen)](https://nodejs.org/)
 
-This project is a monorepo managed by [Nx](https://nx.dev).
+A modern, AI-powered content management system that enables creators to build, manage, and deploy content across multiple platforms. Built with a full-stack architecture using cutting-edge technologies for optimal performance and developer experience.
 
--   `apps/`: Contains the individual applications.
-    -   `server`: ElysiaJS backend with tRPC for the API.
-    -   `dashboard`: React (Vite) application for the user dashboard.
-    -   `blog`: Astro-powered blog that consumes content from the SDK.
-    -   `docs`: Astro-powered documentation site.
-    -   `landing-page`: Astro-powered marketing landing page.
--   `packages/`: Shared libraries and utilities used across the monorepo.
-    -   `api`: tRPC router definitions, shared between client and server.
-    -   `authentication`: Shared authentication logic using Better Auth.
-    -   `database`: Drizzle ORM schema, migrations, and repository logic.
-    -   `workers`: BullMQ queue and worker definitions for background jobs.
-    -   `ui`: Shared React component library using shadcn/ui and Tailwind CSS.
-    -   `...and more!`
--   `tooling/`: Shared tooling configurations, like TypeScript `tsconfig.json` presets.
+## ✨ Key Features
+
+- **AI-Powered Content Generation**: Leverage advanced AI models to create high-quality content
+- **Multi-Platform Publishing**: Deploy content to blogs, documentation sites, and landing pages
+- **Real-time Collaboration**: Work with team members seamlessly
+- **Version Control**: Track content changes with full revision history
+- **Modern UI/UX**: Beautiful, responsive dashboard built with shadcn/ui
+- **Scalable Architecture**: Built with Nx monorepo for enterprise-scale applications
+
+## 🚀 Live Demos
+
+-   **Dashboard**: [https://app.contentagen.com](https://app.contentagen.com) - Main content management interface
+-   **Blog Example**: [https://blog.contentagen.com](https://blog.contentagen.com) - Live blog powered entirely by the SDK
 
 ## 🛠️ Tech Stack
 
