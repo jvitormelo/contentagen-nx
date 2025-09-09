@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 export const writingDraftSchema = z.object({
    draft: z.string().describe("A detailed draft of the content"),
 });

@@ -20,6 +20,7 @@ import { contentVersion } from "./content-version";
 
 export const ContentRequestSchema = z.object({
    description: z.string().min(1, "Description is required"),
+   layout: z.enum(["tutorial", "interview", "article", "changelog"]),
 });
 export type ContentRequest = z.infer<typeof ContentRequestSchema>;
 export const ContentStatsSchema = z.object({
@@ -87,10 +88,12 @@ export const content = pgTable(
       meta: jsonb("meta").$type<ContentMeta>().default({}),
       request: jsonb("request").$type<ContentRequest>().notNull(),
       stats: jsonb("stats").$type<ContentStats>().default({}),
+
       currentVersion: integer("current_version").default(0),
       createdAt: timestamp("created_at")
          .$defaultFn(() => new Date())
          .notNull(),
+
       updatedAt: timestamp("updated_at")
          .$defaultFn(() => new Date())
          .notNull(),

@@ -2,7 +2,26 @@ import {
    writingDraftInputPrompt,
    type WritingDraftSchema,
    writingDraftSchema,
+   writingDraftSystemPrompt,
 } from "@packages/prompts/prompt/writing/writing-draft";
+import {
+   changelogDraftSystemPrompt,
+   changelogDraftInputPrompt,
+   changelogDraftSchema,
+   type ChangelogDraftSchema,
+} from "@packages/prompts/prompt/writing/changelog-writing-draft";
+import {
+   interviewDraftSystemPrompt,
+   interviewDraftInputPrompt,
+   interviewDraftSchema,
+   type InterviewDraftSchema,
+} from "@packages/prompts/prompt/writing/interview-writing-draft";
+import {
+   tutorialDraftSystemPrompt,
+   tutorialDraftInputPrompt,
+   tutorialDraftSchema,
+   type TutorialDraftSchema,
+} from "@packages/prompts/prompt/writing/tutorial-writing-draft";
 import { generateOpenRouterObject } from "@packages/openrouter/helpers";
 import { createOpenrouterClient } from "@packages/openrouter/client";
 import { serverEnv } from "@packages/environment/server";
@@ -23,19 +42,74 @@ export async function runWriteContentDraft(payload: {
    const { brandDocument, webSearchContent, contentRequest, personaConfig } =
       data;
    try {
+      const getSystemPrompt = () => {
+         if (contentRequest.layout === "tutorial") {
+            return tutorialDraftSystemPrompt();
+         }
+         if (contentRequest.layout === "interview") {
+            return interviewDraftSystemPrompt();
+         }
+         if (contentRequest.layout === "changelog") {
+            return changelogDraftSystemPrompt();
+         }
+         return writingDraftSystemPrompt();
+      };
+      const getSchema = () => {
+         if (contentRequest.layout === "tutorial") {
+            return tutorialDraftSchema;
+         }
+         if (contentRequest.layout === "interview") {
+            return interviewDraftSchema;
+         }
+         if (contentRequest.layout === "changelog") {
+            return changelogDraftSchema;
+         }
+         return writingDraftSchema;
+      };
+      const getInputPrompt = () => {
+         if (contentRequest.layout === "tutorial") {
+            return tutorialDraftInputPrompt(
+               contentRequest.description,
+               brandDocument,
+               webSearchContent,
+            );
+         }
+         if (contentRequest.layout === "interview") {
+            return interviewDraftInputPrompt(
+               contentRequest.description,
+               brandDocument,
+               webSearchContent,
+            );
+         }
+         if (contentRequest.layout === "changelog") {
+            return changelogDraftInputPrompt(
+               contentRequest.description,
+               brandDocument,
+               webSearchContent,
+            );
+         }
+         return writingDraftInputPrompt(
+            contentRequest.description,
+            brandDocument,
+            webSearchContent,
+         );
+      };
+      const systemPrompt = [
+         generateWritingPrompt(personaConfig),
+         getSystemPrompt(),
+      ]
+         .filter(Boolean)
+         .join(`\n\n${"=".repeat(80)}\n\n`);
+
       const result = await generateOpenRouterObject(
          openrouter,
          {
             model: "small",
          },
-         writingDraftSchema,
+         getSchema(),
          {
-            prompt: writingDraftInputPrompt(
-               contentRequest.description,
-               brandDocument,
-               webSearchContent,
-            ),
-            system: generateWritingPrompt(personaConfig),
+            prompt: getInputPrompt(),
+            system: systemPrompt,
          },
       );
 
@@ -46,7 +120,11 @@ export async function runWriteContentDraft(payload: {
          userId,
       });
 
-      const { draft } = result.object as WritingDraftSchema;
+      const { draft } = result.object as
+         | WritingDraftSchema
+         | ChangelogDraftSchema
+         | InterviewDraftSchema
+         | TutorialDraftSchema;
       return {
          draft,
       };

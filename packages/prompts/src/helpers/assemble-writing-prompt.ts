@@ -12,7 +12,6 @@ import { flexibleGuidelinePrompt } from "../prompts/brand/flexible_guideline";
 import { referenceOnlyPrompt } from "../prompts/brand/reference_only";
 import { creativeBlendPrompt } from "../prompts/brand/creative_blend";
 import { searchIntegrationSystemPrompt } from "../prompts/search/search-integrations";
-import { writingDraftSystemPrompt } from "../prompts/writing/writing-draft";
 import { languageCorrectionBasePrompt } from "../prompts/language/language-corrections";
 
 // Type definitions for content request and options
@@ -185,7 +184,6 @@ export function generateWritingPrompt(config: PersonaConfig): string {
       createAudienceSection(config),
       createVoiceSection(config),
       searchIntegrationSystemPrompt(),
-      writingDraftSystemPrompt(),
    ];
    return sections.filter(Boolean).join(`\n\n${"=".repeat(80)}\n\n`);
 }
