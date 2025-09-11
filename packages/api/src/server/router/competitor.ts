@@ -78,7 +78,6 @@ export const competitorRouter = router({
          CompetitorInsertSchema.pick({
             name: true,
             websiteUrl: true,
-            changelogUrl: true,
          }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -129,7 +128,6 @@ export const competitorRouter = router({
             data: CompetitorInsertSchema.pick({
                name: true,
                websiteUrl: true,
-               changelogUrl: true,
             }).partial(),
          }),
       )
