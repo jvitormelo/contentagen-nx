@@ -65,6 +65,8 @@ const ContentImageStreamInput = z.object({
 
 export const contentRouter = router({
    regenerate: organizationProcedure
+      .use(hasGenerationCredits)
+
       .input(ContentInsertSchema.pick({ id: true }))
       .mutation(async ({ ctx, input }) => {
          try {
@@ -355,6 +357,7 @@ export const contentRouter = router({
                   changedFields.push("body");
                }
             } catch (err) {
+               console.error(err);
                // If no base version exists, diff will be null
                console.log("No base version found for diff calculation");
             }
@@ -409,6 +412,7 @@ export const contentRouter = router({
          }
       }),
    create: organizationProcedure
+      .use(hasGenerationCredits)
 
       .input(
          ContentInsertSchema.pick({
@@ -663,6 +667,7 @@ export const contentRouter = router({
          }
       }),
    bulkApprove: organizationProcedure
+      .use(hasGenerationCredits)
       .input(z.object({ ids: z.array(z.string()).min(1) }))
       .mutation(async ({ ctx, input }) => {
          try {
@@ -753,7 +758,7 @@ export const contentRouter = router({
                   if (!slug || !agentId) continue;
                   if (!agentSlugMap.has(agentId))
                      agentSlugMap.set(agentId, new Set());
-                  agentSlugMap.get(agentId)!.add(slug);
+                  agentSlugMap.get(agentId)?.add(slug);
                }
 
                // Persist slugs per agent
@@ -891,6 +896,7 @@ export const contentRouter = router({
       }),
 
    approve: organizationProcedure
+      .use(hasGenerationCredits)
 
       .input(ContentInsertSchema.pick({ id: true }))
       .mutation(async ({ ctx, input }) => {
