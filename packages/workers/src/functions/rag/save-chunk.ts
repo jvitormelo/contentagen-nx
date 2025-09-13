@@ -1,8 +1,8 @@
-import { createChromaClient } from "@packages/chroma-db/client";
+import { getChromaClient } from "@packages/chroma-db/client";
 import { getCollection, addToCollection } from "@packages/chroma-db/helpers";
-import { serverEnv } from "@packages/environment/server";
 import crypto from "node:crypto";
-const chroma = createChromaClient(serverEnv.CHROMA_DB_URL);
+
+const chroma = getChromaClient();
 export async function runCunkSaving(payload: {
    items: { chunk: string; agentId: string; sourceId: string }[];
 }) {

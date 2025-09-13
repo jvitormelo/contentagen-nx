@@ -1,8 +1,7 @@
-import { serverEnv } from "@packages/environment/server";
-import { createChromaClient } from "@packages/chroma-db/client";
+import { getChromaClient } from "@packages/chroma-db/client";
 import { queryCollection, getCollection } from "@packages/chroma-db/helpers";
 
-const chroma = createChromaClient(serverEnv.CHROMA_DB_URL);
+const chroma = getChromaClient();
 
 export async function runRagByKeywords(payload: {
    agentId: string;
