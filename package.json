@@ -30,6 +30,7 @@
       "check": "nx run-many -t check --parallel=3",
       "dev:all": "nx run-many -t dev --parallel=6",
       "dev:sdk-blog": "nx run-many -t dev --parallel=2 -p blog server",
+      "dev:mastra": "nx run-many -t dev --parallel=1 -p mastra",
       "dev:content-apps": "nx run-many -t dev --parallel=3 -p  landing-page blog docs",
       "dev:landing-page": "nx run-many -t dev --parallel=1 -p  landing-page ",
       "dev:blog": "nx run-many -t dev --parallel=1 -p  blog ",
@@ -61,7 +62,7 @@
             "@arcjet/bun": "^1.0.0-beta.8"
          },
          "validation": {
-            "zod": "4.0.14"
+            "zod": "4.1.8"
          },
          "payment": {
             "@polar-sh/sdk": "0.34.11"

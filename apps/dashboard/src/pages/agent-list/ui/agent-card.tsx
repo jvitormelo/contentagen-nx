@@ -1,11 +1,8 @@
 import {
    Card,
    CardHeader,
-   CardTitle,
-   CardContent,
    CardFooter,
    CardAction,
-   CardDescription,
 } from "@packages/ui/components/card";
 import { Checkbox } from "@packages/ui/components/checkbox";
 import { Badge } from "@packages/ui/components/badge";
@@ -101,12 +98,13 @@ export function AgentCard({ agent }: AgentCardProps) {
             <CredenzaTrigger asChild>
                <Card className="cursor-pointer">
                   <CardHeader>
-                     <CardTitle className="line-clamp-1">
-                        {personaConfig.metadata.name}
-                     </CardTitle>
-                     <CardDescription className="line-clamp-2">
-                        {personaConfig.metadata.description}
-                     </CardDescription>
+                     <AgentWriterCard
+                        isHeader={true}
+                        photo={profilePhoto?.data}
+                        name={personaConfig.metadata.name}
+                        description={personaConfig.metadata.description}
+                     />
+
                      <CardAction>
                         <Checkbox
                            checked={selectedItems.has(agent.id)}
@@ -120,14 +118,6 @@ export function AgentCard({ agent }: AgentCardProps) {
                         />
                      </CardAction>
                   </CardHeader>
-
-                  <CardContent>
-                     <AgentWriterCard
-                        photo={profilePhoto?.data}
-                        name={personaConfig.metadata.name}
-                        description={personaConfig.metadata.description}
-                     />
-                  </CardContent>
 
                   <CardFooter className="flex items-center justify-between">
                      <Badge variant="outline">{purpose}</Badge>
