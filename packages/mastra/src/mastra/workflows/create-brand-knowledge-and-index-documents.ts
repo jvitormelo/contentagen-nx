@@ -11,12 +11,17 @@ import { uploadFile, getMinioClient } from "@packages/files/client";
 import { serverEnv } from "@packages/environment/server";
 import { createDb } from "@packages/database/client";
 import { updateAgent } from "@packages/database/repositories/agent-repository";
-import { emitAgentKnowledgeStatusChanged } from "@packages/server-events";
+import { updateCompetitor } from "@packages/database/repositories/competitor-repository";
+import {
+   emitAgentKnowledgeStatusChanged,
+   emitCompetitorAnalysisStatusChanged,
+} from "@packages/server-events";
 import { getChromaClient } from "@packages/chroma-db/client";
 import { getCollection, addToCollection } from "@packages/chroma-db/helpers";
 import crypto from "node:crypto";
 import { z } from "zod";
 import type { BrandKnowledgeStatus } from "@packages/database/schemas/agent";
+import type { CompetitorAnalysisStatus } from "@packages/database/schemas/competitor";
 
 type LLMUsage = {
    inputTokens: number;
@@ -57,11 +62,149 @@ async function updateAgentKnowledgeStatus(
    emitAgentKnowledgeStatusChanged({ agentId, status, message });
 }
 
+// Helper function to update competitor status and emit server events
+async function updateCompetitorAnalysisStatus(
+   competitorId: string,
+   status: CompetitorAnalysisStatus,
+   message?: string,
+) {
+   try {
+      const db = createDb({ databaseUrl: serverEnv.DATABASE_URL });
+      await updateCompetitor(db, competitorId, { analysisStatus: status });
+   } catch (err) {
+      // If DB update fails, still emit event so UI can update
+      console.error(
+         "[CompetitorAnalysis] Failed to update competitor status in DB:",
+         err,
+      );
+   }
+   emitCompetitorAnalysisStatusChanged({ competitorId, status, message });
+}
+
+// Unified helper function to handle status updates for both targets
+async function updateTargetStatus(
+   targetId: string,
+   target: "brand" | "competitor",
+   status: BrandKnowledgeStatus | CompetitorAnalysisStatus,
+   message?: string,
+) {
+   if (target === "brand") {
+      await updateAgentKnowledgeStatus(
+         targetId,
+         status as BrandKnowledgeStatus,
+         message,
+      );
+   } else {
+      await updateCompetitorAnalysisStatus(
+         targetId,
+         status as CompetitorAnalysisStatus,
+         message,
+      );
+   }
+}
+
+// Helper function to update uploaded files for the appropriate target
+async function updateTargetUploadedFiles(
+   targetId: string,
+   target: "brand" | "competitor",
+   uploadedFiles: { fileName: string; fileUrl: string; uploadedAt: string }[],
+) {
+   const db = createDb({ databaseUrl: serverEnv.DATABASE_URL });
+
+   if (target === "brand") {
+      await updateAgent(db, targetId, { uploadedFiles });
+   } else {
+      await updateCompetitor(db, targetId, { uploadedFiles });
+   }
+}
+
+// Helper function to get collection name based on target
+function getTargetCollectionName(target: "brand" | "competitor"): string {
+   return target === "brand" ? "AgentKnowledge" : "CompetitorKnowledge";
+}
+
+// Helper function to create chunk metadata based on target
+function createChunkMetadata(
+   target: "brand" | "competitor",
+   targetId: string,
+   sourceId: string,
+   websiteUrl: string,
+) {
+   const baseMetadata = {
+      sourceType: target === "brand" ? "brand_document" : "competitor_document",
+      sourceId,
+      websiteUrl,
+   };
+
+   return target === "brand"
+      ? { ...baseMetadata, agentId: targetId }
+      : { ...baseMetadata, competitorId: targetId };
+}
+
+// Helper function to sanitize document type for safe filenames
+function sanitizeDocumentType(type: string): string {
+   return type
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric with hyphens
+      .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}
+
+// Helper function to build and upload a single document
+async function buildAndUploadDocument({
+   document,
+   documentIndex,
+   targetId,
+   target,
+   bucketName,
+   minioClient,
+}: {
+   document: { type: string; content: string; title: string };
+   documentIndex: number;
+   targetId: string;
+   target: "brand" | "competitor";
+   bucketName: string;
+   minioClient: ReturnType<typeof getMinioClient>;
+}) {
+   const targetPrefix = target === "brand" ? "brand" : "competitor";
+   const sanitizedType = sanitizeDocumentType(document?.type || "document");
+   const fileName = `${targetPrefix}-doc-${documentIndex + 1}-${sanitizedType}.md`;
+   const key = `${targetId}/${fileName}`;
+
+   // Create file buffer and upload to MinIO
+   const fileBuffer = Buffer.from(document.content, "utf-8");
+   await uploadFile(key, fileBuffer, "text/markdown", bucketName, minioClient);
+
+   // Create document and chunks
+   const doc = MDocument.fromMarkdown(document.content);
+   const chunks = await doc.chunk({
+      strategy: "semantic-markdown",
+      maxSize: 256,
+      overlap: 50,
+   });
+
+   // Return structured data
+   return {
+      file: {
+         fileName,
+         fileUrl: key,
+         uploadedAt: new Date().toISOString(),
+         rawContent: document.content,
+      },
+      chunks: chunks.map((chunk) => ({
+         text: chunk.text,
+         agentId: targetId,
+         sourceId: key,
+      })),
+      fileName,
+   };
+}
+
 // Input schema for the workflow
 export const CreateBrandKnowledgeInput = z.object({
    websiteUrl: z.url(),
    userId: z.string(),
-   agentId: z.string(),
+   id: z.string(),
+   target: z.enum(["brand", "competitor"]),
 });
 
 // Output schema for the workflow
@@ -97,10 +240,11 @@ const getFullBrandAnalysis = createStep({
    outputSchema: getFullBrandAnalysisOutputSchema,
 
    execute: async ({ inputData }) => {
-      const { userId, websiteUrl, agentId } = inputData;
+      const { userId, websiteUrl, id, target } = inputData;
 
-      await updateAgentKnowledgeStatus(
-         agentId,
+      await updateTargetStatus(
+         id,
+         target,
          "analyzing",
          "Analyzing brand website and gathering information",
       );
@@ -140,8 +284,9 @@ Return the complete analysis as a well-structured markdown document.
       }
 
       const { fullBrandAnalysis } = result.object;
-      await updateAgentKnowledgeStatus(
-         agentId,
+      await updateTargetStatus(
+         id,
+         target,
          "analyzing",
          "Brand website analysis completed",
       );
@@ -150,7 +295,8 @@ Return the complete analysis as a well-structured markdown document.
          fullBrandAnalysis,
          userId,
          websiteUrl,
-         agentId,
+         id,
+         target,
       };
    },
 });
@@ -161,11 +307,12 @@ const createBrandDocuments = createStep({
    inputSchema: getFullBrandAnalysisOutputSchema,
    outputSchema: createBrandDocumentsOutputSchema,
    execute: async ({ inputData }) => {
-      const { fullBrandAnalysis, userId, agentId, websiteUrl } = inputData;
+      const { fullBrandAnalysis, userId, id, target, websiteUrl } = inputData;
 
       // Update status to chunking (preparing documents)
-      await updateAgentKnowledgeStatus(
-         agentId,
+      await updateTargetStatus(
+         id,
+         target,
          "chunking",
          "Creating business documents from brand analysis",
       );
@@ -209,7 +356,8 @@ Return the documents in the specified structured format.
          generatedDocuments,
          userId,
          websiteUrl,
-         agentId,
+         id,
+         target,
       };
    },
 });
@@ -220,11 +368,12 @@ const saveAndIndexBrandDocuments = createStep({
    inputSchema: createBrandDocumentsOutputSchema,
    outputSchema: CreateBrandKnowledgeOutput,
    execute: async ({ inputData }) => {
-      const { generatedDocuments, agentId, websiteUrl } = inputData;
+      const { generatedDocuments, id, target, websiteUrl } = inputData;
 
       // Update status to chunking (processing and indexing)
-      await updateAgentKnowledgeStatus(
-         agentId,
+      await updateTargetStatus(
+         id,
+         target,
          "chunking",
          "Processing and indexing documents",
       );
@@ -242,7 +391,6 @@ const saveAndIndexBrandDocuments = createStep({
          sourceId: string;
       };
 
-      const db = createDb({ databaseUrl: serverEnv.DATABASE_URL });
       const minioClient = getMinioClient(serverEnv);
       const chroma = getChromaClient();
       const bucketName = serverEnv.MINIO_BUCKET;
@@ -251,86 +399,63 @@ const saveAndIndexBrandDocuments = createStep({
       const uploadedFiles: UploadedFile[] = [];
       const allChunks: ChunkItem[] = [];
 
-      // Helper function to sanitize document type for safe filenames
-      const sanitizeDocumentType = (type: string): string => {
-         return type
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric with hyphens
-            .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
-      };
+      // Determine the target ID based on the target type
+      const targetId = target === "brand" ? id : id;
 
+      // Process documents using the helper function
       for (let docIndex = 0; docIndex < generatedDocuments.length; docIndex++) {
          const document = generatedDocuments[docIndex];
-         const sanitizedType = sanitizeDocumentType(
-            document?.type || "document",
-         );
-         const fileName = `brand-doc-${docIndex + 1}-${sanitizedType}.md`;
-         const key = `${agentId}/${fileName}`;
+
+         if (!document) continue;
 
          try {
-            if (!document) continue;
-            const fileBuffer = Buffer.from(document.content, "utf-8");
-
-            // Upload file first, then chunk the content sequentially.
-            await uploadFile(
-               key,
-               fileBuffer,
-               "text/markdown",
+            const result = await buildAndUploadDocument({
+               document,
+               documentIndex: docIndex,
+               targetId,
+               target,
                bucketName,
                minioClient,
-            );
-
-            const doc = MDocument.fromMarkdown(document.content);
-            const chunks = await doc.chunk({
-               strategy: "semantic-markdown",
-               maxSize: 256,
-               overlap: 50,
             });
 
-            const uploadedFile: UploadedFile = {
-               fileName,
-               fileUrl: key,
-               uploadedAt: new Date().toISOString(),
-               rawContent: document.content,
-            };
-
-            const chunkItems: ChunkItem[] = chunks.map((c) => ({
-               text: c.text,
-               agentId,
-               sourceId: key,
-            }));
-
-            uploadedFiles.push(uploadedFile);
-            allChunks.push(...chunkItems);
+            uploadedFiles.push(result.file);
+            allChunks.push(...result.chunks);
 
             console.log(
-               `[saveAndIndexBrandDocuments] Created ${chunkItems.length} chunks for document ${fileName}`,
+               `[saveAndIndexBrandDocuments] Created ${result.chunks.length} chunks for document ${result.fileName}`,
             );
          } catch (error) {
             console.error(
-               `[saveAndIndexBrandDocuments] Error processing document ${fileName}:`,
+               `[saveAndIndexBrandDocuments] Error processing document ${docIndex + 1}:`,
                error,
             );
             throw error;
          }
       }
 
-      // Persist uploaded file metadata (without raw content) to the agent record
+      // Persist uploaded file metadata based on target type
       const filesForDb = uploadedFiles.map(({ rawContent, ...rest }) => rest);
-      await updateAgent(db, agentId, { uploadedFiles: filesForDb });
+      await updateTargetUploadedFiles(targetId, target, filesForDb);
 
       if (allChunks.length > 0) {
          try {
-            const collection = await getCollection(chroma, "AgentKnowledge");
+            const collection = await getCollection(
+               chroma,
+               getTargetCollectionName(target) as Parameters<
+                  typeof getCollection
+               >[1],
+            );
 
             const documents = allChunks.map((item) => item.text);
             const ids = allChunks.map(() => crypto.randomUUID());
-            const metadatas = allChunks.map((item) => ({
-               agentId: item.agentId,
-               sourceType: "brand_document",
-               sourceId: item.sourceId,
-               websiteUrl,
-            }));
+            const metadatas = allChunks.map((item) =>
+               createChunkMetadata(
+                  target,
+                  item.agentId,
+                  item.sourceId,
+                  websiteUrl,
+               ),
+            );
 
             await addToCollection(collection, {
                documents,
@@ -350,9 +475,10 @@ const saveAndIndexBrandDocuments = createStep({
          }
       }
 
-      // Update status to completed
-      await updateAgentKnowledgeStatus(
-         agentId,
+      // Update status to completed for both target types
+      await updateTargetStatus(
+         targetId,
+         target,
          "completed",
          `Successfully processed ${allChunks.length} document chunks`,
       );
