@@ -50,39 +50,6 @@ export async function createServer(
 
   if (isProd) app.use(express.static('./dist/client'))
 
-  // File proxy API route for serving Minio files
-  app.get('/api/files/proxy', async (req, res) => {
-    try {
-      const { path: filePath } = req.query;
-      
-      if (!filePath) {
-        return res.status(400).json({ error: 'Missing path parameter' });
-      }
-
-      // Import Minio client and functions
-      const { getMinioClient, streamFileForProxy } = await import('@packages/files/client');
-      const { getServerEnv } = await import('@packages/environment/server');
-      
-      const env = getServerEnv();
-      const minioClient = getMinioClient(env);
-      
-      // Get file from Minio with proper content type
-      const { buffer, contentType } = await streamFileForProxy(filePath, 'competitors', minioClient);
-      
-      // Set appropriate headers
-      res.set({
-        'Content-Type': contentType,
-        'Content-Length': buffer.length.toString(),
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-      });
-      
-      // Send the file buffer
-      res.send(buffer);
-    } catch (error) {
-      console.error('File proxy error:', error);
-      res.status(404).json({ error: 'File not found' });
-    }
-  });
 
   app.use('*', async (req, res) => {
     try {
@@ -133,7 +100,7 @@ if (!isTest) {
     // In production, the PORT env var is set by the hosting provider.
     // In development, we use get-port to find an available port.
     const port = process.env.PORT || (await getPort({ port: portNumbers(3000, 3100) }));
- 
+
     app.listen(port, () => {
       // The log now dynamically shows the correct port.
       console.info(`Client Server listening on port: ${port}`);
