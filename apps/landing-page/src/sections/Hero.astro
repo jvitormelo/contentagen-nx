@@ -1,85 +1,66 @@
 ---
 import lightHero from "../assets/light/light-hero.webp";
 import darkHero from "../assets/dark/dark-hero.webp";
-import { Sparkles, ChevronRight, CirclePlay } from "@lucide/astro";
-import { Badge } from "@packages/ui/components/badge";
+import { ChevronRight, CirclePlay } from "@lucide/astro";
 import { Button } from "@packages/ui/components/button";
 import LogoCloud from "../sections/LogoCloud.astro";
 import { Image } from "astro:assets";
 ---
 
-<main class="overflow-hidden">
-  <section class="bg-gradient-to-b to-muted from-background">
-    <div class="relative py-24 md:py-36">
-      <div class="relative z-10 mx-auto w-full max-w-7xl px-6">
-
-        <div class="grid grid-cols-1 gap-12 md:grid-cols-[1fr_1.8fr] md:gap-8 items-center">
-
-          <div class="flex flex-col space-y-6 text-center md:text-left">
-            <Badge className="flex gap-2 px-4 py-2 items-center font-semibold w-fit mx-auto md:mx-0">
-              <Sparkles />
-              Introducing Contenta Agents
-            </Badge>
-
-            <h1 class="text-4xl font-bold leading-tight md:text-5xl lg:text-6xl text-foreground">
-              AI Blog Posts, <span class="text-primary">Instantly</span>
+<main class="overflow-hidden h-screen bg-gradient-to-b to-muted from-background grid grid-cols-1">
+    <div id="hero" class="relative py-36 ">
+      <div class="relative z-10 mx-auto w-full max-w-6xl px-6">
+        <div class="md:w-1/2">
+          <div>
+            <h1 class="max-w-md text-balance text-5xl font-medium ">
+              AI Content That <span class="text-primary">Actually Sounds Like You</span>
             </h1>
-
-            <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto md:mx-0">
-              Automated, SEO-ready content for creators and agencies.
+            <p class="text-muted-foreground my-8 max-w-2xl text-balance text-base">
+              Stop wasting hours editing generic AI articles. ContentaGen's autonomous agents learn your unique brand voice, analyze market trends, and produce high-quality, SEO-optimized content that drives real results.
             </p>
 
-            <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3">
-              <a href="https://app.contentagen.com/auth/sign-up" target="_blank" rel="noopener noreferrer">
-                <Button size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2" aria-label="Get started with Contentagen AI blog generator">
-                  Get Started
-                  <ChevronRight  />
+            <div class="flex items-center gap-3">
+              <a href="https://app.contentagen.com/auth/sign-in" target="_blank" rel="noopener noreferrer">
+                <Button size="lg" className="pr-4.5">
+                  <span class="text-nowrap">Get Started</span>
+                  <ChevronRight className="opacity-50" />
                 </Button>
               </a>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto flex items-center justify-center gap-2" aria-label="Watch product demonstration video">
-                <CirclePlay  />
-                Watch demo
-              </Button>
-            </div>
-
-            <div class="block md:hidden mt-8">
-              <LogoCloud />
+              <a href="#pricing">
+                <Button size="lg" variant="outline" className="pl-5">
+                  <span class="text-nowrap">See pricing</span>
+                </Button>
+              </a>
             </div>
           </div>
 
-          <div class="relative md:order-last">
-            <div class="perspective-near">
-              <div class="before:border-foreground/5 before:bg-foreground/5 relative h-full before:absolute before:-inset-x-4 before:bottom-7 before:top-0 before:skew-x-6 before:rounded-[calc(var(--radius)+1rem)] before:border">
-                <div class="bg-background rounded-lg shadow-foreground/10 ring-foreground/5 relative h-full -translate-y-12 skew-x-6 overflow-hidden border border-transparent shadow-md ring-1">
-                  <Image
-                    src={lightHero}
-                    alt="Contentagen dashboard interface showing AI blog post generation in light mode"
-                    class="object-cover object-top-left size-full block dark:hidden"
-                    width={Number(lightHero.width)}
-                    height={Number(lightHero.height)}
-                    loading="eager"
-                    fetchpriority="high"
-                  />
-                  <Image
-                    src={darkHero}
-                    alt="Contentagen dashboard interface showing AI blog post generation in dark mode"
-                    class="object-cover object-top-left size-full hidden dark:block"
-                    width={Number(darkHero.width)}
-                    height={Number(darkHero.height)}
-                    loading="eager"
-                    fetchpriority="high"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hidden md:block mt-16">
           <LogoCloud />
         </div>
       </div>
-    </div>
-  </section>
-</main>
 
+      <div class="perspective-near mt-24 translate-x-12 md:absolute md:-right-6 md:bottom-16 md:left-1/2 md:top-40 md:mt-0 md:translate-x-0">
+        <div class="before:border-foreground/5 before:bg-foreground/5 relative h-full before:absolute before:-inset-x-4 before:bottom-7 before:top-0 before:skew-x-6 before:rounded-[calc(var(--radius)+1rem)] before:border">
+          <div class="bg-background rounded-[calc(var(--radius)+1rem)] shadow-foreground/10 ring-foreground/5 relative h-full -translate-y-12 skew-x-6 overflow-hidden border border-transparent shadow-md ring-1">
+            <Image
+              src={lightHero}
+              alt="Contentagen dashboard interface showing AI blog post generation in light mode"
+              class="object-top-left size-full object-cover block dark:hidden"
+              width={Number(lightHero.width)}
+              height={Number(lightHero.height)}
+              loading="eager"
+              fetchpriority="high"
+            />
+            <Image
+              src={darkHero}
+              alt="Contentagen dashboard interface showing AI blog post generation in dark mode"
+              class="object-top-left size-full object-cover hidden dark:block"
+              width={Number(darkHero.width)}
+              height={Number(darkHero.height)}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+</main>
