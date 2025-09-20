@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync } from "fs";
-import { join } from "path";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 
-const LOCALES_DIR = join(__dirname, "locales");
+const LOCALES_DIR = join(__dirname, "../src/locales");
 const SUPPORTED_LOCALES = ["en-US", "pt-BR"];
 
 function getAllJsonFiles(dir: string): string[] {
@@ -46,7 +46,7 @@ function loadTranslationKeys(locale: string, filename: string): string[] {
 
 describe("Translation Keys Consistency", () => {
    const jsonFiles = getAllJsonFiles(
-      join(LOCALES_DIR, SUPPORTED_LOCALES[0]!, "pages"),
+      join(LOCALES_DIR, SUPPORTED_LOCALES[0] ?? "", "pages"),
    );
 
    describe.each(jsonFiles)("Translation file: %s", (filename) => {
@@ -60,10 +60,10 @@ describe("Translation Keys Consistency", () => {
 
          // Compare keys between locales
          const [baseLocale, ...otherLocales] = SUPPORTED_LOCALES;
-         const baseKeys = keysByLocale[baseLocale!]!;
+         const baseKeys = keysByLocale[baseLocale ?? ""] ?? [];
 
          for (const locale of otherLocales) {
-            const localeKeys = keysByLocale[locale]!;
+            const localeKeys = keysByLocale[locale] ?? [];
 
             // Check for missing keys in current locale
             const missingKeys = baseKeys.filter(
@@ -98,10 +98,10 @@ describe("Translation Keys Consistency", () => {
       }
 
       const [baseLocale, ...otherLocales] = SUPPORTED_LOCALES;
-      const baseFiles = filesByLocale[baseLocale!]!;
+      const baseFiles = filesByLocale[baseLocale ?? ""] ?? [];
 
       for (const locale of otherLocales) {
-         const localeFiles = filesByLocale[locale]!;
+         const localeFiles = filesByLocale[locale] ?? [];
 
          const missingFiles = baseFiles.filter(
             (file: string) => !localeFiles.includes(file),

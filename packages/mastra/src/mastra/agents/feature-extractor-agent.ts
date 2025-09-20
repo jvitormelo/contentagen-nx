@@ -1,5 +1,4 @@
 import { Agent } from "@mastra/core/agent";
-import { LanguageDetector } from "@mastra/core/processors";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { serverEnv } from "@packages/environment/server";
 import { tavilyCrawlTool } from "../tools/tavily-crawl-tool";
