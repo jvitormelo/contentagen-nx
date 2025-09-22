@@ -63,7 +63,7 @@
       "conventionalCommits": true,
       "preserveLocalDependencyProtocols": true,
       "versionActionsOptions": {
-        "skipLockFileUpdate": false
+        "skipLockFileUpdate": true
       }
     },
     "changelog": {
