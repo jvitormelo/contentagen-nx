@@ -46,7 +46,7 @@
     "typecheck": "nx run-many -t typecheck --parallel=3",
     "test": "nx run-many -t test --parallel=3",
     "release": "nx release",
-    "release:dry": "nx release --dry-run",
+    "release:dry": "nx release --dry-run --first-release",
     "release:version": "nx release version",
     "release:changelog": "nx release changelog",
     "release:publish": "nx release publish"
