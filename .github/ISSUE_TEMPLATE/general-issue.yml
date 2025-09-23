@@ -2,14 +2,12 @@ name: 📝 General Issue
 description: For questions, documentation issues, or other general topics
 title: "[GENERAL] "
 labels: ["question", "triage"]
-assignees: []
 body:
   - type: markdown
     attributes:
       value: |
-        ## 📝 General Issue
-
-        For questions, documentation issues, or other topics that don't fit bug reports or feature requests.
+        ## General Issue
+        For questions, documentation issues, or other topics
 
   - type: dropdown
     id: type
@@ -26,59 +24,11 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: scope-app
-    attributes:
-      label: App Scope
-      description: Which app is this issue related to? (if applicable)
-      multiple: true
-      options:
-        - blog
-        - dashboard
-        - docs
-        - landing-page
-        - server
-        - Multiple Apps
-        - Unknown / Not Applicable
-
-  - type: dropdown
-    id: scope-package
-    attributes:
-      label: Package Scope
-      description: Which package is this issue related to? (if applicable)
-      multiple: true
-      options:
-        - api
-        - arcjet
-        - authentication
-        - brand
-        - chroma-db
-        - database
-        - environment
-        - errors
-        - files
-        - helpers
-        - localization
-        - mastra
-        - openrouter
-        - payment
-        - posthog
-        - prompts
-        - rag
-        - redis
-        - server-events
-        - tavily
-        - transactional
-        - ui
-        - workers
-        - Multiple Packages
-        - Unknown / Not Applicable
-
   - type: textarea
     id: description
     attributes:
-      label: Description
-      description: Describe your issue or question in detail.
+      label: What's your question or issue?
+      description: Describe your issue in detail
       placeholder: "Please provide as much detail as possible..."
     validations:
       required: true
@@ -87,19 +37,12 @@ body:
     id: context
     attributes:
       label: Context
-      description: Provide any relevant context or background information.
-      placeholder: "What were you trying to do? What did you expect?"
-
-  - type: input
-    id: environment
-    attributes:
-      label: Environment (if applicable)
-      description: What environment are you running in?
-      placeholder: "e.g., Node.js 18, Chrome 120, Ubuntu 22.04"
+      description: What were you trying to do?
+      placeholder: "What did you expect? What happened instead?"
 
   - type: textarea
     id: additional
     attributes:
-      label: Additional Information
-      description: Any additional information, logs, or screenshots.
-      placeholder: "Add any other relevant information here."
+      label: Additional info
+      description: Screenshots, logs, etc.
+      placeholder: "Any additional information..."
