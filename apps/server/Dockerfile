@@ -1,12 +1,11 @@
 FROM oven/bun:latest AS builder
 
-
-ARG POLAR_PREMIUM_PLAN
-ARG POLAR_PRO_PLAN
 ARG DATABASE_URL
 ARG BETTER_AUTH_GOOGLE_CLIENT_ID
 ARG BETTER_AUTH_GOOGLE_CLIENT_SECRET
 ARG POLAR_ACCESS_TOKEN
+ARG POLAR_FREE_PLAN_ID
+ARG POLAR_PAID_PLAN_ID
 ARG RESEND_API_KEY
 ARG BETTER_AUTH_SECRET
 ARG BETTER_AUTH_TRUSTED_ORIGINS
@@ -20,6 +19,7 @@ ARG MINIO_ACCESS_KEY
 ARG MINIO_SECRET_KEY
 ARG MINIO_BUCKET
 ARG TAVILY_API_KEY
+ARG PG_VECTOR_URL
 
 WORKDIR /app
 
@@ -32,19 +32,15 @@ COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
 COPY packages/server-events/package.json ./packages/server-events/
 COPY packages/localization/package.json ./packages/localization/
-COPY packages/mastra/package.json ./packages/mastra/
+COPY packages/agents/package.json ./packages/agents/
 COPY packages/brand/package.json ./packages/brand/
-COPY packages/helpers/package.json ./packages/helpers/
+COPY packages/utils/package.json ./packages/utils/
 COPY packages/rag/package.json ./packages/rag/
 COPY packages/database/package.json ./packages/database/
 COPY packages/environment/package.json ./packages/environment/
-COPY packages/errors/package.json ./packages/errors/
 COPY packages/files/package.json ./packages/files/
-COPY packages/openrouter/package.json ./packages/openrouter/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/prompts/package.json ./packages/prompts/
-COPY packages/redis/package.json ./packages/redis/
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/workers/package.json ./packages/workers/
 
@@ -55,26 +51,6 @@ RUN bun install
 COPY . .
 
 ENV NODE_ENV=production
-ENV POLAR_PREMIUM_PLAN=${POLAR_PREMIUM_PLAN}
-ENV POLAR_PRO_PLAN=${POLAR_PRO_PLAN}
-ENV DATABASE_URL=${DATABASE_URL}
-ENV BETTER_AUTH_GOOGLE_CLIENT_ID=${BETTER_AUTH_GOOGLE_CLIENT_ID}
-ENV BETTER_AUTH_GOOGLE_CLIENT_SECRET=${BETTER_AUTH_GOOGLE_CLIENT_SECRET}
-ENV POLAR_ACCESS_TOKEN=${POLAR_ACCESS_TOKEN}
-ENV POLAR_SUCCESS_URL=${POLAR_SUCCESS_URL}
-ENV RESEND_API_KEY=${RESEND_API_KEY}
-ENV BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-ENV BETTER_AUTH_TRUSTED_ORIGINS=${BETTER_AUTH_TRUSTED_ORIGINS}
-ENV REDIS_URL=${REDIS_URL}
-ENV OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-ENV AP_QUEUE_UI_PASSWORD=${AP_QUEUE_UI_PASSWORD}
-ENV AP_QUEUE_UI_USERNAME=${AP_QUEUE_UI_USERNAME}
-ENV MINIO_ENDPOINT=${MINIO_ENDPOINT}
-ENV MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-ENV MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-ENV MINIO_BUCKET=${MINIO_BUCKET}
-ENV TAVILY_API_KEY=${TAVILY_API_KEY}
 RUN bun build \
     --minify-whitespace \
     --minify-syntax \
@@ -95,24 +71,17 @@ COPY apps/server/package.json ./apps/server/
 COPY tooling/typescript/package.json ./tooling/typescript/
 COPY packages/api/package.json ./packages/api/
 COPY packages/authentication/package.json ./packages/authentication/
-COPY packages/brand/package.json ./packages/brand/
-COPY packages/chroma-db/package.json ./packages/chroma-db/
-COPY packages/database/package.json ./packages/database/
-COPY packages/environment/package.json ./packages/environment/
-COPY packages/errors/package.json ./packages/errors/
 COPY packages/server-events/package.json ./packages/server-events/
 COPY packages/localization/package.json ./packages/localization/
-
-COPY packages/mastra/package.json ./packages/mastra/
-
+COPY packages/agents/package.json ./packages/agents/
+COPY packages/brand/package.json ./packages/brand/
+COPY packages/utils/package.json ./packages/utils/
+COPY packages/rag/package.json ./packages/rag/
+COPY packages/database/package.json ./packages/database/
+COPY packages/environment/package.json ./packages/environment/
 COPY packages/files/package.json ./packages/files/
-COPY packages/openrouter/package.json ./packages/openrouter/
 COPY packages/payment/package.json ./packages/payment/
 COPY packages/posthog/package.json ./packages/posthog/
-COPY packages/prompts/package.json ./packages/prompts/
-COPY packages/redis/package.json ./packages/redis/
-COPY packages/helpers/package.json ./packages/helpers/
-
 COPY packages/transactional/package.json ./packages/transactional/
 COPY packages/workers/package.json ./packages/workers/
 
@@ -126,25 +95,26 @@ FROM oven/bun:latest AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV POLAR_PREMIUM_PLAN=${POLAR_PREMIUM_PLAN}
-ENV POLAR_PRO_PLAN=${POLAR_PRO_PLAN}
-ENV DATABASE_URL=${DATABASE_URL}
-ENV BETTER_AUTH_GOOGLE_CLIENT_ID=${BETTER_AUTH_GOOGLE_CLIENT_ID}
-ENV BETTER_AUTH_GOOGLE_CLIENT_SECRET=${BETTER_AUTH_GOOGLE_CLIENT_SECRET}
-ENV POLAR_ACCESS_TOKEN=${POLAR_ACCESS_TOKEN}
-ENV RESEND_API_KEY=${RESEND_API_KEY}
-ENV BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-ENV BETTER_AUTH_TRUSTED_ORIGINS=${BETTER_AUTH_TRUSTED_ORIGINS}
-ENV REDIS_URL=${REDIS_URL}
-ENV OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-ENV AP_QUEUE_UI_PASSWORD=${AP_QUEUE_UI_PASSWORD}
-ENV AP_QUEUE_UI_USERNAME=${AP_QUEUE_UI_USERNAME}
-ENV MINIO_ENDPOINT=${MINIO_ENDPOINT}
-ENV MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-ENV MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-ENV MINIO_BUCKET=${MINIO_BUCKET}
-ENV TAVILY_API_KEY=${TAVILY_API_KEY}
+ARG DATABASE_URL
+ARG BETTER_AUTH_GOOGLE_CLIENT_ID
+ARG BETTER_AUTH_GOOGLE_CLIENT_SECRET
+ARG POLAR_ACCESS_TOKEN
+ARG POLAR_FREE_PLAN_ID
+ARG POLAR_PAID_PLAN_ID
+ARG RESEND_API_KEY
+ARG BETTER_AUTH_SECRET
+ARG BETTER_AUTH_TRUSTED_ORIGINS
+ARG REDIS_URL
+ARG OPENROUTER_API_KEY
+ARG OPENAI_API_KEY
+ARG AP_QUEUE_UI_PASSWORD
+ARG AP_QUEUE_UI_USERNAME
+ARG MINIO_ENDPOINT
+ARG MINIO_ACCESS_KEY
+ARG MINIO_SECRET_KEY
+ARG MINIO_BUCKET
+ARG TAVILY_API_KEY
+ARG PG_VECTOR_URL
 
 # Copy the pruned, production-only node_modules from the 'deps' stage.
 COPY --from=deps /app/node_modules ./node_modules
@@ -158,3 +128,4 @@ COPY --from=deps /app/package.json ./package.json
 ARG PORT
 EXPOSE ${PORT}
 CMD ["bun", "./dist/index.js"]
+
