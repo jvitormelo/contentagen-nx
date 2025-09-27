@@ -130,6 +130,12 @@ const ContentReviewerStepOutputSchema =
          .array(z.string())
          .describe("The associeated keywords of the content"),
       sources: z.array(z.string()).describe("The sources found on the search"),
+      metaDescription: z
+         .string()
+         .describe(
+            "The meta description, being a SEO optmizaed description of the article",
+         ),
+      editor: editorType,
    }).omit({
       competitorIds: true,
       organizationId: true,
@@ -150,6 +156,8 @@ original:${request.description}
 final:${editor}
 
 `;
+      //TODO: Rework
+
       const result = await changelogReaderAgent.generateVNext(
          [
             {
@@ -162,6 +170,7 @@ final:${editor}
                rating: true,
                reasonOfTheRating: true,
                keywords: true,
+               metaDescription: true,
             }),
          },
       );
@@ -176,11 +185,13 @@ final:${editor}
       return {
          rating: result.object.rating,
          reasonOfTheRating: result.object.reasonOfTheRating,
+         metaDescription: result.object.metaDescription,
          userId,
          agentId,
          contentId,
          request,
          keywords: result.object.keywords,
+         editor,
          sources: ["Your changelog"],
       };
    },

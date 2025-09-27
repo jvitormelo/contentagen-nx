@@ -4,26 +4,46 @@
    "targetDefaults": {
       "typecheck": {
          "cache": true,
-         "dependsOn": ["^typecheck"],
-         "inputs": ["{projectRoot}/**/*", "{projectRoot}/.env*"],
+         "dependsOn": [
+            "^typecheck"
+         ],
+         "inputs": [
+            "{projectRoot}/**/*",
+            "{projectRoot}/.env*"
+         ],
          "outputs": []
       },
       "build": {
          "cache": true,
-         "dependsOn": ["^build:all"],
-         "inputs": ["{projectRoot}/**/*", "{projectRoot}/.env*"],
+         "dependsOn": [
+            "^build:all"
+         ],
+         "inputs": [
+            "{projectRoot}/**/*",
+            "{projectRoot}/.env*"
+         ],
          "outputs": []
       },
       "check": {
          "cache": true,
-         "dependsOn": ["^check"],
-         "inputs": ["{projectRoot}/**/*", "{projectRoot}/.env*"],
+         "dependsOn": [
+            "^check"
+         ],
+         "inputs": [
+            "{projectRoot}/**/*",
+            "{projectRoot}/.env*"
+         ],
          "outputs": []
       },
       "test": {
          "cache": true,
-         "dependsOn": ["^test"],
-         "inputs": ["{projectRoot}/**/*", "{projectRoot}/.env*"],
+         "dependsOn": [
+            "^test"
+         ],
+         "inputs": [
+            "{projectRoot}/**/*",
+            "{projectRoot}/.env*"
+         ],
          "outputs": []
       },
       "dev": {
@@ -34,7 +54,10 @@
       "enabled": true
    },
    "release": {
-      "projects": ["apps/*", "packages/*"],
+      "projects": [
+         "apps/*",
+         "packages/*"
+      ],
       "projectsRelationship": "independent",
       "releaseTagPattern": "{projectName}@{version}",
       "version": {
@@ -44,18 +67,20 @@
          "versionActionsOptions": {
             "skipLockFileUpdate": true
          },
+         "git": {
+            "commit": true,
+            "tag": true
+         },
          "updateDependents": "never"
       },
-      "git": {
-         "commit": true,
-         "tag": true
-      },
+      "releaseTagPatternRequireSemver": true,
       "changelog": {
-         "workspaceChangelog": false,
+         "workspaceChangelog": true,
+         "automaticFromRef": true,
          "projectChangelogs": {
+            "entryWhenNoChanges": false,
             "createRelease": "github",
-            "file": "CHANGELOG.md",
-            "automaticFromRef": true
+            "file": "CHANGELOG.md"
          }
       }
    },
