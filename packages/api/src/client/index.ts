@@ -15,6 +15,7 @@ export interface APIClientOptions {
    headers?: Record<string, string> | Headers;
    language?: string;
 }
+
 export const createTrpcClient = ({
    serverUrl,
    headers,
