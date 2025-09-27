@@ -11,6 +11,7 @@
     "@lucide/astro": "catalog:astro",
     "@packages/posthog": "workspace:*",
     "@packages/ui": "workspace:*",
+    "@packages/environment": "workspace:*",
     "@tailwindcss/vite": "catalog:vite",
     "astro": "catalog:astro",
     "marked": "^16.1.2",
