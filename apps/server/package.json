@@ -2,11 +2,11 @@
   "dependencies": {
     "@bull-board/elysia": "^6.12.0",
     "@elysiajs/cors": "catalog:server",
-    "@packages/helpers": "workspace:*",
+    "@packages/utils": "workspace:*",
     "@packages/api": "workspace:*",
-    "@packages/arcjet": "workspace:*",
     "@packages/authentication": "workspace:*",
     "@packages/database": "workspace:*",
+    "@packages/rag": "workspace:*",
     "@packages/environment": "workspace:*",
     "@packages/files": "workspace:*",
     "@packages/payment": "workspace:*",
@@ -31,7 +31,7 @@
     "dev": "bun run container-start && bun run --watch src/index.ts",
     "format": "biome format",
     "start": "./server",
-    "typecheck": "bunx --bun tsc --noEmit "
+    "typecheck": "bunx --bun tsc  "
   },
   "version": "0.4.0"
 }

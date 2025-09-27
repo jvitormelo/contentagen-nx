@@ -11,6 +11,7 @@ export const relatedSlugs = pgTable(
    "related_slugs",
    {
       id: uuid("id").primaryKey().defaultRandom(),
+      externalId: uuid("external_id").notNull(),
       slug: text("slug").notNull(),
       embedding: vector("embedding", { dimensions: 1536 }).notNull(),
       createdAt: timestamp("created_at")

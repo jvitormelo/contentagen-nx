@@ -23,7 +23,6 @@ export async function fetchGitHubRepoStats(): Promise<GitHubRepoStats> {
       }
 
       const data = await response.json();
-      console.log(data);
       return {
          stargazers_count: data.stargazers_count || 0,
          forks_count: data.forks_count || 0,
