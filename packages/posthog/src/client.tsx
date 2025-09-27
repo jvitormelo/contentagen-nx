@@ -1,5 +1,5 @@
 import { posthogHost, posthogPublicKey } from "./shared-posthog-config";
-import { isClientProduction } from "@packages/environment/client";
+import { isClientProduction } from "@packages/environment/helpers";
 import { PostHogProvider } from "posthog-js/react";
 
 export function getReactPosthogConfig() {
