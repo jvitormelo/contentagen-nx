@@ -70,8 +70,9 @@ export const CardMultiStepLoader = ({
 }) => {
    const [currentState, setCurrentState] = useState(0);
 
+   // biome-ignore lint/correctness/useExhaustiveDependencies: <if the current state isnt on the array it dont work>
    useEffect(() => {
-      if (!loading) {
+      if (!loading || loadingStates.length === 0) {
          setCurrentState(0);
          return;
       }
@@ -86,7 +87,7 @@ export const CardMultiStepLoader = ({
       }, duration);
 
       return () => clearTimeout(timeout);
-   }, [loading, loop, loadingStates.length, duration]);
+   }, [loading, loop, loadingStates.length, duration, currentState]);
 
    return (
       <AnimatePresence mode="wait">

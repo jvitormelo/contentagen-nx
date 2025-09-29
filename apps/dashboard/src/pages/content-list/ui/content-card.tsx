@@ -68,6 +68,7 @@ export function ContentRequestCard({
             contentId: request.id,
          },
          {
+            enabled: Boolean(isLoading),
             onData: ({ message, status }) => {
                toast.info(message || status);
             },
@@ -122,19 +123,19 @@ export function ContentRequestCard({
                            loading={isLoading}
                            loadingStates={[
                               {
-                                 text: "🤔 Brewing creative ideas...",
+                                 text: "Brewing creative ideas...",
                               },
                               {
-                                 text: "📚 Researching and analyzing...",
+                                 text: "Researching and analyzing...",
                               },
                               {
-                                 text: "✍️ Crafting compelling content...",
+                                 text: "Crafting compelling content...",
                               },
                               {
-                                 text: "🔍 Polishing and perfecting...",
+                                 text: "Polishing and perfecting...",
                               },
                               {
-                                 text: "🎨 Adding final touches...",
+                                 text: "Adding final touches...",
                               },
                            ]}
                         />
