@@ -79,7 +79,8 @@
          "projectChangelogs": {
             "createRelease": "github",
             "file": "CHANGELOG.md"
-         }
+         },
+         "automaticFromRef": true
       }
    },
    "plugins": [
