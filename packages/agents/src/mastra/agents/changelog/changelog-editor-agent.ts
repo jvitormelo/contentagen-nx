@@ -7,39 +7,17 @@ const openrouter = createOpenRouter({
    apiKey: serverEnv.OPENROUTER_API_KEY,
 });
 
-const getLanguageEditingInstruction = (language: "en" | "pt"): string => {
+const getLanguageOutputInstruction = (language: "en" | "pt"): string => {
    const languageNames = {
       en: "English",
       pt: "Portuguese",
    };
 
-   const grammarRules = {
-      en: `
-- Subject-verb agreement
-- Proper tense consistency
-- Correct punctuation and capitalization
-- Article usage (a, an, the)
-- Preposition accuracy
-- Sentence structure and clarity
-- Active vs passive voice optimization
-`,
-      pt: `
-- Concordância verbal e nominal
-- Uso correto dos tempos verbais
-- Pontuação e capitalização adequadas
-- Uso correto de artigos e preposições
-- Estrutura de frases e clareza
-- Acentuação e ortografia
-- Colocação pronominal
-`,
-   };
-
    return `
-## LANGUAGE EDITING REQUIREMENTS
-You are editing content in ${languageNames[language]}. Focus on these grammar and style rules:
-${grammarRules[language]}
-
-Ensure all content maintains native-level fluency and professional quality in ${languageNames[language]}.
+## OUTPUT LANGUAGE REQUIREMENT
+You MUST provide ALL your changelog editing, technical documentation refinements, release note polishing, and consistency improvements in ${languageNames[language]}.
+Regardless of the source changelog language, your entire editorial output must be written in ${languageNames[language]}.
+This includes all technical clarity improvements, version consistency, formatting enhancements, and documentation refinements.
 `;
 };
 
@@ -50,7 +28,7 @@ export const changelogEditorAgent = new Agent({
       return `
 You are a technical documentation editor specializing in changelog and release note editing for clarity and consistency.
 
-${getLanguageEditingInstruction(locale as "en" | "pt")}
+${getLanguageOutputInstruction(locale as "en" | "pt")}
 
 ## YOUR EDITORIAL EXPERTISE
 - Technical documentation standards
