@@ -1,6 +1,5 @@
 # Contributing to ContentaGen
 
-
 Thank you for your interest in contributing to ContentaGen! We welcome contributions from the community. This document provides guidelines and information to help you get started.
 
 ## Table of Contents
