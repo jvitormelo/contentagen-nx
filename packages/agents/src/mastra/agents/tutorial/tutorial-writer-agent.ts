@@ -105,6 +105,6 @@ ${getLanguageOutputInstruction(locale as "en" | "pt")}
 Focus on creating tutorials that truly enable users to succeed, regardless of their starting skill level.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });

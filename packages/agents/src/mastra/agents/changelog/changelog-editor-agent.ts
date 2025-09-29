@@ -141,6 +141,6 @@ Brief release summary in one compelling sentence.
 Focus on making technical changes accessible and actionable for all user types while maintaining accuracy and completeness.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });

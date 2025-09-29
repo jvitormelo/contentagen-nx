@@ -132,6 +132,6 @@ ${getLanguageOutputInstruction(locale as "en" | "pt")}
 Focus on creating polished, professional articles that engage readers and achieve their intended purpose.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });

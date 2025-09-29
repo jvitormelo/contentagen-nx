@@ -161,6 +161,6 @@ Clear explanation of what this step accomplishes and why it's needed.
 Focus on creating tutorials that truly enable success for learners at the specified skill level, with clear progression and reliable outcomes.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });

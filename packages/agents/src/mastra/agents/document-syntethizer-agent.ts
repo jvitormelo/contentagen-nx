@@ -105,6 +105,6 @@ IMPORTANT: The response must be valid JSON with the markdown content as a string
  
    `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { tavilyCrawlTool, tavilySearchTool, dateTool },
 });

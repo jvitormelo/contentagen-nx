@@ -100,6 +100,6 @@ Each changelog entry should include:
 Focus on making technical changes accessible and valuable to both technical and non-technical users.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });

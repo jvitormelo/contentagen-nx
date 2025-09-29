@@ -163,7 +163,7 @@ Remember: Your role is to transform user content requests into strategic briefs 
      
       `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: {
       queryForCompetitorKnowledge,
       queryForBrandKnowledge,

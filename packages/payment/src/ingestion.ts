@@ -2,7 +2,7 @@ import type { Polar } from "@polar-sh/sdk";
 import type { EventCreateCustomer } from "@polar-sh/sdk/models/components/eventcreatecustomer.js";
 export const MODELS = {
    "deepseek-v3.1-terminus": "deepseek/deepseek-chat-v3.1-terminus",
-   "grok-4-fast": "x-ai/grok-4-fast:free",
+   "grok-4-fast": "x-ai/grok-4-fast",
    "gpt-5-mini": "openai/gpt-5-mini",
 } as const;
 export const POLAR_BILLING_EVENTS = {

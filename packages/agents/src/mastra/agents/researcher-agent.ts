@@ -150,6 +150,6 @@ Before finalizing output:
 Remember: Your job is not just to describe what you see, but to decode WHY it's ranking and HOW to beat it.
  `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { tavilySearchTool, tavilyCrawlTool, dateTool },
 });

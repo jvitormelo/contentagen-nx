@@ -225,6 +225,6 @@ Grades: A+ (95-100), A (90-94), B+ (85-89), B (80-84), C+ (75-79), C (70-74), D 
 Focus primarily on requirements fulfillment and content quality. Provide specific evidence from the article content and prioritize recommendations by their impact on reader value and requirement satisfaction.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });

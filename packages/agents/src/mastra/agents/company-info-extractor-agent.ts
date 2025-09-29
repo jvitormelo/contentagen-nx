@@ -147,6 +147,6 @@ DECISION TREE:
 Focus exclusively on company information. Ignore product features and logo extraction. Maximize accuracy from minimal tool usage.
    `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { tavilyCrawlTool, tavilySearchTool, dateTool },
 });

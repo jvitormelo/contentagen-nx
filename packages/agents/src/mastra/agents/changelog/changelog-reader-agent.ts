@@ -117,6 +117,6 @@ Grades: A+ (95-100), A (90-94), B+ (85-89), B (80-84), C+ (75-79), C (70-74), D 
 Focus on requirements fulfillment as the primary criterion. Provide specific evidence and prioritize recommendations by impact.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });

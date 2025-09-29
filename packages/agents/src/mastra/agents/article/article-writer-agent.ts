@@ -81,6 +81,6 @@ ${getLanguageOutputInstruction(locale as "en" | "pt")}
 Focus on creating valuable, engaging content that serves the reader's needs while maintaining professional journalism standards.
 `;
    },
-   model: openrouter("x-ai/grok-4-fast:free"),
+   model: openrouter("x-ai/grok-4-fast"),
    tools: { dateTool },
 });
