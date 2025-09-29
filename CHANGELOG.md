@@ -1,3 +1,13 @@
+## 0.17.0 (2025-09-29)
+
+### 🚀 Features
+
+- **agents): chore(agents:** Remove unused lumen.config.json file ([979fa4b](https://github.com/F-O-T/contentagen-nx/commit/979fa4b))
+
+### ❤️ Thank You
+
+- Manoel
+
 ## 0.16.0 (2025-09-29)
 
 ### 🧱 Updated Dependencies
