@@ -14,6 +14,7 @@ import { ideasRouter } from "./router/ideas";
 import { preferencesRouter } from "./router/preferences";
 import { competitorRouter } from "./router/competitor";
 import { competitorFileRouter } from "./router/competitor-file";
+import { bugReportRouter } from "./router/bug-report";
 
 export const appRouter = router({
    agent: agentRouter,
@@ -26,6 +27,7 @@ export const appRouter = router({
    preferences: preferencesRouter,
    competitor: competitorRouter,
    competitorFile: competitorFileRouter,
+   bugReport: bugReportRouter,
 });
 export const createApi = ({
    auth,
