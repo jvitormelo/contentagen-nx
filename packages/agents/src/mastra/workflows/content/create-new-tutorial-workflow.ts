@@ -83,7 +83,9 @@ const editorType = z.string().describe("The edited tutorial, ready for review");
 const ContentWritingStepOutputSchema =
    CreateNewContentWorkflowInputSchema.extend({
       writing: writingType,
-      sources: z.array(z.string()).describe("The URLs found during web search research"),
+      sources: z
+         .array(z.string())
+         .describe("The URLs found during web search research"),
    }).omit({
       competitorIds: true,
       organizationId: true,
@@ -111,7 +113,7 @@ export const researchStep = createStep({
    description: "Perform SERP research and competitive analysis",
    inputSchema: CreateNewContentWorkflowInputSchema,
    outputSchema: ResearchStepOutputSchema,
-   execute: async ({ inputData }) => {
+   execute: async ({ inputData, runtimeContext }) => {
       try {
          const { userId, request, agentId, contentId } = inputData;
 
@@ -139,7 +141,7 @@ Please conduct SERP analysis to identify:
 Focus on the research findings only and include actual URLs found during your web searches.
 `;
 
-         const result = await researcherAgent.generateVNext(
+         const result = await researcherAgent.generate(
             [
                {
                   role: "user",
@@ -147,6 +149,7 @@ Focus on the research findings only and include actual URLs found during your we
                },
             ],
             {
+               runtimeContext,
                output: ResearchStepOutputSchema.omit({
                   agentId: true,
                   contentId: true,
@@ -202,7 +205,7 @@ const tutorialWritingStep = createStep({
    description: "Write the tutorial based on the content strategy and research",
    inputSchema: ResearchStepOutputSchema,
    outputSchema: ContentWritingStepOutputSchema,
-   execute: async ({ inputData }) => {
+   execute: async ({ inputData, runtimeContext }) => {
       try {
          const {
             userId,
@@ -239,7 +242,7 @@ request: ${request.description}
 ${researchPrompt}
 
 `;
-         const result = await tutorialWriterAgent.generateVNext(
+         const result = await tutorialWriterAgent.generate(
             [
                {
                   role: "user",
@@ -247,6 +250,7 @@ ${researchPrompt}
                },
             ],
             {
+               runtimeContext,
                output: ContentWritingStepOutputSchema.pick({
                   writing: true,
                }),
@@ -298,7 +302,9 @@ ${researchPrompt}
 const ContentEditorStepOutputSchema =
    CreateNewContentWorkflowInputSchema.extend({
       editor: editorType,
-      sources: z.array(z.string()).describe("The URLs found during web search research"),
+      sources: z
+         .array(z.string())
+         .describe("The URLs found during web search research"),
    }).omit({
       competitorIds: true,
       organizationId: true,
@@ -308,16 +314,10 @@ const tutorialEditorStep = createStep({
    description: "Edit the tutorial based on the content research",
    inputSchema: ContentWritingStepOutputSchema,
    outputSchema: ContentEditorStepOutputSchema,
-   execute: async ({ inputData }) => {
+   execute: async ({ inputData, runtimeContext }) => {
       try {
-         const {
-            userId,
-            request,
-            writing,
-            agentId,
-            contentId,
-            sources,
-         } = inputData;
+         const { userId, request, writing, agentId, contentId, sources } =
+            inputData;
 
          // Emit event when editing starts
          await updateContentStatus({
@@ -334,7 +334,7 @@ writing: ${writing}
 
 output the edited content in markdown format.
 `;
-         const result = await tutorialEditorAgent.generateVNext(
+         const result = await tutorialEditorAgent.generate(
             [
                {
                   role: "user",
@@ -342,6 +342,7 @@ output the edited content in markdown format.
                },
             ],
             {
+               runtimeContext,
                output: ContentEditorStepOutputSchema.pick({
                   editor: true,
                }),
@@ -405,7 +406,7 @@ export const tutorialReadAndReviewStep = createStep({
    description: "Read and review the tutorial",
    inputSchema: ContentEditorStepOutputSchema,
    outputSchema: ContentReviewerStepOutputSchema,
-   execute: async ({ inputData }) => {
+   execute: async ({ inputData, runtimeContext }) => {
       try {
          const { userId, request, editor, agentId, contentId, sources } =
             inputData;
@@ -429,7 +430,7 @@ final:${editor}
 `;
 
          //TODO: Rework
-         const result = await tutorialReaderAgent.generateVNext(
+         const result = await tutorialReaderAgent.generate(
             [
                {
                   role: "user",
@@ -437,6 +438,7 @@ final:${editor}
                },
             ],
             {
+               runtimeContext,
                output: ContentReviewerStepOutputSchema.pick({
                   rating: true,
                   reasonOfTheRating: true,
@@ -510,7 +512,7 @@ export const tutorialSeoOptimizationStep = createStep({
    description: "Generate SEO keywords and meta description for the tutorial",
    inputSchema: ContentEditorStepOutputSchema,
    outputSchema: SeoOptimizationStepOutputSchema,
-   execute: async ({ inputData }) => {
+   execute: async ({ inputData, runtimeContext }) => {
       try {
          const { userId, agentId, contentId, request, editor } = inputData;
 
@@ -536,7 +538,7 @@ Requirements:
 - Follow SEO best practices for character limits and optimization
 `;
 
-         const result = await seoOptimizationAgent.generateVNext(
+         const result = await seoOptimizationAgent.generate(
             [
                {
                   role: "user",
@@ -544,6 +546,7 @@ Requirements:
                },
             ],
             {
+               runtimeContext,
                output: SeoOptimizationStepOutputSchema.pick({
                   keywords: true,
                   metaDescription: true,
