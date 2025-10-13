@@ -1,6 +1,6 @@
 {
    "dependencies": {
-      "@bull-board/elysia": "^6.12.0",
+      "@bull-board/elysia": "6.12.0",
       "@elysiajs/cors": "catalog:server",
       "@packages/utils": "workspace:*",
       "@packages/api": "workspace:*",
