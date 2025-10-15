@@ -90,32 +90,24 @@ export const sdkRouter = router({
       .input(
          z.object({
             message: z.string(),
+            agentId: z.uuid(),
             language: z.enum(["en", "pt"]).optional().default("en"),
          }),
       )
       .query(async ({ ctx, input }) => {
          const resolvedCtx = await ctx;
-         const userId = resolvedCtx?.session?.user.id;
-         if (!userId) {
-            throw APIError.validation("User not authenticated");
+         if (!input.agentId) {
+            throw new TRPCError({
+               code: "BAD_REQUEST",
+               message: "Agent ID is required.",
+            });
          }
-         const organization = await resolvedCtx.auth.api.listOrganizations({
-            headers: resolvedCtx.headers,
-         });
-         const organizationId = organization[0]?.id;
-         if (!organizationId) {
-            throw APIError.validation("No organization found for user");
-         }
-
-         await resolvedCtx.auth.api.setActiveOrganization({
-            headers: resolvedCtx.headers,
-            body: { organizationId },
-         });
+         const agent = await getAgentById(resolvedCtx.db, input.agentId ?? "");
 
          const runtimeContext = setRuntimeContext({
-            userId,
+            userId: agent.userId,
             language: resolvedCtx.language,
-            organizationId,
+            organizationId: agent.organizationId || "",
          });
          try {
             const agent = mastra.getAgent("appAssistantAgent");
