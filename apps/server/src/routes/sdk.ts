@@ -14,6 +14,8 @@ import { db, ragClient } from "@api/integrations/database";
 import { serverEnv as env } from "@packages/environment/server";
 
 import { minioClient } from "@api/integrations/minio";
+import { listBrands } from "@packages/database/repositories/brand-repository";
+import type { SupportedLng } from "@packages/localization";
 const minioBucket = env.MINIO_BUCKET;
 
 const ImageSchema = t.Object(
@@ -24,7 +26,9 @@ const ImageSchema = t.Object(
    { additionalProperties: true },
 ); // Using additionalProperties to keep it flexible, or define it as nullable if needed.
 
-export const sdkRoutes = new Elysia({ prefix: "/sdk" })
+export const sdkRoutes = new Elysia({
+   prefix: "/sdk",
+})
    .macro({
       sdkAuth: {
          async resolve({ request }) {
@@ -120,8 +124,10 @@ export const sdkRoutes = new Elysia({ prefix: "/sdk" })
    .get(
       "/assistant",
       async function* ({ query, request }) {
-         const language =
-            request.headers.get("x-locale") || ("en" as "en" | "pt");
+         const language = request.headers.get("x-locale");
+         if (!language) {
+            throw new Error("Language header is required.");
+         }
          if (!query.agentId) {
             throw new Error("Agent ID is required.");
          }
@@ -130,14 +136,15 @@ export const sdkRoutes = new Elysia({ prefix: "/sdk" })
          if (!agent) {
             throw new Error("Agent not found.");
          }
-
+         const brand = await listBrands(db, {
+            organizationId: agent.organizationId ?? "",
+         }).then((brands) => brands[0]);
          const runtimeContext = setRuntimeContext({
             userId: agent.userId,
-            language: language === "pt" ? "pt" : "en",
-            organizationId: agent.organizationId || "",
+            language: language as SupportedLng,
+            brandId: brand?.id || "",
          });
 
-         console.log("entrou");
          try {
             const agentInstance = mastra.getAgent("appAssistantAgent");
             const result = await agentInstance.stream(
@@ -145,7 +152,6 @@ export const sdkRoutes = new Elysia({ prefix: "/sdk" })
                { runtimeContext },
             );
 
-            // Stream the response word by word or character by character
             for await (const chunk of result.textStream) {
                yield chunk;
             }

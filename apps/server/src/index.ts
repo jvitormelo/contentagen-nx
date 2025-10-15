@@ -44,7 +44,11 @@ const trpcApi = createApi({
    db,
    ragClient,
 });
-const app = new Elysia()
+const app = new Elysia({
+   serve: {
+      idleTimeout: 0,
+   },
+})
    .derive(() => ({
       db,
       ragClient,
