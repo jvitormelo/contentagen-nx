@@ -24,8 +24,7 @@ const ImageSchema = t.Object(
       contentType: t.String(),
    },
    { additionalProperties: true },
-); // Using additionalProperties to keep it flexible, or define it as nullable if needed.
-
+);
 export const sdkRoutes = new Elysia({
    prefix: "/sdk",
    serve: {
