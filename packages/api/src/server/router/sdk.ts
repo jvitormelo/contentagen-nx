@@ -93,7 +93,7 @@ export const sdkRouter = router({
             language: z.enum(["en", "pt"]).optional().default("en"),
          }),
       )
-      .query(async function* ({ ctx, input }) {
+      .query(async ({ ctx, input }) => {
          const resolvedCtx = await ctx;
          const userId = resolvedCtx?.session?.session.userId;
          const organizationId =
@@ -112,18 +112,16 @@ export const sdkRouter = router({
          try {
             const agent = mastra.getAgent("appAssistantAgent");
 
-            const stream = await agent.stream(
+            const result = await agent.generate(
                [{ role: "user", content: input.message }],
                { runtimeContext },
             );
 
-            for await (const chunk of stream.textStream) {
-               yield chunk;
-            }
+            return result.text;
          } catch (error) {
-            console.error("Error processing agent stream:", error);
+            console.error("Error processing agent generation:", error);
             propagateError(error);
-            throw APIError.internal("Error processing agent stream");
+            throw APIError.internal("Error processing agent generation");
          }
       }),
    listContentByAgent: sdkProcedure
