@@ -28,6 +28,9 @@ const ImageSchema = t.Object(
 
 export const sdkRoutes = new Elysia({
    prefix: "/sdk",
+   serve: {
+      idleTimeout: 0,
+   },
 })
    .macro({
       sdkAuth: {
