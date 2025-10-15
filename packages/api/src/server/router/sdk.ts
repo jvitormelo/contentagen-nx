@@ -90,6 +90,7 @@ export const sdkRouter = router({
       .input(
          z.object({
             message: z.string(),
+            language: z.enum(["en", "pt"]).optional().default("en"),
          }),
       )
       .query(async function* ({ ctx, input }) {

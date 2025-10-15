@@ -51,7 +51,7 @@ export const createTrpcClient = ({
                         : "en");
                   if (clientLanguage) {
                      requestHeaders.set("Accept-Language", clientLanguage);
-                     requestHeaders.set("X-Locale", clientLanguage);
+                     requestHeaders.set("x-locale", clientLanguage);
                   }
 
                   if (headers) {
