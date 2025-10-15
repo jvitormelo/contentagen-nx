@@ -152,12 +152,9 @@ export const sdkRoutes = new Elysia({
             const agentInstance = mastra.getAgent("appAssistantAgent");
             const result = await agentInstance.stream(
                [{ role: "user", content: query.message }],
-               { runtimeContext },
+               { runtimeContext, format: "aisdk" },
             );
-
-            for await (const chunk of result.textStream) {
-               yield chunk;
-            }
+            return result.toTextStreamResponse();
          } catch (error) {
             console.error("Error processing agent generation:", error);
             propagateError(error);
