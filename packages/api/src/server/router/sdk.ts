@@ -89,7 +89,6 @@ export const sdkRouter = router({
    streamAssisantResponse: sdkProcedure
       .input(
          z.object({
-            agentId: z.string(),
             message: z.string(),
          }),
       )
@@ -108,7 +107,6 @@ export const sdkRouter = router({
             userId,
             language: resolvedCtx.language,
             organizationId,
-            agentId: input.agentId,
          });
          try {
             const agent = mastra.getAgent("appAssistantAgent");
