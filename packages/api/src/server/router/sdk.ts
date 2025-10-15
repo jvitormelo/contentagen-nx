@@ -96,14 +96,22 @@ export const sdkRouter = router({
       .query(async ({ ctx, input }) => {
          const resolvedCtx = await ctx;
          const userId = resolvedCtx?.session?.session.userId;
-         const organizationId =
-            resolvedCtx?.session?.session.activeOrganizationId;
          if (!userId) {
             throw APIError.validation("User not authenticated");
          }
+         const organization = await resolvedCtx.auth.api.listOrganizations({
+            headers: resolvedCtx.headers,
+         });
+         const organizationId = organization[0]?.id;
          if (!organizationId) {
-            throw APIError.validation("Organization not selected");
+            throw APIError.validation("No organization found for user");
          }
+
+         await resolvedCtx.auth.api.setActiveOrganization({
+            headers: resolvedCtx.headers,
+            body: { organizationId },
+         });
+
          const runtimeContext = setRuntimeContext({
             userId,
             language: resolvedCtx.language,
