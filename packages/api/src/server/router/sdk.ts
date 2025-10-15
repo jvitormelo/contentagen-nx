@@ -86,7 +86,7 @@ export const sdkRouter = router({
          );
          return slugs;
       }),
-   streamAssisantResponse: sdkProcedure
+   streamAssistantResponse: sdkProcedure
       .input(
          z.object({
             message: z.string(),
