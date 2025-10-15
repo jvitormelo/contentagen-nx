@@ -95,7 +95,7 @@ export const sdkRouter = router({
       )
       .query(async ({ ctx, input }) => {
          const resolvedCtx = await ctx;
-         const userId = resolvedCtx?.session?.session.userId;
+         const userId = resolvedCtx?.session?.user.id;
          if (!userId) {
             throw APIError.validation("User not authenticated");
          }
