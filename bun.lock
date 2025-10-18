@@ -28,7 +28,7 @@
         "@astrojs/rss": "catalog:astro",
         "@astrojs/sitemap": "catalog:astro",
         "@astrojs/ts-plugin": "catalog:astro",
-        "@contentagen/sdk": "^0.15.9",
+        "@contentagen/sdk": "^0.15.10",
         "@lucide/astro": "catalog:astro",
         "@packages/environment": "workspace:*",
         "@packages/posthog": "workspace:*",
@@ -915,7 +915,7 @@
 
     "@commitlint/types": ["@commitlint/types@20.0.0", "", { "dependencies": { "@types/conventional-commits-parser": "^5.0.0", "chalk": "^5.3.0" } }, "sha512-bVUNBqG6aznYcYjTjnc3+Cat/iBgbgpflxbIBTnsHTX0YVpnmINPEkSRWymT2Q8aSH3Y7aKnEbunilkYe8TybA=="],
 
-    "@contentagen/sdk": ["@contentagen/sdk@0.15.9", "", { "dependencies": { "superjson": "2.2.2", "zod": "4.0.14" } }, "sha512-ahiO0QjMiHhvJeNFS3UTJu0hADAT+g2oabMSHdNe16FDtRJQ3f3BraETFunUxtk8uFApgRD7QPuRjbtklI5LIQ=="],
+    "@contentagen/sdk": ["@contentagen/sdk@0.15.10", "", { "dependencies": { "superjson": "2.2.2", "zod": "4.0.14" } }, "sha512-2g82+PKLa+/LmY5O4xpYdv+JCyMkBSirXtZQGfS2d7O2GmAekmQC6c3adqxXxYVHTkis1UlvrMFocY0T4Mj1sA=="],
 
     "@ctrl/tinycolor": ["@ctrl/tinycolor@4.2.0", "", {}, "sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A=="],
 
