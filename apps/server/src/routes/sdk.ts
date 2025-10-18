@@ -238,9 +238,7 @@ export const sdkRoutes = new Elysia({
          query: t.Object({
             limit: t.Optional(t.String()),
             page: t.Optional(t.String()),
-            status: t.Optional(
-               t.Array(t.UnionEnum(["draft", "approved"]).default("approved")),
-            ),
+            status: t.Optional(t.Array(t.UnionEnum(["draft", "approved"]))),
          }),
       },
    )
