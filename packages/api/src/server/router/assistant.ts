@@ -20,11 +20,7 @@ export const assistantRouter = router({
             for await (const chunk of stream) {
                response.push(chunk);
             }
-
-            return {
-               success: true,
-               response: response.join(""),
-            };
+            return response.join("");
          } catch (error) {
             console.error("Error in sendMessage:", error);
             throw new Error("Failed to process message");
