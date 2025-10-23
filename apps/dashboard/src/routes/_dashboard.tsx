@@ -1,4 +1,5 @@
 import { ContentaChat } from "@contentagen/assistant-widget";
+import i18n, { type SupportedLng } from "@packages/localization";
 import { MessageCircle } from "lucide-react";
 import {
    Popover,
@@ -89,7 +90,10 @@ function RouteComponent() {
                   </Button>
                </PopoverTrigger>
                <PopoverContent align="end" className="w-full p-0">
-                  <ContentaChat sendMessage={sendMessage} />
+                  <ContentaChat
+                     locale={i18n.language as SupportedLng}
+                     sendMessage={sendMessage}
+                  />
                </PopoverContent>
             </Popover>
 
