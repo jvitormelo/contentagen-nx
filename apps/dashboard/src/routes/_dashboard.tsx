@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { PendingComponent } from "@/default/pending";
 import { ErrorComponent } from "@/default/error";
 import { useCallback, useEffect } from "react";
+
 export const Route = createFileRoute("/_dashboard")({
    component: RouteComponent,
    wrapInSuspense: true,
