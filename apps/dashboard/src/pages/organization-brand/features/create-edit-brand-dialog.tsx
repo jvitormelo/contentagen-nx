@@ -1,7 +1,5 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTRPC } from "@/integrations/clients";
-import { createToast } from "@/features/error-modal/lib/create-toast";
+import type { RouterOutput } from "@packages/api/client";
+import { Button } from "@packages/ui/components/button";
 import {
    Dialog,
    DialogContent,
@@ -10,12 +8,14 @@ import {
    DialogHeader,
    DialogTitle,
 } from "@packages/ui/components/dialog";
-import { Button } from "@packages/ui/components/button";
-import { Input } from "@packages/ui/components/input";
 import { useAppForm } from "@packages/ui/components/form";
-import type { RouterOutput } from "@packages/api/client";
-import { z } from "zod";
+import { Input } from "@packages/ui/components/input";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { FormEvent } from "react";
+import { useCallback } from "react";
+import { z } from "zod";
+import { createToast } from "@/features/error-modal/lib/create-toast";
+import { useTRPC } from "@/integrations/clients";
 
 const brandSchema = z.object({
    websiteUrl: z.url("Please enter a valid URL"),
@@ -38,42 +38,42 @@ export function CreateEditBrandDialog({
 
    const updateMutation = useMutation(
       trpc.brand.update.mutationOptions({
+         onError: (error) => {
+            createToast({
+               message: `Failed to update brand: ${error.message ?? "Unknown error"}`,
+               type: "danger",
+            });
+         },
          onSuccess: async () => {
             createToast({
-               type: "success",
                message: "Brand updated successfully",
+               type: "success",
             });
             await queryClient.invalidateQueries({
                queryKey: trpc.brand.getByOrganization.queryKey(),
             });
             onOpenChange(false);
-         },
-         onError: (error) => {
-            createToast({
-               type: "danger",
-               message: `Failed to update brand: ${error.message ?? "Unknown error"}`,
-            });
          },
       }),
    );
 
    const createMutation = useMutation(
       trpc.brand.create.mutationOptions({
+         onError: (error) => {
+            createToast({
+               message: `Failed to create brand: ${error.message ?? "Unknown error"}`,
+               type: "danger",
+            });
+         },
          onSuccess: async () => {
             createToast({
-               type: "success",
                message: "Brand created successfully",
+               type: "success",
             });
             await queryClient.invalidateQueries({
                queryKey: trpc.brand.getByOrganization.queryKey(),
             });
             onOpenChange(false);
-         },
-         onError: (error) => {
-            createToast({
-               type: "danger",
-               message: `Failed to create brand: ${error.message ?? "Unknown error"}`,
-            });
          },
       }),
    );
@@ -88,8 +88,8 @@ export function CreateEditBrandDialog({
       async (values: z.infer<typeof brandSchema>) => {
          if (!brand) return;
          await updateMutation.mutateAsync({
-            id: brand.id,
             data: values,
+            id: brand.id,
          });
       },
       [updateMutation, brand],
@@ -99,9 +99,6 @@ export function CreateEditBrandDialog({
       defaultValues: {
          websiteUrl: brand?.websiteUrl || "",
       },
-      validators: {
-         onChange: brandSchema,
-      },
       onSubmit: async ({ value, formApi }) => {
          if (isEditing) {
             await updateBrand(value);
@@ -109,6 +106,9 @@ export function CreateEditBrandDialog({
             await createBrand(value);
          }
          formApi.reset();
+      },
+      validators: {
+         onChange: brandSchema,
       },
    });
 
@@ -122,7 +122,7 @@ export function CreateEditBrandDialog({
    );
 
    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog onOpenChange={onOpenChange} open={open}>
          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
                <DialogTitle>
@@ -157,19 +157,19 @@ export function CreateEditBrandDialog({
                </div>
                <DialogFooter>
                   <Button
+                     onClick={() => onOpenChange(false)}
                      type="button"
                      variant="outline"
-                     onClick={() => onOpenChange(false)}
                   >
                      Cancel
                   </Button>
                   <form.Subscribe>
                      {(formState) => (
                         <Button
-                           type="submit"
                            disabled={
                               !formState.canSubmit || formState.isSubmitting
                            }
+                           type="submit"
                         >
                            {formState.isSubmitting
                               ? "Saving..."

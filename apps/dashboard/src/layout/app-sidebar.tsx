@@ -1,4 +1,3 @@
-import type { FileRoutesByTo } from "@/routeTree.gen";
 import brandConfig from "@packages/brand/index.json";
 import logo from "@packages/brand/logo.svg";
 import {
@@ -9,21 +8,22 @@ import {
    SidebarMenu,
    SidebarMenuItem,
 } from "@packages/ui/components/sidebar";
+import { Link } from "@tanstack/react-router";
 import {
    Bot,
+   Building2,
    FilesIcon,
+   FileText,
    type LayoutDashboardIcon,
    Lightbulb,
    Target,
-   FileText,
-   Building2,
    Users,
 } from "lucide-react";
 import type * as React from "react";
-import { Link } from "@tanstack/react-router";
+import type { Session } from "@/integrations/clients";
+import type { FileRoutesByTo } from "@/routeTree.gen";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import type { Session } from "@/integrations/clients";
 
 type NavigationItems = {
    url?: keyof FileRoutesByTo;
@@ -43,24 +43,24 @@ export function AppSidebar({
    const navMain: NavigationItems[] = [
       {
          icon: FilesIcon,
-         title: "Content",
          subItems: [
             {
-               url: "/agents",
-               title: "Content Agents",
                icon: Bot,
+               title: "Content Agents",
+               url: "/agents",
             },
             {
-               url: "/ideas",
-               title: "Content Ideas",
                icon: Lightbulb,
+               title: "Content Ideas",
+               url: "/ideas",
             },
             {
-               url: "/content",
-               title: "Created Content",
                icon: FileText,
+               title: "Created Content",
+               url: "/content",
             },
          ],
+         title: "Content",
       },
       {
          icon: Target,
@@ -69,24 +69,24 @@ export function AppSidebar({
       },
       {
          icon: Building2,
-         title: "Organization",
          subItems: [
             {
-               url: "/organization",
-               title: "Organization Overview",
                icon: Building2,
+               title: "Organization Overview",
+               url: "/organization",
             },
             {
-               url: "/organization/members",
-               title: "Members",
                icon: Users,
+               title: "Members",
+               url: "/organization/members",
             },
             {
-               url: "/organization/brand",
-               title: "Brand Files",
                icon: FileText,
+               title: "Brand Files",
+               url: "/organization/brand",
             },
          ],
+         title: "Organization",
       },
    ];
 
@@ -95,7 +95,7 @@ export function AppSidebar({
          <SidebarHeader>
             <SidebarMenu>
                <SidebarMenuItem>
-                  <Link to="/home" className="flex items-center gap-2">
+                  <Link className="flex items-center gap-2" to="/home">
                      <figure className="text-primary">
                         <img
                            alt="Project logo"

@@ -1,17 +1,17 @@
-import { betterAuthClient, useTRPC } from "@/integrations/clients";
+import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
+   CredenzaBody,
    CredenzaContent,
+   CredenzaDescription,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaFooter,
-   CredenzaBody,
-   CredenzaDescription,
 } from "@packages/ui/components/credenza";
-import { Button } from "@packages/ui/components/button";
-import { toast } from "sonner";
-import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { toast } from "sonner";
+import { betterAuthClient, useTRPC } from "@/integrations/clients";
 
 export function DeleteOrganizationCredenza({
    organizationId,
@@ -30,16 +30,16 @@ export function DeleteOrganizationCredenza({
             organizationId,
          },
          {
+            onError: (error) => {
+               console.error("Failed to delete organization", error);
+               toast.error("Failed to delete organization. Please try again.");
+            },
             onSuccess: async () => {
                toast.success("Organization deleted successfully");
                await queryClient.invalidateQueries({
                   queryKey: trpc.authHelpers.getDefaultOrganization.queryKey(),
                });
                onOpenChange(false);
-            },
-            onError: (error) => {
-               console.error("Failed to delete organization", error);
-               toast.error("Failed to delete organization. Please try again.");
             },
          },
       );
@@ -52,7 +52,7 @@ export function DeleteOrganizationCredenza({
    ]);
 
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>Delete Organization</CredenzaTitle>
@@ -70,8 +70,8 @@ export function DeleteOrganizationCredenza({
             <CredenzaFooter>
                <Button
                   className="w-full shadow-lg transition-all duration-300 group bg-red-600 shadow-red-600/20 hover:bg-red-700 flex gap-2 items-center justify-center"
-                  type="button"
                   onClick={handleDelete}
+                  type="button"
                >
                   Delete Organization
                </Button>

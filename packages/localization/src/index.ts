@@ -1,6 +1,6 @@
 import i18n, { type TOptions } from "i18next";
-import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+import { initReactI18next } from "react-i18next";
 import enUSResources from "./locales/en-US";
 import ptBRResources from "./locales/pt-BR";
 
@@ -36,18 +36,18 @@ i18n
    .use(LanguageDetector)
    .use(initReactI18next)
    .init({
-      resources,
-      supportedLngs,
       defaultNS: "translation",
-      load: "languageOnly",
-      fallbackLng: "en",
       detection: {
-         order: ["localStorage", "navigator"],
          caches: ["localStorage"],
+         order: ["localStorage", "navigator"],
       },
+      fallbackLng: "en",
       interpolation: {
          escapeValue: false,
       },
+      load: "languageOnly",
+      resources,
+      supportedLngs,
    });
 
 export default i18n;

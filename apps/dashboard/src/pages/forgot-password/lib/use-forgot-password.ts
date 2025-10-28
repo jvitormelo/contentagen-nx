@@ -1,10 +1,10 @@
+import { translate } from "@packages/localization";
 import { useAppForm } from "@packages/ui/components/form";
 import { useRouter } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 import { betterAuthClient } from "@/integrations/clients";
-import { translate } from "@packages/localization";
 
 export function useForgotPassword() {
    const router = useRouter();

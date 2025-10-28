@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "@packages/ui/hooks/use-isomorphic-layout-effect";
-import { SubscriptionReminderCredenza } from "../ui/subscription-reminder-credenza";
-import { useTRPC } from "@/integrations/clients";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { toast } from "sonner";
+import { useTRPC } from "@/integrations/clients";
+import { SubscriptionReminderCredenza } from "../ui/subscription-reminder-credenza";
 
 export function useSubscriptionReminder() {
    const [showReminder, setShowReminder] = useState(false);
@@ -35,14 +35,14 @@ export function useSubscriptionReminder() {
 
    const SubscriptionReminderComponent = () => (
       <SubscriptionReminderCredenza
-         open={showReminder}
          onOpenChange={handleClose}
+         open={showReminder}
       />
    );
 
    return {
-      showReminder,
-      setShowReminder,
       SubscriptionReminderComponent,
+      setShowReminder,
+      showReminder,
    };
 }

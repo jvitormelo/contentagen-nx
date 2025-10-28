@@ -1,3 +1,4 @@
+import type { RouterOutput } from "@packages/api/client";
 import {
    Card,
    CardContent,
@@ -5,12 +6,12 @@ import {
    CardHeader,
    CardTitle,
 } from "@packages/ui/components/card";
-import { Calendar, Globe } from "lucide-react";
 import { InfoItem } from "@packages/ui/components/info-item";
-import { AgentWriterCard } from "@/widgets/agent-display-card/ui/agent-writter-card";
-import type { RouterOutput } from "@packages/api/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Calendar, Globe } from "lucide-react";
 import { useTRPC } from "@/integrations/clients";
+import { AgentWriterCard } from "@/widgets/agent-display-card/ui/agent-writter-card";
+
 interface BrandInfoCardProps {
    brand: RouterOutput["brand"]["list"]["items"][number];
 }
@@ -18,9 +19,9 @@ interface BrandInfoCardProps {
 export function BrandInfoCard({ brand }: BrandInfoCardProps) {
    const formatDate = (date: Date) => {
       return new Intl.DateTimeFormat("en-US", {
-         year: "numeric",
-         month: "long",
          day: "numeric",
+         month: "long",
+         year: "numeric",
       }).format(date);
    };
    const trpc = useTRPC();
@@ -39,8 +40,8 @@ export function BrandInfoCard({ brand }: BrandInfoCardProps) {
          </CardHeader>
          <CardContent className="space-y-2">
             <AgentWriterCard
-               name={brand.name || ""}
                description={brand.summary || ""}
+               name={brand.name || ""}
                photo={data?.data || ""}
             />
             <div className="grid grid-cols-1 gap-2">

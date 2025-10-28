@@ -1,28 +1,28 @@
-import { useAppForm } from "@packages/ui/components/form";
-import { z } from "zod";
+import { translate } from "@packages/localization";
+import {
+   AlertDialog,
+   AlertDialogAction,
+   AlertDialogCancel,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
+} from "@packages/ui/components/alert-dialog";
 import { Button } from "@packages/ui/components/button";
-import { Input } from "@packages/ui/components/input";
 import {
    Credenza,
    CredenzaContent,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaFooter,
 } from "@packages/ui/components/credenza";
-import {
-   AlertDialog,
-   AlertDialogContent,
-   AlertDialogHeader,
-   AlertDialogTitle,
-   AlertDialogDescription,
-   AlertDialogFooter,
-   AlertDialogAction,
-   AlertDialogCancel,
-} from "@packages/ui/components/alert-dialog";
-import { useState, useCallback } from "react";
+import { useAppForm } from "@packages/ui/components/form";
+import { Input } from "@packages/ui/components/input";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { betterAuthClient } from "@/integrations/clients";
-import { translate } from "@packages/localization";
 
 const emailSchema = z.object({
    email: z
@@ -48,8 +48,8 @@ export function UpdateEmailForm({
       async (value: EmailFormValues, formApi: { reset: () => void }) => {
          await betterAuthClient.changeEmail(
             {
-               newEmail: value.email,
                callbackURL: "/profile?emailChanged=1",
+               newEmail: value.email,
             },
             {
                onError: ({ error }: { error: Error }) => {
@@ -83,13 +83,13 @@ export function UpdateEmailForm({
    );
    const form = useAppForm({
       defaultValues: { email: currentEmail || "" },
-      validators: { onBlur: emailSchema },
       onSubmit: async ({ value, formApi }) => {
          await handleChangeEmail(value, formApi);
       },
+      validators: { onBlur: emailSchema },
    });
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>
@@ -97,9 +97,9 @@ export function UpdateEmailForm({
                </CredenzaTitle>
             </CredenzaHeader>
             <form
-               onSubmit={form.handleSubmit}
-               className="space-y-4 py-4"
                autoComplete="off"
+               className="space-y-4 py-4"
+               onSubmit={form.handleSubmit}
             >
                <div>
                   <label className="text-sm font-medium">
@@ -107,7 +107,7 @@ export function UpdateEmailForm({
                         "pages.profile.forms.update-email.fields.current-email.label",
                      )}
                   </label>
-                  <Input value={currentEmail} disabled className="bg-muted" />
+                  <Input className="bg-muted" disabled value={currentEmail} />
                </div>
                <form.AppField name="email">
                   {(field) => (
@@ -118,16 +118,16 @@ export function UpdateEmailForm({
                            )}
                         </field.FieldLabel>
                         <Input
+                           autoComplete="email"
                            id={field.name}
                            name={field.name}
-                           type="email"
-                           autoComplete="email"
+                           onBlur={field.handleBlur}
+                           onChange={(e) => field.handleChange(e.target.value)}
                            placeholder={translate(
                               "pages.profile.forms.update-email.fields.new-email.placeholder",
                            )}
+                           type="email"
                            value={field.state.value}
-                           onBlur={field.handleBlur}
-                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         <field.FieldMessage />
                      </field.FieldContainer>
@@ -135,9 +135,9 @@ export function UpdateEmailForm({
                </form.AppField>{" "}
                <CredenzaFooter>
                   <Button
+                     onClick={() => onOpenChange(false)}
                      type="button"
                      variant="outline"
-                     onClick={() => onOpenChange(false)}
                   >
                      {translate(
                         "pages.profile.forms.update-email.actions.cancel",
@@ -146,9 +146,9 @@ export function UpdateEmailForm({
                   <form.Subscribe>
                      {(formState) => (
                         <Button
-                           type="button"
-                           onClick={() => setConfirmOpen(true)}
                            disabled={!formState.canSubmit}
+                           onClick={() => setConfirmOpen(true)}
+                           type="button"
                         >
                            {translate(
                               "pages.profile.forms.update-email.actions.send",
@@ -158,7 +158,7 @@ export function UpdateEmailForm({
                   </form.Subscribe>{" "}
                </CredenzaFooter>
             </form>
-            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <AlertDialog onOpenChange={setConfirmOpen} open={confirmOpen}>
                <AlertDialogContent>
                   <AlertDialogHeader>
                      <AlertDialogTitle>

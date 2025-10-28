@@ -1,9 +1,12 @@
 ---
+
+
+
+import { Code, GitFork, Github, Heart, Star, Users } from "@lucide/astro";
+import type { SupportedLng } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
-import { Github, Heart, Users, Code, Star, GitFork } from "@lucide/astro";
 import { fetchGitHubRepoStats } from "@/services/github";
 import { useTranslations } from "../i18n/utils";
-import type { SupportedLng } from "@packages/localization";
 
 interface Props {
    lang?: SupportedLng;
@@ -16,21 +19,21 @@ const githubStats = await fetchGitHubRepoStats();
 
 const benefits = [
    {
+      description: t("pages.landing.openSource.benefits.community.description"),
       icon: Users,
       title: t("pages.landing.openSource.benefits.community.title"),
-      description: t("pages.landing.openSource.benefits.community.description"),
    },
    {
-      icon: Code,
-      title: t("pages.landing.openSource.benefits.transparency.title"),
       description: t(
          "pages.landing.openSource.benefits.transparency.description",
       ),
+      icon: Code,
+      title: t("pages.landing.openSource.benefits.transparency.title"),
    },
    {
+      description: t("pages.landing.openSource.benefits.free.description"),
       icon: Heart,
       title: t("pages.landing.openSource.benefits.free.title"),
-      description: t("pages.landing.openSource.benefits.free.description"),
    },
 ];
 ---

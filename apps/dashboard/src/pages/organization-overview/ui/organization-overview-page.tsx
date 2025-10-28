@@ -1,19 +1,19 @@
-import { useTRPC } from "@/integrations/clients";
-import { UsersIcon, FileArchive } from "lucide-react";
-import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
-import { StatsCard } from "@packages/ui/components/stats-card";
-import { SquaredIconButton } from "@packages/ui/components/squared-icon-button";
-import { AgentWriterCard } from "@/widgets/agent-display-card/ui/agent-writter-card";
-import { Link } from "@tanstack/react-router";
 import {
    Card,
+   CardContent,
+   CardDescription,
    CardHeader,
    CardTitle,
-   CardDescription,
-   CardContent,
 } from "@packages/ui/components/card";
 import { Separator } from "@packages/ui/components/separator";
+import { SquaredIconButton } from "@packages/ui/components/squared-icon-button";
+import { StatsCard } from "@packages/ui/components/stats-card";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { FileArchive, UsersIcon } from "lucide-react";
+import { useTRPC } from "@/integrations/clients";
+import { AgentWriterCard } from "@/widgets/agent-display-card/ui/agent-writter-card";
+import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { QuickActions } from "./quick-actions";
 export function OrganizationOverviewPage() {
    const trpc = useTRPC();
@@ -45,14 +45,14 @@ export function OrganizationOverviewPage() {
                      </div>
 
                      <StatsCard
+                        description="The total number of members in the organization"
                         title="Total Members"
                         value={data.totalMembers}
-                        description="The total number of members in the organization"
                      />
                      <StatsCard
+                        description="The total number of writer agents in the organization"
                         title="Total agents"
                         value={data.totalAgents}
-                        description="The total number of writer agents in the organization"
                      />
                   </CardContent>
                </Card>

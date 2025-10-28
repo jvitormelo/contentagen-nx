@@ -55,17 +55,17 @@ export function SignUpPage() {
                                           )}
                                        </field.FieldLabel>
                                        <Input
-                                          value={field.state.value}
+                                          autoComplete="name"
                                           id={field.name}
                                           name={field.name}
-                                          placeholder={translate(
-                                             "pages.sign-up.form.name.placeholder",
-                                          )}
-                                          autoComplete="name"
                                           onBlur={field.handleBlur}
                                           onChange={(e) =>
                                              field.handleChange(e.target.value)
                                           }
+                                          placeholder={translate(
+                                             "pages.sign-up.form.name.placeholder",
+                                          )}
+                                          value={field.state.value}
                                        />
                                        <field.FieldMessage />
                                     </field.FieldContainer>
@@ -80,18 +80,18 @@ export function SignUpPage() {
                                           )}
                                        </field.FieldLabel>
                                        <Input
-                                          value={field.state.value}
+                                          autoComplete="email"
                                           id={field.name}
                                           name={field.name}
-                                          type="email"
-                                          placeholder={translate(
-                                             "pages.sign-up.form.email.placeholder",
-                                          )}
-                                          autoComplete="email"
                                           onBlur={field.handleBlur}
                                           onChange={(e) =>
                                              field.handleChange(e.target.value)
                                           }
+                                          placeholder={translate(
+                                             "pages.sign-up.form.email.placeholder",
+                                          )}
+                                          type="email"
+                                          value={field.state.value}
                                        />
                                        <field.FieldMessage />
                                     </field.FieldContainer>
@@ -110,17 +110,17 @@ export function SignUpPage() {
                                           )}
                                        </field.FieldLabel>
                                        <PasswordInput
-                                          value={field.state.value}
+                                          autoComplete="new-password"
                                           id={field.name}
                                           name={field.name}
-                                          placeholder={translate(
-                                             "pages.sign-up.form.password.placeholder",
-                                          )}
-                                          autoComplete="new-password"
                                           onBlur={field.handleBlur}
                                           onChange={(e) =>
                                              field.handleChange(e.target.value)
                                           }
+                                          placeholder={translate(
+                                             "pages.sign-up.form.password.placeholder",
+                                          )}
+                                          value={field.state.value}
                                        />
                                        <field.FieldMessage />
                                     </field.FieldContainer>
@@ -135,17 +135,17 @@ export function SignUpPage() {
                                           )}
                                        </field.FieldLabel>
                                        <PasswordInput
-                                          value={field.state.value}
+                                          autoComplete="new-password"
                                           id={field.name}
                                           name={field.name}
-                                          placeholder={translate(
-                                             "pages.sign-up.form.confirm-password.placeholder",
-                                          )}
-                                          autoComplete="new-password"
                                           onBlur={field.handleBlur}
                                           onChange={(e) =>
                                              field.handleChange(e.target.value)
                                           }
+                                          placeholder={translate(
+                                             "pages.sign-up.form.confirm-password.placeholder",
+                                          )}
+                                          value={field.state.value}
                                        />
                                        <field.FieldMessage />
                                     </field.FieldContainer>
@@ -156,10 +156,10 @@ export function SignUpPage() {
                      })}
                      <Stepper.Controls className="flex w-full justify-between">
                         <Button
-                           variant="outline"
-                           onClick={methods.prev}
                            disabled={methods.isFirst}
+                           onClick={methods.prev}
                            type="button"
+                           variant="outline"
                         >
                            {translate("pages.sign-up.form.previous")}
                         </Button>
@@ -167,13 +167,13 @@ export function SignUpPage() {
                            <form.Subscribe>
                               {(formState) => (
                                  <Button
+                                    className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
                                     disabled={
                                        !formState.canSubmit ||
                                        formState.isSubmitting
                                     }
-                                    variant="default"
-                                    className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
                                     type="submit"
+                                    variant="default"
                                  >
                                     {translate("pages.sign-up.form.submit")}
                                  </Button>
@@ -182,9 +182,9 @@ export function SignUpPage() {
                         ) : (
                            <form.Subscribe
                               selector={(state) => ({
-                                 nameValue: state.values.name,
                                  emailValue: state.values.email,
                                  fieldMeta: state.fieldMeta,
+                                 nameValue: state.values.name,
                               })}
                            >
                               {({ nameValue, emailValue, fieldMeta }) => {
@@ -201,9 +201,9 @@ export function SignUpPage() {
 
                                  return (
                                     <Button
+                                       disabled={!canGoNext}
                                        onClick={methods.next}
                                        type="button"
-                                       disabled={!canGoNext}
                                     >
                                        {translate("pages.sign-up.form.next")}
                                     </Button>
@@ -218,8 +218,8 @@ export function SignUpPage() {
                   <p className="text-sm text-center">
                      {translate("pages.sign-up.footer.have-account")}
                      <Link
-                        to="/auth/sign-in"
                         className="ml-1 underline text-muted-foreground"
+                        to="/auth/sign-in"
                      >
                         {translate("pages.sign-up.footer.sign-in-link")}
                      </Link>

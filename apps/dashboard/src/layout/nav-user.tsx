@@ -1,9 +1,4 @@
 import {
-   betterAuthClient,
-   useTRPC,
-   type Session,
-} from "@/integrations/clients";
-import {
    Avatar,
    AvatarFallback,
    AvatarImage,
@@ -28,14 +23,20 @@ import { Skeleton } from "@packages/ui/components/skeleton";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import {
+   Building2,
+   KeyIcon,
    LogOutIcon,
    MoreVerticalIcon,
    UserCircleIcon,
-   KeyIcon,
-   Building2,
 } from "lucide-react";
 import { useCallback } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import {
+   betterAuthClient,
+   type Session,
+   useTRPC,
+} from "@/integrations/clients";
+
 function UserAvatarInfo({
    name,
    email,
@@ -81,7 +82,7 @@ function NavUserSkeleton() {
    return (
       <SidebarMenu>
          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="pointer-events-none">
+            <SidebarMenuButton className="pointer-events-none" size="lg">
                <Skeleton className="h-8 w-8 rounded-lg mr-3" />
                <div className="grid flex-1 text-left text-sm leading-tight">
                   <Skeleton className="h-4 w-24 mb-1" />
@@ -141,10 +142,10 @@ function NavUserContent({ session }: { session: Session | null }) {
                      size="lg"
                   >
                      <UserAvatarInfo
-                        name={session?.user.name}
                         email={session?.user.email}
-                        image={session?.user.image ?? ""}
                         grayscale
+                        image={session?.user.image ?? ""}
+                        name={session?.user.name}
                      />
                      <MoreVerticalIcon className="ml-auto size-4" />
                   </SidebarMenuButton>
@@ -158,9 +159,9 @@ function NavUserContent({ session }: { session: Session | null }) {
                   <DropdownMenuLabel className="p-0 font-normal">
                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                         <UserAvatarInfo
-                           name={session?.user.name}
                            email={session?.user.email}
                            image={session?.user.image ?? ""}
+                           name={session?.user.name}
                         />
                      </div>
                   </DropdownMenuLabel>
@@ -168,10 +169,10 @@ function NavUserContent({ session }: { session: Session | null }) {
                   <DropdownMenuGroup>
                      <DropdownMenuItem asChild>
                         <Button
-                           className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
-                           variant="ghost"
-                           onClick={() => setOpenMobile(false)}
                            asChild
+                           className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
+                           onClick={() => setOpenMobile(false)}
+                           variant="ghost"
                         >
                            <Link to="/profile">
                               <UserCircleIcon />
@@ -182,10 +183,10 @@ function NavUserContent({ session }: { session: Session | null }) {
                      {customer.activeSubscriptions && (
                         <DropdownMenuItem asChild>
                            <Button
-                              className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
-                              variant="ghost"
-                              onClick={() => setOpenMobile(false)}
                               asChild
+                              className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
+                              onClick={() => setOpenMobile(false)}
+                              variant="ghost"
                            >
                               <Link to="/apikey">
                                  <KeyIcon />
@@ -197,10 +198,10 @@ function NavUserContent({ session }: { session: Session | null }) {
                      {(customer.activeSubscriptions || organization) && (
                         <DropdownMenuItem asChild>
                            <Button
-                              className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
-                              variant="ghost"
-                              onClick={() => setOpenMobile(false)}
                               asChild
+                              className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
+                              onClick={() => setOpenMobile(false)}
+                              variant="ghost"
                            >
                               <Link to="/organization">
                                  <Building2 />
@@ -213,8 +214,8 @@ function NavUserContent({ session }: { session: Session | null }) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                      <Button
-                        onClick={handleLogout}
                         className="w-full cursor-pointer items-center justify-start flex gap-2"
+                        onClick={handleLogout}
                         variant="ghost"
                      >
                         <LogOutIcon />

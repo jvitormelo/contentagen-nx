@@ -1,18 +1,18 @@
-import { createWorkflow, createStep } from "@mastra/core/workflows";
-import { companyInfoExtractorAgent } from "../../agents/company-info-extractor-agent";
-import { serverEnv } from "@packages/environment/server";
+import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { createDb } from "@packages/database/client";
-import { updateCompetitor } from "@packages/database/repositories/competitor-repository";
 import { updateBrand } from "@packages/database/repositories/brand-repository";
+import { updateCompetitor } from "@packages/database/repositories/competitor-repository";
+import { serverEnv } from "@packages/environment/server";
 import { AppError, propagateError } from "@packages/utils/errors";
-import { ingestUsage, type MastraLLMUsage } from "../../helpers";
 import { z } from "zod";
+import { companyInfoExtractorAgent } from "../../agents/company-info-extractor-agent";
+import { ingestUsage, type MastraLLMUsage } from "../../helpers";
 
 export const CreateOverviewInput = z.object({
-   websiteUrl: z.url(),
-   userId: z.string(),
    id: z.string(),
    target: z.enum(["brand", "competitor"]),
+   userId: z.string(),
+   websiteUrl: z.url(),
 });
 
 export const CreateOverviewOutput = z.object({
@@ -33,11 +33,8 @@ const extractOverviewOutputSchema = CreateOverviewInput.extend({
 });
 
 const extractOverview = createStep({
-   id: "extract-overview-step",
    description:
       "Extract company overview information using company info extractor agent",
-   inputSchema: CreateOverviewInput,
-   outputSchema: extractOverviewOutputSchema,
 
    execute: async ({ inputData, runtimeContext }) => {
       const { userId, websiteUrl, id, target } = inputData;
@@ -50,16 +47,16 @@ Provide the official company name and a comprehensive summary covering their bus
          const result = await companyInfoExtractorAgent.generate(
             [
                {
-                  role: "user",
                   content: inputPrompt,
+                  role: "user",
                },
             ],
             {
-               runtimeContext,
                output: extractOverviewOutputSchema.pick({
                   companyName: true,
                   detailedSummary: true,
                }),
+               runtimeContext,
             },
          );
 
@@ -76,10 +73,10 @@ Provide the official company name and a comprehensive summary covering their bus
          return {
             companyName,
             detailedSummary,
-            userId,
-            websiteUrl,
             id,
             target,
+            userId,
+            websiteUrl,
          };
       } catch (err) {
          console.error("failed to extract overview for url", err);
@@ -89,13 +86,13 @@ Provide the official company name and a comprehensive summary covering their bus
          );
       }
    },
+   id: "extract-overview-step",
+   inputSchema: CreateOverviewInput,
+   outputSchema: extractOverviewOutputSchema,
 });
 
 const saveCompetitorOverview = createStep({
-   id: "save-competitor-overview-step",
    description: "Save competitor overview information to database",
-   inputSchema: extractOverviewOutputSchema,
-   outputSchema: CreateOverviewOutput,
    execute: async ({ inputData }) => {
       const { companyName, detailedSummary, id, websiteUrl } = inputData;
 
@@ -104,8 +101,8 @@ const saveCompetitorOverview = createStep({
 
          await updateCompetitor(db, id, {
             name: companyName,
-            websiteUrl: websiteUrl,
             summary: detailedSummary,
+            websiteUrl: websiteUrl,
          });
 
          return {
@@ -119,13 +116,13 @@ const saveCompetitorOverview = createStep({
          );
       }
    },
+   id: "save-competitor-overview-step",
+   inputSchema: extractOverviewOutputSchema,
+   outputSchema: CreateOverviewOutput,
 });
 
 const saveBrandOverview = createStep({
-   id: "save-brand-overview-step",
    description: "Save brand overview information to database",
-   inputSchema: extractOverviewOutputSchema,
-   outputSchema: CreateOverviewOutput,
    execute: async ({ inputData }) => {
       const { companyName, detailedSummary, id, websiteUrl } = inputData;
 
@@ -134,8 +131,8 @@ const saveBrandOverview = createStep({
 
          await updateBrand(db, id, {
             name: companyName,
-            websiteUrl: websiteUrl,
             summary: detailedSummary,
+            websiteUrl: websiteUrl,
          });
 
          return {
@@ -149,11 +146,14 @@ const saveBrandOverview = createStep({
          );
       }
    },
+   id: "save-brand-overview-step",
+   inputSchema: extractOverviewOutputSchema,
+   outputSchema: CreateOverviewOutput,
 });
 
 export const createOverviewWorkflow = createWorkflow({
-   id: "create-overview",
    description: "Create company overview from analysis",
+   id: "create-overview",
    inputSchema: CreateOverviewInput,
    outputSchema: CreateOverviewOutput,
 })

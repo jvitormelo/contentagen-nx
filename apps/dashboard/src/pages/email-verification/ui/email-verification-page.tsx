@@ -1,3 +1,4 @@
+import { translate } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
 import {
    Card,
@@ -15,7 +16,6 @@ import {
 } from "@packages/ui/components/input-otp";
 import { ArrowRight } from "lucide-react";
 import { useEmailVerification } from "../lib/use-email-verification";
-import { translate } from "@packages/localization";
 
 export function EmailVerificationPage() {
    const { handleResendEmail, handleSubmit, form } = useEmailVerification();

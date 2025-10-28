@@ -1,6 +1,4 @@
-import { betterAuthClient, useTRPC } from "@/integrations/clients";
-import { useSuspenseQuery } from "@tanstack/react-query";
-
+import { translate } from "@packages/localization";
 import { Badge } from "@packages/ui/components/badge";
 import { Button } from "@packages/ui/components/button";
 import {
@@ -13,10 +11,11 @@ import {
 } from "@packages/ui/components/card";
 import { Progress } from "@packages/ui/components/progress";
 import { Skeleton } from "@packages/ui/components/skeleton";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useCallback } from "react";
+import { betterAuthClient, useTRPC } from "@/integrations/clients";
 import { SubscriptionPricingCards } from "@/widgets/subscription/ui/subscription-pricing-cards";
-import { translate } from "@packages/localization";
 
 export function ProfilePageBilling() {
    const trpc = useTRPC();
@@ -65,7 +64,7 @@ export function ProfilePageBilling() {
                      </h4>
                      <div className="space-y-2">
                         {[1, 2, 3].map((i) => (
-                           <div key={i} className="flex items-center">
+                           <div className="flex items-center" key={i}>
                               <Skeleton className="h-4 w-4 mr-2 rounded" />
                               <Skeleton className="h-4 w-full max-w-xs" />
                            </div>
@@ -124,17 +123,17 @@ export function ProfilePageBilling() {
 
    const formatCurrency = (amount: number, currency: string) => {
       return new Intl.NumberFormat("en-US", {
-         style: "currency",
          currency: currency.toUpperCase(),
+         style: "currency",
       }).format(amount / 100); // Assuming amount is in cents
    };
 
    const formatDate = (date: Date | null) => {
       if (!date) return "N/A";
       return new Intl.DateTimeFormat("en-US", {
-         year: "numeric",
-         month: "long",
          day: "numeric",
+         month: "long",
+         year: "numeric",
       }).format(new Date(date));
    };
 
@@ -149,10 +148,10 @@ export function ProfilePageBilling() {
       // If credited is -1 we treat it as unlimited / not priced per unit
       if (credited === -1 || credited === 0) {
          return {
-            perUnitCents: 0,
             consumedAmountCents: 0,
-            perUnitFormatted: "—",
             consumedFormatted: "—",
+            perUnitCents: 0,
+            perUnitFormatted: "—",
          };
       }
 
@@ -176,10 +175,10 @@ export function ProfilePageBilling() {
          // For very small per-unit prices, show extra decimal places so value isn't rounded to $0.00
          if (absAmount < 0.01) {
             return new Intl.NumberFormat("en-US", {
-               style: "currency",
                currency: currencyCode.toUpperCase(),
-               minimumFractionDigits: 6,
                maximumFractionDigits: 8,
+               minimumFractionDigits: 6,
+               style: "currency",
             }).format(amountDollars);
          }
 
@@ -190,13 +189,13 @@ export function ProfilePageBilling() {
       const consumedAmountCentsRounded = Math.round(consumedAmountCentsFloat);
 
       return {
-         perUnitCents: perUnitCentsFloat,
          consumedAmountCents: consumedAmountCentsRounded,
-         perUnitFormatted: formatCurrencyFlexible(perUnitCentsFloat, currency),
          consumedFormatted: formatCurrency(
             consumedAmountCentsRounded,
             currency,
          ),
+         perUnitCents: perUnitCentsFloat,
+         perUnitFormatted: formatCurrencyFlexible(perUnitCentsFloat, currency),
       };
    };
 
@@ -270,8 +269,8 @@ export function ProfilePageBilling() {
                   </p>
                </div>
                <Badge
-                  variant="secondary"
                   className={getStatusColor(activeSubscription.status)}
+                  variant="secondary"
                >
                   {activeSubscription.status.charAt(0).toUpperCase() +
                      activeSubscription.status.slice(1)}
@@ -304,7 +303,7 @@ export function ProfilePageBilling() {
                                  </span>
                               )}
                            </div>
-                           <Progress value={usagePercentage} className="h-2" />
+                           <Progress className="h-2" value={usagePercentage} />
                            <div className="flex justify-between text-xs text-foreground/60 mt-1">
                               <span>
                                  {translate("pages.profile.billing.remaining")}{" "}

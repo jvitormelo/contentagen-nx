@@ -1,5 +1,5 @@
-import { useTRPC } from "@/integrations/clients";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/integrations/clients";
 
 export const useBillingInfo = () => {
    const trpc = useTRPC();
@@ -7,9 +7,9 @@ export const useBillingInfo = () => {
       trpc.authHelpers.getCustomerState.queryOptions(),
    );
    return {
-      customerState,
-      activeSubscription: customerState?.activeSubscriptions[0],
       activeMeter: customerState?.activeMeters[0],
+      activeSubscription: customerState?.activeSubscriptions[0],
+      customerState,
       isLoading,
    };
 };

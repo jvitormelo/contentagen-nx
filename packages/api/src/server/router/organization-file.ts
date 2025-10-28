@@ -1,20 +1,49 @@
-import { uploadFile } from "@packages/files/client";
-import { compressImage } from "@packages/files/image-helper";
-import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
-import { streamFileForProxy } from "@packages/files/client";
 import {
    findOrganizationById,
    updateOrganization,
 } from "@packages/database/repositories/auth-repository";
+import { streamFileForProxy, uploadFile } from "@packages/files/client";
+import { compressImage } from "@packages/files/image-helper";
+import { z } from "zod";
+import { protectedProcedure, router } from "../trpc";
 
 const OrganizationLogoUploadInput = z.object({
-   fileName: z.string(),
-   fileBuffer: z.base64(), // base64 encoded
    contentType: z.string(),
+   fileBuffer: z.base64(), // base64 encoded
+   fileName: z.string(),
 });
 
 export const organizationFileRouter = router({
+   getLogo: protectedProcedure.query(async ({ ctx }) => {
+      const resolvedCtx = await ctx;
+
+      const organization = await resolvedCtx.auth.api.getFullOrganization({
+         headers: resolvedCtx.headers,
+      });
+
+      if (!organization?.logo) {
+         return null;
+      }
+
+      const bucketName = resolvedCtx.minioBucket;
+      const key = organization.logo;
+
+      try {
+         const { buffer, contentType } = await streamFileForProxy(
+            key,
+            bucketName,
+            resolvedCtx.minioClient,
+         );
+         const base64 = buffer.toString("base64");
+         return {
+            contentType,
+            data: `data:${contentType};base64,${base64}`,
+         };
+      } catch (error) {
+         console.error("Error fetching organization logo:", error);
+         return null;
+      }
+   }),
    uploadLogo: protectedProcedure
       .input(OrganizationLogoUploadInput)
       .mutation(async ({ ctx, input }) => {
@@ -89,37 +118,6 @@ export const organizationFileRouter = router({
             throw new Error("Failed to update organization logo");
          }
 
-         return { url, key };
+         return { key, url };
       }),
-
-   getLogo: protectedProcedure.query(async ({ ctx }) => {
-      const resolvedCtx = await ctx;
-
-      const organization = await resolvedCtx.auth.api.getFullOrganization({
-         headers: resolvedCtx.headers,
-      });
-
-      if (!organization?.logo) {
-         return null;
-      }
-
-      const bucketName = resolvedCtx.minioBucket;
-      const key = organization.logo;
-
-      try {
-         const { buffer, contentType } = await streamFileForProxy(
-            key,
-            bucketName,
-            resolvedCtx.minioClient,
-         );
-         const base64 = buffer.toString("base64");
-         return {
-            data: `data:${contentType};base64,${base64}`,
-            contentType,
-         };
-      } catch (error) {
-         console.error("Error fetching organization logo:", error);
-         return null;
-      }
-   }),
 });

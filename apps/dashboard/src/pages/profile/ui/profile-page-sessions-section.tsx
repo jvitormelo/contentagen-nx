@@ -1,44 +1,44 @@
-import {
-   Card,
-   CardHeader,
-   CardTitle,
-   CardDescription,
-   CardContent,
-   CardAction,
-} from "@packages/ui/components/card";
+import { translate } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
 import {
+   Card,
+   CardAction,
+   CardContent,
+   CardDescription,
+   CardHeader,
+   CardTitle,
+} from "@packages/ui/components/card";
+import {
    DropdownMenu,
-   DropdownMenuTrigger,
    DropdownMenuContent,
    DropdownMenuItem,
+   DropdownMenuTrigger,
 } from "@packages/ui/components/dropdown-menu";
-import { betterAuthClient } from "@/integrations/clients";
-import { Trash2, CheckCircle2, MoreVertical } from "lucide-react";
 import {
-   useSuspenseQuery,
    useMutation,
    useQueryClient,
+   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { translate } from "@packages/localization";
+import { CheckCircle2, MoreVertical, Trash2 } from "lucide-react";
+import { betterAuthClient } from "@/integrations/clients";
 
 export function ProfilePageSessionsSection() {
    const queryClient = useQueryClient();
 
    // Fetch sessions and current session in parallel
    const { data: sessions } = useSuspenseQuery({
-      queryKey: ["sessions"],
       queryFn: async () => {
          const { data } = await betterAuthClient.listSessions();
          return data || [];
       },
+      queryKey: ["sessions"],
    });
    const { data: currentSession } = useSuspenseQuery({
-      queryKey: ["currentSession"],
       queryFn: async () => {
          const { data } = await betterAuthClient.getSession();
          return data;
       },
+      queryKey: ["currentSession"],
    });
    const currentSessionId = currentSession?.session.id || null;
 
@@ -90,22 +90,22 @@ export function ProfilePageSessionsSection() {
                   <DropdownMenu>
                      <DropdownMenuTrigger asChild>
                         <Button
-                           variant="ghost"
-                           size="icon"
                            aria-label={translate(
                               "pages.profile.sessions.manage-sessions",
                            )}
+                           size="icon"
+                           variant="ghost"
                         >
                            <MoreVertical className="w-5 h-5" />
                         </Button>
                      </DropdownMenuTrigger>{" "}
                      <DropdownMenuContent align="end">
                         <DropdownMenuItem
+                           disabled={revokeOtherSessionsMutation.isPending}
                            onSelect={(e) => {
                               e.preventDefault();
                               revokeOtherSessionsMutation.mutate();
                            }}
-                           disabled={revokeOtherSessionsMutation.isPending}
                         >
                            <Trash2 className="w-4 h-4 mr-2" />
                            {revokeOtherSessionsMutation.isPending
@@ -117,11 +117,11 @@ export function ProfilePageSessionsSection() {
                                 )}
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                           disabled={revokeAllSessionsMutation.isPending}
                            onSelect={(e) => {
                               e.preventDefault();
                               revokeAllSessionsMutation.mutate();
                            }}
-                           disabled={revokeAllSessionsMutation.isPending}
                            variant="destructive"
                         >
                            <Trash2 className="w-4 h-4 mr-2 text-destructive" />
@@ -151,8 +151,8 @@ export function ProfilePageSessionsSection() {
                         s.id === currentSessionId;
                      return (
                         <Card
-                           key={s.id}
                            className={`relative transition hover:shadow-lg ${isCurrent ? "ring-1 ring-primary/80" : ""}`}
+                           key={s.id}
                         >
                            <CardHeader>
                               <CardTitle className="truncate text-base">
@@ -179,27 +179,27 @@ export function ProfilePageSessionsSection() {
                                  <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                        <Button
-                                          variant="ghost"
-                                          size="icon"
                                           aria-label={translate(
                                              "pages.profile.sessions.session-actions",
                                           )}
                                           disabled={
                                              revokeSessionMutation.isPending
                                           }
+                                          size="icon"
+                                          variant="ghost"
                                        >
                                           <MoreVertical className="w-5 h-5" />
                                        </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                        <DropdownMenuItem
+                                          disabled={
+                                             revokeSessionMutation.isPending
+                                          }
                                           onSelect={(e) => {
                                              e.preventDefault();
                                              handleDelete(s.token || s.id);
                                           }}
-                                          disabled={
-                                             revokeSessionMutation.isPending
-                                          }
                                           variant="destructive"
                                        >
                                           <Trash2 className="w-4 h-4 mr-2 text-destructive" />

@@ -1,20 +1,19 @@
+import { execSync, spawn } from "node:child_process";
 import * as fs from "node:fs";
 import * as readline from "node:readline";
-import { execSync } from "node:child_process";
-import { spawn } from "node:child_process";
-import { Command } from "commander";
 import chalk from "chalk";
+import { Command } from "commander";
 
 const program = new Command();
 
 // Colors
 const colors = {
    blue: chalk.blue,
-   green: chalk.green,
-   yellow: chalk.yellow,
-   red: chalk.red,
    cyan: chalk.cyan,
+   green: chalk.green,
    magenta: chalk.magenta,
+   red: chalk.red,
+   yellow: chalk.yellow,
 };
 
 // Directories and files to clean
@@ -95,7 +94,7 @@ function deletePath(pathToDelete: string): boolean {
          const stats = fs.statSync(pathToDelete);
 
          if (stats.isDirectory()) {
-            fs.rmSync(pathToDelete, { recursive: true, force: true });
+            fs.rmSync(pathToDelete, { force: true, recursive: true });
             console.log(colors.green(`🗑️  Deleted directory: ${pathToDelete}`));
          } else {
             fs.unlinkSync(pathToDelete);
@@ -119,8 +118,8 @@ function expandGlobPatterns(patterns: string[]): string[] {
          const result = execSync(
             `find . -path "${pattern}" -not -path "./node_modules/*" 2>/dev/null || true`,
             {
-               encoding: "utf8",
                cwd: process.cwd(),
+               encoding: "utf8",
             },
          );
 
