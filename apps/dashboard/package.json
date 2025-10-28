@@ -20,6 +20,7 @@
     "@packages/brand": "workspace:*",
     "@packages/environment": "workspace:*",
     "@packages/localization": "workspace:*",
+    "@packages/lp-blocks": "workspace:*",
     "@packages/posthog": "workspace:*",
     "@packages/transactional": "workspace:*",
     "@packages/ui": "workspace:*",

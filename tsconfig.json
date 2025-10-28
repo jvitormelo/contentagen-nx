@@ -1,6 +1,6 @@
 {
-   "extends": "@tooling/typescript/base.json",
-   "references": [
+  "extends": "@tooling/typescript/base.json",
+  "references": [
     {
       "path": "./packages/server-events"
     },
@@ -48,6 +48,9 @@
     },
     {
       "path": "./packages/contenta-sdk"
+    },
+    {
+      "path": "./packages/lp-builder-components"
     }
   ]
 }
