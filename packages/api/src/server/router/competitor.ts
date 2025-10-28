@@ -336,8 +336,9 @@ export const competitorRouter = router({
 
          if (!organizationId) {
             return {
-               findings: [],
-               insights: [],
+               findings: [] as string[],
+               insights: [] as string[],
+               priorities: [] as string[],
             };
          }
 
