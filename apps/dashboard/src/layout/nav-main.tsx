@@ -1,22 +1,22 @@
 import {
+   Collapsible,
+   CollapsibleContent,
+   CollapsibleTrigger,
+} from "@packages/ui/components/collapsible";
+import {
    SidebarGroup,
    SidebarGroupContent,
    SidebarMenu,
    SidebarMenuButton,
    SidebarMenuItem,
    SidebarMenuSub,
-   SidebarMenuSubItem,
    SidebarMenuSubButton,
+   SidebarMenuSubItem,
    useSidebar,
 } from "@packages/ui/components/sidebar";
 import { Link, useLocation } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import { ChevronDown } from "lucide-react";
-import {
-   Collapsible,
-   CollapsibleTrigger,
-   CollapsibleContent,
-} from "@packages/ui/components/collapsible";
 
 export function NavMain({
    items,
@@ -47,22 +47,22 @@ export function NavMain({
                   if (item.subItems) {
                      return (
                         <Collapsible
-                           key={item.title}
                            className="group/collapsible"
                            defaultOpen={isActive(item.url || "")}
+                           key={item.title}
                         >
                            <SidebarMenuItem>
                               <CollapsibleTrigger asChild>
                                  <SidebarMenuButton
                                     asChild
-                                    tooltip={item.title}
                                     className={`${isActive(item.url || "") ? "bg-primary/10 text-primary rounded-lg" : ""}`}
+                                    tooltip={item.title}
                                  >
                                     <div className="flex items-center justify-between w-full">
                                        <Link
                                           className="flex items-center gap-2"
-                                          to={item.url || ""}
                                           onClick={() => setOpenMobile(false)}
+                                          to={item.url || ""}
                                        >
                                           {item.icon && (
                                              <item.icon className="h-4 w-4" />
@@ -83,10 +83,10 @@ export function NavMain({
                                           >
                                              <Link
                                                 className="flex items-center gap-2"
-                                                to={subItem.url}
                                                 onClick={() =>
                                                    setOpenMobile(false)
                                                 }
+                                                to={subItem.url}
                                              >
                                                 {subItem.icon && (
                                                    <subItem.icon />
@@ -111,8 +111,8 @@ export function NavMain({
                         <SidebarMenuButton asChild tooltip={item.title}>
                            <Link
                               className="flex items-center gap-2"
-                              to={item.url || ""}
                               onClick={() => setOpenMobile(false)}
+                              to={item.url || ""}
                            >
                               {item.icon && <item.icon />}
                               <span>{item.title}</span>

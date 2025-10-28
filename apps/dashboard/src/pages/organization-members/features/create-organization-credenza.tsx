@@ -1,20 +1,20 @@
-import { betterAuthClient, useTRPC } from "@/integrations/clients";
-import { createSlug } from "@packages/utils/text";
 import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
+   CredenzaBody,
    CredenzaContent,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaFooter,
-   CredenzaBody,
 } from "@packages/ui/components/credenza";
 import { useAppForm } from "@packages/ui/components/form";
 import { Input } from "@packages/ui/components/input";
+import { createSlug } from "@packages/utils/text";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, type FormEvent } from "react";
+import { type FormEvent, useCallback } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { betterAuthClient, useTRPC } from "@/integrations/clients";
 export function CreateOrganizationCredenza({
    open,
    onOpenChange,
@@ -56,6 +56,10 @@ export function CreateOrganizationCredenza({
                slug,
             },
             {
+               onError: (e) => {
+                  console.error("Error creating organization:", e);
+                  toast.error(`Failed to create organization`);
+               },
                onSuccess: async ({ data }) => {
                   toast.success(
                      `Organization "${data.name}" created successfully`,
@@ -64,10 +68,6 @@ export function CreateOrganizationCredenza({
                      queryKey:
                         trpc.authHelpers.getDefaultOrganization.queryKey(),
                   });
-               },
-               onError: (e) => {
-                  console.error("Error creating organization:", e);
-                  toast.error(`Failed to create organization`);
                },
             },
          );
@@ -82,13 +82,13 @@ export function CreateOrganizationCredenza({
 
    const form = useAppForm({
       defaultValues: { name: "" },
-      validators: {
-         onBlur: schema,
-      },
       onSubmit: async ({ value, formApi }) => {
          await createOrganization(value);
          formApi.reset();
          onOpenChange(false);
+      },
+      validators: {
+         onBlur: schema,
       },
    });
    const handleSubmit = useCallback(
@@ -101,7 +101,7 @@ export function CreateOrganizationCredenza({
    );
 
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>Create organization</CredenzaTitle>

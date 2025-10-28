@@ -1,5 +1,5 @@
 import { SquaredIconButton } from "@packages/ui/components/squared-icon-button";
-import { SunIcon, MoonIcon } from "lucide-react";
+import { MoonIcon, SunIcon } from "lucide-react";
 import * as React from "react";
 
 interface ValueObject {
@@ -186,9 +186,9 @@ const Theme = ({
 
    const providerValue = React.useMemo(
       () => ({
-         theme,
-         setTheme,
          forcedTheme,
+         setTheme,
+         theme,
          themes: enableSystem ? [...themes, "system"] : themes,
       }),
       [theme, setTheme, forcedTheme, enableSystem, themes],
@@ -198,15 +198,15 @@ const Theme = ({
       <ThemeContext.Provider value={providerValue}>
          <ThemeScript
             {...{
-               forcedTheme,
-               storageKey,
                attribute,
-               enableSystem,
-               enableColorScheme,
                defaultTheme,
-               value,
-               themes,
+               enableColorScheme,
+               enableSystem,
+               forcedTheme,
                nonce,
+               storageKey,
+               themes,
+               value,
             }}
          />
          {children}
@@ -239,12 +239,12 @@ const ThemeScript = React.memo(
 
       return (
          <script
-            suppressHydrationWarning
-            nonce={typeof window === "undefined" ? nonce : ""}
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: Needed to inject script before hydration
             dangerouslySetInnerHTML={{
                __html: `(${script.toString()})(${scriptArgs})`,
             }}
+            nonce={typeof window === "undefined" ? nonce : ""}
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Needed to inject script before hydration
+            suppressHydrationWarning
          />
          // <></>
       );

@@ -5,10 +5,10 @@ export function getCurrentDate(timezone?: string): { date: string } {
       return {
          date: now
             .toLocaleDateString("en-CA", {
+               day: "2-digit",
+               month: "2-digit",
                timeZone: timezone,
                year: "numeric",
-               month: "2-digit",
-               day: "2-digit",
             })
             .replace(/\//g, "-"),
       };
@@ -25,10 +25,10 @@ export function formatDate(date: Date, timezone?: string): string {
    if (timezone) {
       return date
          .toLocaleDateString("en-CA", {
+            day: "2-digit",
+            month: "2-digit",
             timeZone: timezone,
             year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
          })
          .replace(/\//g, "-");
    }

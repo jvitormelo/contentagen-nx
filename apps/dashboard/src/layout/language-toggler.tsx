@@ -1,8 +1,4 @@
-import { useState, useMemo } from "react";
-import { Globe } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@packages/ui/components/button";
-import { cn } from "@packages/ui/lib/utils";
 import {
    Dialog,
    DialogContent,
@@ -11,6 +7,10 @@ import {
    DialogTitle,
    DialogTrigger,
 } from "@packages/ui/components/dialog";
+import { cn } from "@packages/ui/lib/utils";
+import { Globe } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function LanguageToggler() {
    const { i18n } = useTranslation();
@@ -18,8 +18,8 @@ export function LanguageToggler() {
 
    const languages = useMemo(
       () => [
-         { code: "en", name: "English", flag: "🇺🇸" },
-         { code: "pt", name: "Português", flag: "🇧🇷" },
+         { code: "en", flag: "🇺🇸", name: "English" },
+         { code: "pt", flag: "🇧🇷", name: "Português" },
       ],
       [],
    );
@@ -46,11 +46,11 @@ export function LanguageToggler() {
    };
 
    return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog onOpenChange={setOpen} open={open}>
          <DialogTrigger asChild>
             <Button
-               variant="outline"
                className="flex flex-col gap-2 justify-center items-center p-4 w-full h-full bg-background/50 backdrop-blur-sm"
+               variant="outline"
             >
                <Globe className="w-6 h-6" />
                <span>Language</span>
@@ -70,6 +70,11 @@ export function LanguageToggler() {
             <div className="grid gap-2">
                {languages.map((lang) => (
                   <Button
+                     className={cn(
+                        "w-full justify-start text-left font-normal",
+                        currentLanguageDisplay === lang.name &&
+                           "bg-primary text-primary-foreground",
+                     )}
                      key={lang.code}
                      onClick={() => handleLanguageChange(lang.code)}
                      variant={
@@ -77,11 +82,6 @@ export function LanguageToggler() {
                            ? "default"
                            : "outline"
                      }
-                     className={cn(
-                        "w-full justify-start text-left font-normal",
-                        currentLanguageDisplay === lang.name &&
-                           "bg-primary text-primary-foreground",
-                     )}
                   >
                      <span className="mr-2">{lang.flag}</span>
                      <span>{lang.name}</span>

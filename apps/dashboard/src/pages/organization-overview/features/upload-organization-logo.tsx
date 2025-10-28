@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { useTRPC } from "@/integrations/clients";
-import { toast } from "sonner";
+import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
+   CredenzaBody,
+   CredenzaClose,
    CredenzaContent,
+   CredenzaDescription,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaDescription,
-   CredenzaBody,
-   CredenzaFooter,
-   CredenzaClose,
 } from "@packages/ui/components/credenza";
 import {
    Dropzone,
    DropzoneContent,
    DropzoneEmptyState,
 } from "@packages/ui/components/dropzone";
-import { Button } from "@packages/ui/components/button";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useTRPC } from "@/integrations/clients";
 
 export function UploadOrganizationLogoFeature() {
    const [dialogOpen, setDialogOpen] = useState(false);
@@ -37,6 +37,10 @@ export function UploadOrganizationLogoFeature() {
 
    const uploadLogoMutation = useMutation(
       trpc.organizationFile.uploadLogo.mutationOptions({
+         onError: (error) => {
+            console.error("Upload error:", error);
+            toast.error("Failed to upload organization logo");
+         },
          onSuccess: async () => {
             toast.success("Organization logo uploaded successfully");
             await queryClient.invalidateQueries({
@@ -45,10 +49,6 @@ export function UploadOrganizationLogoFeature() {
             setDialogOpen(false);
             setSelectedFile(null);
             setFilePreview(undefined);
-         },
-         onError: (error) => {
-            console.error("Upload error:", error);
-            toast.error("Failed to upload organization logo");
          },
       }),
    );
@@ -103,9 +103,9 @@ export function UploadOrganizationLogoFeature() {
          });
 
          const uploadData = {
-            fileName: selectedFile.name,
-            fileBuffer: base64,
             contentType: selectedFile.type,
+            fileBuffer: base64,
+            fileName: selectedFile.name,
          };
 
          await uploadLogoMutation.mutateAsync(uploadData);
@@ -116,7 +116,7 @@ export function UploadOrganizationLogoFeature() {
    };
 
    return (
-      <Credenza open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Credenza onOpenChange={setDialogOpen} open={dialogOpen}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>Upload Organization Logo</CredenzaTitle>
@@ -130,10 +130,10 @@ export function UploadOrganizationLogoFeature() {
                   accept={{
                      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
                   }}
-                  maxSize={5 * 1024 * 1024} // 5MB
+                  disabled={uploadLogoMutation.isPending} // 5MB
                   maxFiles={1}
+                  maxSize={5 * 1024 * 1024}
                   onDrop={handleFileSelect}
-                  disabled={uploadLogoMutation.isPending}
                   src={selectedFile ? [selectedFile] : undefined}
                >
                   <DropzoneEmptyState>
@@ -161,8 +161,8 @@ export function UploadOrganizationLogoFeature() {
                   <Button variant="outline">Cancel</Button>
                </CredenzaClose>
                <Button
-                  onClick={handleUpload}
                   disabled={!selectedFile || uploadLogoMutation.isPending}
+                  onClick={handleUpload}
                >
                   {uploadLogoMutation.isPending
                      ? "Uploading..."

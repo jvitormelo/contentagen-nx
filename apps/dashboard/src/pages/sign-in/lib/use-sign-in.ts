@@ -1,11 +1,11 @@
 import brandConfig from "@packages/brand/index.json";
+import { translate } from "@packages/localization";
 import { useAppForm } from "@packages/ui/components/form";
 import { useRouter } from "@tanstack/react-router";
 import { type FormEvent, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { betterAuthClient } from "@/integrations/clients";
-import { translate } from "@packages/localization";
 
 type codes = "INVALID_EMAIL_OR_PASSWORD" | "default";
 export const useSignIn = () => {
@@ -28,8 +28,8 @@ export const useSignIn = () => {
    const handleGoogleSignIn = useCallback(async () => {
       await betterAuthClient.signIn.social(
          {
-            provider: "google",
             callbackURL: `${window.location.origin}/home`,
+            provider: "google",
          },
          {
             onError: ({ error }) => {
@@ -110,5 +110,5 @@ export const useSignIn = () => {
       },
       [form],
    );
-   return { form, handleSubmit, handleGoogleSignIn };
+   return { form, handleGoogleSignIn, handleSubmit };
 };

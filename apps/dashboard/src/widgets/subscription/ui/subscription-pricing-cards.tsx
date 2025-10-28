@@ -1,36 +1,36 @@
-import { betterAuthClient } from "@/integrations/clients";
 import { Button } from "@packages/ui/components/button";
 import {
    Card,
-   CardHeader,
-   CardDescription,
-   CardTitle,
    CardContent,
+   CardDescription,
    CardFooter,
+   CardHeader,
+   CardTitle,
 } from "@packages/ui/components/card";
 import { Separator } from "@packages/ui/components/separator";
 import { useCallback, useMemo } from "react";
+import { betterAuthClient } from "@/integrations/clients";
 
 export function SubscriptionPricingCards() {
    const plans = useMemo(
       () => [
          {
-            slug: "basic",
-            name: "Basic",
-            price: "$8 / mo",
             buttonVariant: "default" as const,
             features: ["$5 of credits", "Pay as you go after"],
+            name: "Basic",
+            price: "$8 / mo",
+            slug: "basic",
          },
          {
-            slug: "hobby",
-            name: "Hobby",
-            price: "$0 / mo",
             buttonVariant: "outline" as const,
             features: [
                "$1 of credits",
                "Dont include additional usage",
                "No credit card required",
             ],
+            name: "Hobby",
+            price: "$0 / mo",
+            slug: "hobby",
          },
       ],
       [],
@@ -52,9 +52,9 @@ export function SubscriptionPricingCards() {
                </CardHeader>
                <CardContent>
                   <Button
+                     className="w-full"
                      onClick={() => handleCheckout(plan.slug)}
                      variant={plan.buttonVariant}
-                     className="w-full"
                   >
                      Get Started
                   </Button>

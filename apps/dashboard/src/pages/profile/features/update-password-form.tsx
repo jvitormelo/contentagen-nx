@@ -1,28 +1,28 @@
-import { useAppForm } from "@packages/ui/components/form";
-import { z } from "zod";
+import { translate } from "@packages/localization";
+import {
+   AlertDialog,
+   AlertDialogAction,
+   AlertDialogCancel,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
+} from "@packages/ui/components/alert-dialog";
 import { Button } from "@packages/ui/components/button";
-import { Input } from "@packages/ui/components/input";
 import {
    Credenza,
    CredenzaContent,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaFooter,
 } from "@packages/ui/components/credenza";
-import {
-   AlertDialog,
-   AlertDialogContent,
-   AlertDialogHeader,
-   AlertDialogTitle,
-   AlertDialogDescription,
-   AlertDialogFooter,
-   AlertDialogAction,
-   AlertDialogCancel,
-} from "@packages/ui/components/alert-dialog";
-import { useState, useCallback } from "react";
+import { useAppForm } from "@packages/ui/components/form";
+import { Input } from "@packages/ui/components/input";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { betterAuthClient } from "@/integrations/clients";
-import { translate } from "@packages/localization";
 
 const passwordSchema = z.object({
    currentPassword: z
@@ -93,13 +93,13 @@ export function UpdatePasswordForm({
    );
    const form = useAppForm({
       defaultValues: { currentPassword: "", newPassword: "" },
-      validators: { onBlur: passwordSchema },
       onSubmit: async ({ value, formApi }) => {
          await handleChangePassword(value, formApi);
       },
+      validators: { onBlur: passwordSchema },
    });
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>
@@ -107,9 +107,9 @@ export function UpdatePasswordForm({
                </CredenzaTitle>
             </CredenzaHeader>
             <form
-               onSubmit={form.handleSubmit}
-               className="space-y-4 py-4"
                autoComplete="off"
+               className="space-y-4 py-4"
+               onSubmit={form.handleSubmit}
             >
                <form.AppField name="currentPassword">
                   {(field) => (
@@ -120,16 +120,16 @@ export function UpdatePasswordForm({
                            )}
                         </field.FieldLabel>
                         <Input
+                           autoComplete="current-password"
                            id={field.name}
                            name={field.name}
-                           type="password"
-                           autoComplete="current-password"
+                           onBlur={field.handleBlur}
+                           onChange={(e) => field.handleChange(e.target.value)}
                            placeholder={translate(
                               "pages.profile.forms.update-password.fields.current-password.placeholder",
                            )}
+                           type="password"
                            value={field.state.value}
-                           onBlur={field.handleBlur}
-                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         <field.FieldMessage />
                      </field.FieldContainer>
@@ -144,16 +144,16 @@ export function UpdatePasswordForm({
                            )}
                         </field.FieldLabel>
                         <Input
+                           autoComplete="new-password"
                            id={field.name}
                            name={field.name}
-                           type="password"
-                           autoComplete="new-password"
+                           onBlur={field.handleBlur}
+                           onChange={(e) => field.handleChange(e.target.value)}
                            placeholder={translate(
                               "pages.profile.forms.update-password.fields.new-password.placeholder",
                            )}
+                           type="password"
                            value={field.state.value}
-                           onBlur={field.handleBlur}
-                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         <field.FieldMessage />
                      </field.FieldContainer>
@@ -161,9 +161,9 @@ export function UpdatePasswordForm({
                </form.AppField>{" "}
                <CredenzaFooter>
                   <Button
+                     onClick={() => onOpenChange(false)}
                      type="button"
                      variant="outline"
-                     onClick={() => onOpenChange(false)}
                   >
                      {translate(
                         "pages.profile.forms.update-password.actions.cancel",
@@ -172,9 +172,9 @@ export function UpdatePasswordForm({
                   <form.Subscribe>
                      {(formState) => (
                         <Button
-                           type="button"
-                           onClick={() => setConfirmOpen(true)}
                            disabled={!formState.canSubmit}
+                           onClick={() => setConfirmOpen(true)}
+                           type="button"
                         >
                            {translate(
                               "pages.profile.forms.update-password.actions.change",
@@ -184,7 +184,7 @@ export function UpdatePasswordForm({
                   </form.Subscribe>{" "}
                </CredenzaFooter>
             </form>
-            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <AlertDialog onOpenChange={setConfirmOpen} open={confirmOpen}>
                <AlertDialogContent>
                   <AlertDialogHeader>
                      <AlertDialogTitle>

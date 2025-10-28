@@ -1,32 +1,32 @@
+import { translate } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
 import {
    Card,
-   CardHeader,
-   CardTitle,
-   CardDescription,
    CardAction,
    CardContent,
+   CardDescription,
+   CardHeader,
+   CardTitle,
 } from "@packages/ui/components/card";
 import {
    DropdownMenu,
-   DropdownMenuTrigger,
    DropdownMenuContent,
    DropdownMenuItem,
+   DropdownMenuTrigger,
 } from "@packages/ui/components/dropdown-menu";
 import {
    Table,
-   TableHeader,
-   TableRow,
-   TableHead,
    TableBody,
    TableCell,
+   TableHead,
+   TableHeader,
+   TableRow,
 } from "@packages/ui/components/table";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 import { useState } from "react";
 import type { betterAuthClient } from "@/integrations/clients";
-import { SendInvitationCredenza } from "../features/send-invitation-credenza";
 import { DeleteOrganizationCredenza } from "../features/delete-organization-credenza";
-import { translate } from "@packages/localization";
+import { SendInvitationCredenza } from "../features/send-invitation-credenza";
 export function OrganizationPageMembersTable({
    organization,
 }: {
@@ -48,9 +48,9 @@ export function OrganizationPageMembersTable({
                   <DropdownMenu>
                      <DropdownMenuTrigger asChild>
                         <Button
-                           variant="ghost"
-                           size="icon"
                            aria-label="More actions"
+                           size="icon"
+                           variant="ghost"
                         >
                            <MoreHorizontal className="w-5 h-5" />
                         </Button>
@@ -100,9 +100,9 @@ export function OrganizationPageMembersTable({
                               <TableCell className="flex items-center gap-2">
                                  {member.user?.image && (
                                     <img
-                                       src={member.user.image}
                                        alt={member.user.name || "Avatar"}
                                        className="w-6 h-6 rounded-full"
+                                       src={member.user.image}
                                     />
                                  )}
                                  {member.user?.name || "—"}
@@ -121,13 +121,13 @@ export function OrganizationPageMembersTable({
             </CardContent>
          </Card>
          <SendInvitationCredenza
-            open={inviteOpen}
             onOpenChange={setInviteOpen}
+            open={inviteOpen}
             organizationId={organization?.id ?? ""}
          />
          <DeleteOrganizationCredenza
-            open={deleteOpen}
             onOpenChange={setDeleteOpen}
+            open={deleteOpen}
             organizationId={organization?.id || ""}
          />
       </>

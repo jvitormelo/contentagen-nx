@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { Input } from "@packages/ui/components/input";
-import { Label } from "@packages/ui/components/label";
+import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
    CredenzaBody,
@@ -11,7 +9,9 @@ import {
    CredenzaHeader,
    CredenzaTitle,
 } from "@packages/ui/components/credenza";
-import { Button } from "@packages/ui/components/button";
+import { Input } from "@packages/ui/components/input";
+import { Label } from "@packages/ui/components/label";
+import { useState } from "react";
 
 interface EditOrganizationFeatureProps {
    onEdit?: (data: { name: string; slug: string }) => void;
@@ -36,7 +36,7 @@ export function EditOrganizationFeature({
    };
 
    return (
-      <Credenza open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Credenza onOpenChange={setDialogOpen} open={dialogOpen}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>Edit Organization</CredenzaTitle>
@@ -49,18 +49,18 @@ export function EditOrganizationFeature({
                   <Label htmlFor="name">Organization Name</Label>
                   <Input
                      id="name"
-                     value={name}
                      onChange={(e) => setName(e.target.value)}
                      placeholder="Enter organization name"
+                     value={name}
                   />
                </div>
                <div className="space-y-2">
                   <Label htmlFor="slug">Slug</Label>
                   <Input
                      id="slug"
-                     value={slug}
                      onChange={(e) => setSlug(e.target.value)}
                      placeholder="Enter organization slug"
+                     value={slug}
                   />
                </div>
             </CredenzaBody>

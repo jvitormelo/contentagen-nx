@@ -1,4 +1,9 @@
-import { useRouter } from "@tanstack/react-router";
+import {
+   Alert,
+   AlertDescription,
+   AlertTitle,
+} from "@packages/ui/components/alert";
+import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
    CredenzaContent,
@@ -7,12 +12,7 @@ import {
    CredenzaHeader,
    CredenzaTitle,
 } from "@packages/ui/components/credenza";
-import { Button } from "@packages/ui/components/button";
-import {
-   Alert,
-   AlertDescription,
-   AlertTitle,
-} from "@packages/ui/components/alert";
+import { useRouter } from "@tanstack/react-router";
 
 interface SubscriptionReminderCredenzaProps {
    open: boolean;
@@ -31,7 +31,7 @@ export function SubscriptionReminderCredenza({
    };
 
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle className="flex items-center gap-2">
@@ -64,7 +64,7 @@ export function SubscriptionReminderCredenza({
             </div>
 
             <CredenzaFooter>
-               <Button onClick={handleGoToProfile} className="w-full">
+               <Button className="w-full" onClick={handleGoToProfile}>
                   Go to Profile Page
                </Button>
             </CredenzaFooter>
