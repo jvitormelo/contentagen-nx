@@ -28,8 +28,9 @@ export default {
             "transactional",
             "ui",
             "utils",
-              "contenta-sdk",
+            "contenta-sdk",
             "workers",
+            "lp-blocks",
 
             // Tooling
             "typescript",
