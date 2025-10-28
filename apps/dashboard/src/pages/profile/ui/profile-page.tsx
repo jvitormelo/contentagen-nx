@@ -1,5 +1,5 @@
-import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { translate } from "@packages/localization";
+import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
 import { ProfilePageBilling } from "./profile-page-billing";
 import { ProfileInformation } from "./profile-page-informations-section";
 import { PreferencesSection } from "./profile-page-preferences-sections";

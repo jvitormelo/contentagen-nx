@@ -1,7 +1,7 @@
 ---
-   import { Brain, Globe, PenTool, Database } from "@lucide/astro";
-   import { useTranslations } from "../i18n/utils";
+   import { Brain, Database, Globe, PenTool } from "@lucide/astro";
    import type { SupportedLng } from "@packages/localization";
+   import { useTranslations } from "../i18n/utils";
 
    interface _Props {
       lang?: SupportedLng;
@@ -12,25 +12,25 @@
 
    const benefits = [
       {
-         icon: Globe,
-         title: t("pages.landing.brandLearning.benefits.website.title"),
          description: t(
             "pages.landing.brandLearning.benefits.website.description",
          ),
+         icon: Globe,
+         title: t("pages.landing.brandLearning.benefits.website.title"),
       },
       {
-         icon: PenTool,
-         title: t("pages.landing.brandLearning.benefits.voice.title"),
          description: t(
             "pages.landing.brandLearning.benefits.voice.description",
          ),
+         icon: PenTool,
+         title: t("pages.landing.brandLearning.benefits.voice.title"),
       },
       {
-         icon: Database,
-         title: t("pages.landing.brandLearning.benefits.knowledge.title"),
          description: t(
             "pages.landing.brandLearning.benefits.knowledge.description",
          ),
+         icon: Database,
+         title: t("pages.landing.brandLearning.benefits.knowledge.title"),
       },
    ];
 ---

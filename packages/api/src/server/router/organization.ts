@@ -1,5 +1,5 @@
-import { protectedProcedure, router } from "../trpc";
 import { getTotalAgents } from "@packages/database/repositories/agent-repository";
+import { protectedProcedure, router } from "../trpc";
 
 export const organizationRouter = router({
    getOverviewStats: protectedProcedure.query(async ({ ctx }) => {

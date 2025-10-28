@@ -66,18 +66,18 @@ export function ForgotPasswordPage() {
                                        )}
                                     </field.FieldLabel>
                                     <Input
-                                       value={field.state.value}
+                                       autoComplete="email"
                                        id={field.name}
                                        name={field.name}
-                                       type="email"
-                                       placeholder={translate(
-                                          "pages.forgot-password.form.email.placeholder",
-                                       )}
-                                       autoComplete="email"
                                        onBlur={field.handleBlur}
                                        onChange={(e) =>
                                           field.handleChange(e.target.value)
                                        }
+                                       placeholder={translate(
+                                          "pages.forgot-password.form.email.placeholder",
+                                       )}
+                                       type="email"
+                                       value={field.state.value}
                                     />
                                     <field.FieldMessage />
                                  </field.FieldContainer>
@@ -95,12 +95,12 @@ export function ForgotPasswordPage() {
                                           )}
                                        </field.FieldLabel>
                                        <InputOTP
-                                          value={field.state.value}
-                                          onBlur={field.handleBlur}
-                                          onChange={field.handleChange}
-                                          maxLength={6}
                                           autoComplete="one-time-code"
                                           className="gap-2 "
+                                          maxLength={6}
+                                          onBlur={field.handleBlur}
+                                          onChange={field.handleChange}
+                                          value={field.state.value}
                                        >
                                           <InputOTPGroup>
                                              <InputOTPSlot index={0} />
@@ -130,17 +130,17 @@ export function ForgotPasswordPage() {
                                           )}
                                        </field.FieldLabel>
                                        <PasswordInput
-                                          value={field.state.value}
+                                          autoComplete="new-password"
                                           id={field.name}
                                           name={field.name}
-                                          placeholder={translate(
-                                             "pages.forgot-password.placeholders.enter-new-password",
-                                          )}
-                                          autoComplete="new-password"
                                           onBlur={field.handleBlur}
                                           onChange={(e) =>
                                              field.handleChange(e.target.value)
                                           }
+                                          placeholder={translate(
+                                             "pages.forgot-password.placeholders.enter-new-password",
+                                          )}
+                                          value={field.state.value}
                                        />
                                        <field.FieldMessage />
                                     </field.FieldContainer>
@@ -155,17 +155,17 @@ export function ForgotPasswordPage() {
                                           )}
                                        </field.FieldLabel>
                                        <PasswordInput
-                                          value={field.state.value}
+                                          autoComplete="new-password"
                                           id={field.name}
                                           name={field.name}
-                                          placeholder={translate(
-                                             "pages.forgot-password.placeholders.confirm-new-password",
-                                          )}
-                                          autoComplete="new-password"
                                           onBlur={field.handleBlur}
                                           onChange={(e) =>
                                              field.handleChange(e.target.value)
                                           }
+                                          placeholder={translate(
+                                             "pages.forgot-password.placeholders.confirm-new-password",
+                                          )}
+                                          value={field.state.value}
                                        />
                                        <field.FieldMessage />
                                     </field.FieldContainer>
@@ -176,10 +176,10 @@ export function ForgotPasswordPage() {
                      })}
                      <Stepper.Controls className="flex w-full justify-between">
                         <Button
-                           variant="outline"
-                           onClick={methods.prev}
                            disabled={methods.isFirst}
+                           onClick={methods.prev}
                            type="button"
+                           variant="outline"
                         >
                            {translate("pages.forgot-password.actions.previous")}
                         </Button>
@@ -187,13 +187,13 @@ export function ForgotPasswordPage() {
                            <form.Subscribe>
                               {(formState) => (
                                  <Button
+                                    className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
                                     disabled={
                                        !formState.canSubmit ||
                                        formState.isSubmitting
                                     }
-                                    variant="default"
-                                    className="shadow-lg transition-all duration-300 group bg-primary shadow-primary/20 hover:bg-primary/90 flex gap-2 items-center justify-center"
                                     type="submit"
+                                    variant="default"
                                  >
                                     {translate(
                                        "pages.forgot-password.actions.reset-password",
@@ -215,12 +215,12 @@ export function ForgotPasswordPage() {
                                     (!emailErrors || emailErrors.length === 0);
                                  return (
                                     <Button
+                                       disabled={!isEmailValid || sendingOtp}
                                        onClick={async () => {
                                           await sendOtp(emailValue);
                                           methods.next();
                                        }}
                                        type="button"
-                                       disabled={!isEmailValid || sendingOtp}
                                     >
                                        {translate(
                                           "pages.forgot-password.actions.next",
@@ -239,8 +239,8 @@ export function ForgotPasswordPage() {
                         "pages.forgot-password.actions.remembered-password",
                      )}
                      <Link
-                        to="/auth/sign-in"
                         className="ml-1 underline text-muted-foreground"
+                        to="/auth/sign-in"
                      >
                         {translate("pages.forgot-password.actions.sign-in")}
                      </Link>

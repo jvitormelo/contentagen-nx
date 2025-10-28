@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { Button } from "@packages/ui/components/button";
 import {
    Tooltip,
-   TooltipTrigger,
    TooltipContent,
+   TooltipTrigger,
 } from "@packages/ui/components/tooltip";
-import { Edit, Upload, Trash2 } from "lucide-react";
+import { Edit, Trash2, Upload } from "lucide-react";
+import { useState } from "react";
 import { DeleteOrganizationFeature } from "../features/delete-organization";
 import { EditOrganizationFeature } from "../features/edit-organization";
 import { UploadOrganizationLogoFeature } from "../features/upload-organization-logo";
@@ -29,22 +29,22 @@ export function QuickActions() {
 
    const actions = [
       {
+         Component: EditOrganizationFeature,
          icon: Edit,
          label: "Edit Organization",
          onClick: handleEdit,
-         Component: EditOrganizationFeature,
       },
       {
+         Component: UploadOrganizationLogoFeature,
          icon: Upload,
          label: "Upload Organization Logo",
          onClick: handleUpload,
-         Component: UploadOrganizationLogoFeature,
       },
       {
+         Component: DeleteOrganizationFeature,
          icon: Trash2,
          label: "Delete Organization",
          onClick: handleDelete,
-         Component: DeleteOrganizationFeature,
       },
    ];
 
@@ -55,9 +55,9 @@ export function QuickActions() {
                <Tooltip key={`org-action-${index + 1}`}>
                   <TooltipTrigger asChild>
                      <Button
+                        onClick={action.onClick}
                         size="icon"
                         variant="outline"
-                        onClick={action.onClick}
                      >
                         <action.icon />
                      </Button>

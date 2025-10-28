@@ -1,31 +1,32 @@
-import { useAppForm } from "@packages/ui/components/form";
-import { z } from "zod";
+import { translate } from "@packages/localization";
+import {
+   AlertDialog,
+   AlertDialogAction,
+   AlertDialogCancel,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
+} from "@packages/ui/components/alert-dialog";
 import { Button } from "@packages/ui/components/button";
-import { Input } from "@packages/ui/components/input";
-import { Dropzone } from "@packages/ui/components/dropzone";
 import {
    Credenza,
    CredenzaContent,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaFooter,
 } from "@packages/ui/components/credenza";
-import {
-   AlertDialog,
-   AlertDialogContent,
-   AlertDialogHeader,
-   AlertDialogTitle,
-   AlertDialogDescription,
-   AlertDialogFooter,
-   AlertDialogAction,
-   AlertDialogCancel,
-} from "@packages/ui/components/alert-dialog";
-import { useState, useCallback } from "react";
+import { Dropzone } from "@packages/ui/components/dropzone";
+import { useAppForm } from "@packages/ui/components/form";
+import { Input } from "@packages/ui/components/input";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { betterAuthClient } from "@/integrations/clients";
-import { translate } from "@packages/localization";
 
 const profileSchema = z.object({
+   image: z.literal(null),
    name: z
       .string()
       .min(
@@ -34,7 +35,6 @@ const profileSchema = z.object({
             "pages.profile.forms.update-profile.validation.name-required",
          ),
       ),
-   image: z.literal(null),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -62,8 +62,8 @@ export function UpdateProfileForm({
          }
          await betterAuthClient.updateUser(
             {
-               name: value.name,
                image: imageUrl,
+               name: value.name,
             },
             {
                onError: ({ error }: { error: Error }) => {
@@ -96,14 +96,14 @@ export function UpdateProfileForm({
       [currentImage, imageFile, onOpenChange],
    );
    const form = useAppForm({
-      defaultValues: { name: currentName, image: null },
-      validators: { onBlur: profileSchema },
+      defaultValues: { image: null, name: currentName },
       onSubmit: async ({ value, formApi }) => {
          await handleUpdateProfile(value, formApi);
       },
+      validators: { onBlur: profileSchema },
    });
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>
@@ -111,9 +111,9 @@ export function UpdateProfileForm({
                </CredenzaTitle>
             </CredenzaHeader>
             <form
-               onSubmit={form.handleSubmit}
-               className="space-y-4 py-4"
                autoComplete="off"
+               className="space-y-4 py-4"
+               onSubmit={form.handleSubmit}
             >
                <form.AppField name="name">
                   {(field) => (
@@ -124,16 +124,16 @@ export function UpdateProfileForm({
                            )}
                         </field.FieldLabel>
                         <Input
+                           autoComplete="name"
                            id={field.name}
                            name={field.name}
-                           type="text"
-                           autoComplete="name"
+                           onBlur={field.handleBlur}
+                           onChange={(e) => field.handleChange(e.target.value)}
                            placeholder={translate(
                               "pages.profile.forms.update-profile.fields.name.placeholder",
                            )}
+                           type="text"
                            value={field.state.value}
-                           onBlur={field.handleBlur}
-                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         <field.FieldMessage />
                      </field.FieldContainer>
@@ -153,16 +153,16 @@ export function UpdateProfileForm({
                   >
                      {imageFile ? (
                         <img
-                           src={URL.createObjectURL(imageFile)}
                            alt="Preview"
                            className="h-20 w-20 rounded-full object-cover mx-auto"
+                           src={URL.createObjectURL(imageFile)}
                         />
                      ) : (
                         currentImage && (
                            <img
-                              src={currentImage}
                               alt="Current"
                               className="h-20 w-20 rounded-full object-cover mx-auto"
+                              src={currentImage}
                            />
                         )
                      )}
@@ -170,9 +170,9 @@ export function UpdateProfileForm({
                </div>
                <CredenzaFooter>
                   <Button
+                     onClick={() => onOpenChange(false)}
                      type="button"
                      variant="outline"
-                     onClick={() => onOpenChange(false)}
                   >
                      {translate(
                         "pages.profile.forms.update-profile.actions.cancel",
@@ -181,9 +181,9 @@ export function UpdateProfileForm({
                   <form.Subscribe>
                      {(formState) => (
                         <Button
-                           type="button"
-                           onClick={() => setConfirmOpen(true)}
                            disabled={!formState.canSubmit}
+                           onClick={() => setConfirmOpen(true)}
+                           type="button"
                         >
                            {translate(
                               "pages.profile.forms.update-profile.actions.save",
@@ -193,7 +193,7 @@ export function UpdateProfileForm({
                   </form.Subscribe>{" "}
                </CredenzaFooter>
             </form>
-            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <AlertDialog onOpenChange={setConfirmOpen} open={confirmOpen}>
                <AlertDialogContent>
                   <AlertDialogHeader>
                      <AlertDialogTitle>

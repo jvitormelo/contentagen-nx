@@ -1,117 +1,39 @@
 {
-   "mascot-message": "Bem-vindo ao seu perfil! Atualize seus dados, gerencie a cobrança e defina suas preferências abaixo.",
-   "information": {
-      "title": "Informações do Perfil",
-      "description": "Atualize suas informações pessoais e detalhes da conta.",
-      "more-options": "Mais opções",
-      "actions": {
-         "update-email": "Atualizar Email",
-         "update-password": "Atualizar Senha",
-         "update-profile": "Atualizar Nome e Foto"
-      },
-      "fields": {
-         "name": "Nome",
-         "email": "Email",
-         "anonymous": "Anônimo",
-         "no-email": "Nenhum email definido"
-      }
-   },
    "billing": {
-      "title": "Cobrança e Assinatura",
-      "description": "Gerencie sua assinatura e informações de cobrança.",
+      "approaching-limit": "Aproximando do limite",
       "current-plan": "Plano Atual",
-      "usage": "Uso",
-      "upgrade": "Fazer Upgrade",
-      "manage-billing": "Gerenciar Cobrança",
-      "current-plan-title": "Plano atual",
       "current-plan-description": "Estes são os detalhes do seu plano de assinatura atual. Você pode gerenciar sua assinatura ou visualizar métricas de uso abaixo.",
+      "current-plan-title": "Plano atual",
+      "description": "Gerencie sua assinatura e informações de cobrança.",
+      "loading": "Plano atual",
+      "manage-billing": "Gerenciar Cobrança",
       "manage-subscription": "Gerenciar assinatura",
       "next-billing": "Próxima data de cobrança:",
-      "usage-this-month": "Uso este mês",
-      "usage-units": "unidades",
-      "remaining": "Restante:",
-      "remaining-value": "Valor restante:",
-      "approaching-limit": "Aproximando do limite",
-      "no-usage-meters": "Nenhum medidor de uso disponível para este plano.",
       "no-active-plan": "Nenhum plano ativo",
       "no-active-plan-description": "Você não possui um plano de assinatura ativo.",
-      "loading": "Plano atual",
+      "no-usage-meters": "Nenhum medidor de uso disponível para este plano.",
       "plan-features": "Recursos do Plano",
-      "usage-this-month-loading": "Uso Este Mês"
-   },
-   "sessions": {
-      "title": "Sessões Ativas",
-      "description": "Gerencie suas sessões de login ativas.",
-      "current-session": "Sessão Atual",
-      "revoke": "Revogar",
-      "revoke-all": "Revogar Todas as Outras Sessões",
-      "sessions-title": "Sessões",
-      "sessions-description": "Visualize e gerencie suas sessões ativas. Revogue qualquer sessão para fazer logout desse dispositivo.",
-      "manage-sessions": "Gerenciar Sessões",
-      "revoke-other": "Revogar Outras Sessões",
-      "revoke-other-loading": "Revogando Outras Sessões...",
-      "revoke-all-sessions": "Revogar Todas as Sessões",
-      "revoke-all-loading": "Revogando Todas as Sessões...",
-      "no-sessions": "Nenhuma sessão ativa encontrada.",
-      "unknown-device": "Dispositivo Desconhecido",
-      "ip-address": "IP:",
-      "current": "Atual",
-      "session-actions": "Ações da Sessão",
-      "revoke-session": "Revogar Sessão",
-      "revoke-session-loading": "Revogando...",
-      "created": "Criado:",
-      "last-active": "Última Atividade:",
-      "revoke-confirm": "Tem certeza de que deseja revogar esta sessão?"
-   },
-   "preferences": {
-      "title": "Preferências",
-      "description": "Personalize sua experiência.",
-      "workflow": {
-         "title": "Preferências de Fluxo de Trabalho",
-         "notify-missing-images": "Notificar sobre imagens ausentes",
-         "workflow-title": "Preferências do fluxo de trabalho de conteúdo",
-         "workflow-description": "Personalize suas configurações de fluxo de trabalho de conteúdo.",
-         "missing-urls-title": "Notificar sobre URLs ausentes",
-         "missing-urls-description": "Receba notificações quando posts estiverem sem URLs de imagem."
-      }
-   },
-   "toast": {
-      "preference-updated": "Preferência atualizada com sucesso",
-      "preference-failed": "Falha ao atualizar preferência"
+      "remaining": "Restante:",
+      "remaining-value": "Valor restante:",
+      "title": "Cobrança e Assinatura",
+      "upgrade": "Fazer Upgrade",
+      "usage": "Uso",
+      "usage-this-month": "Uso este mês",
+      "usage-this-month-loading": "Uso Este Mês",
+      "usage-units": "unidades"
    },
    "forms": {
-      "update-profile": {
-         "title": "Atualizar Nome e Foto",
-         "fields": {
-            "name": {
-               "label": "Nome",
-               "placeholder": "Digite seu nome"
-            },
-            "image": {
-               "label": "Imagem do Perfil"
-            }
-         },
+      "update-email": {
          "actions": {
             "cancel": "Cancelar",
-            "save": "Salvar Alterações"
+            "send": "Enviar Verificação"
          },
          "confirm": {
-            "title": "Confirmar Atualização do Perfil",
-            "description": "Tem certeza de que deseja atualizar as informações do seu perfil?",
             "cancel": "Cancelar",
-            "confirm": "Sim, Atualizar Perfil"
+            "confirm": "Sim, Alterar Email",
+            "description": "Tem certeza de que deseja alterar seu endereço de email?",
+            "title": "Confirmar Alteração de Email"
          },
-         "messages": {
-            "loading": "Atualizando perfil...",
-            "success": "Perfil atualizado com sucesso.",
-            "error": "Falha ao atualizar perfil."
-         },
-         "validation": {
-            "name-required": "Nome é obrigatório"
-         }
-      },
-      "update-email": {
-         "title": "Alterar Endereço de Email",
          "fields": {
             "current-email": {
                "label": "Email Atual"
@@ -121,27 +43,27 @@
                "placeholder": "Digite o novo endereço de email"
             }
          },
-         "actions": {
-            "cancel": "Cancelar",
-            "send": "Enviar Verificação"
-         },
-         "confirm": {
-            "title": "Confirmar Alteração de Email",
-            "description": "Tem certeza de que deseja alterar seu endereço de email?",
-            "cancel": "Cancelar",
-            "confirm": "Sim, Alterar Email"
-         },
          "messages": {
+            "error": "Falha ao alterar email.",
             "loading": "Enviando email de verificação...",
-            "success": "Email de verificação enviado. Verifique sua caixa de entrada.",
-            "error": "Falha ao alterar email."
+            "success": "Email de verificação enviado. Verifique sua caixa de entrada."
          },
+         "title": "Alterar Endereço de Email",
          "validation": {
             "email-invalid": "Por favor, digite um endereço de email válido"
          }
       },
       "update-password": {
-         "title": "Alterar Senha",
+         "actions": {
+            "cancel": "Cancelar",
+            "change": "Alterar Senha"
+         },
+         "confirm": {
+            "cancel": "Cancelar",
+            "confirm": "Sim, Alterar Senha",
+            "description": "Tem certeza de que deseja alterar sua senha?",
+            "title": "Confirmar Alteração de Senha"
+         },
          "fields": {
             "current-password": {
                "label": "Senha Atual",
@@ -152,25 +74,103 @@
                "placeholder": "Digite a nova senha"
             }
          },
-         "actions": {
-            "cancel": "Cancelar",
-            "change": "Alterar Senha"
-         },
-         "confirm": {
-            "title": "Confirmar Alteração de Senha",
-            "description": "Tem certeza de que deseja alterar sua senha?",
-            "cancel": "Cancelar",
-            "confirm": "Sim, Alterar Senha"
-         },
          "messages": {
+            "error": "Falha ao alterar senha.",
             "loading": "Alterando senha...",
-            "success": "Senha alterada com sucesso.",
-            "error": "Falha ao alterar senha."
+            "success": "Senha alterada com sucesso."
          },
+         "title": "Alterar Senha",
          "validation": {
             "current-required": "Senha atual é obrigatória",
             "new-min-length": "A senha deve ter pelo menos 8 caracteres"
          }
+      },
+      "update-profile": {
+         "actions": {
+            "cancel": "Cancelar",
+            "save": "Salvar Alterações"
+         },
+         "confirm": {
+            "cancel": "Cancelar",
+            "confirm": "Sim, Atualizar Perfil",
+            "description": "Tem certeza de que deseja atualizar as informações do seu perfil?",
+            "title": "Confirmar Atualização do Perfil"
+         },
+         "fields": {
+            "image": {
+               "label": "Imagem do Perfil"
+            },
+            "name": {
+               "label": "Nome",
+               "placeholder": "Digite seu nome"
+            }
+         },
+         "messages": {
+            "error": "Falha ao atualizar perfil.",
+            "loading": "Atualizando perfil...",
+            "success": "Perfil atualizado com sucesso."
+         },
+         "title": "Atualizar Nome e Foto",
+         "validation": {
+            "name-required": "Nome é obrigatório"
+         }
       }
+   },
+   "information": {
+      "actions": {
+         "update-email": "Atualizar Email",
+         "update-password": "Atualizar Senha",
+         "update-profile": "Atualizar Nome e Foto"
+      },
+      "description": "Atualize suas informações pessoais e detalhes da conta.",
+      "fields": {
+         "anonymous": "Anônimo",
+         "email": "Email",
+         "name": "Nome",
+         "no-email": "Nenhum email definido"
+      },
+      "more-options": "Mais opções",
+      "title": "Informações do Perfil"
+   },
+   "mascot-message": "Bem-vindo ao seu perfil! Atualize seus dados, gerencie a cobrança e defina suas preferências abaixo.",
+   "preferences": {
+      "description": "Personalize sua experiência.",
+      "title": "Preferências",
+      "workflow": {
+         "missing-urls-description": "Receba notificações quando posts estiverem sem URLs de imagem.",
+         "missing-urls-title": "Notificar sobre URLs ausentes",
+         "notify-missing-images": "Notificar sobre imagens ausentes",
+         "title": "Preferências de Fluxo de Trabalho",
+         "workflow-description": "Personalize suas configurações de fluxo de trabalho de conteúdo.",
+         "workflow-title": "Preferências do fluxo de trabalho de conteúdo"
+      }
+   },
+   "sessions": {
+      "created": "Criado:",
+      "current": "Atual",
+      "current-session": "Sessão Atual",
+      "description": "Gerencie suas sessões de login ativas.",
+      "ip-address": "IP:",
+      "last-active": "Última Atividade:",
+      "manage-sessions": "Gerenciar Sessões",
+      "no-sessions": "Nenhuma sessão ativa encontrada.",
+      "revoke": "Revogar",
+      "revoke-all": "Revogar Todas as Outras Sessões",
+      "revoke-all-loading": "Revogando Todas as Sessões...",
+      "revoke-all-sessions": "Revogar Todas as Sessões",
+      "revoke-confirm": "Tem certeza de que deseja revogar esta sessão?",
+      "revoke-other": "Revogar Outras Sessões",
+      "revoke-other-loading": "Revogando Outras Sessões...",
+      "revoke-session": "Revogar Sessão",
+      "revoke-session-loading": "Revogando...",
+      "session-actions": "Ações da Sessão",
+      "sessions-description": "Visualize e gerencie suas sessões ativas. Revogue qualquer sessão para fazer logout desse dispositivo.",
+      "sessions-title": "Sessões",
+      "title": "Sessões Ativas",
+      "unknown-device": "Dispositivo Desconhecido"
+   },
+   "toast": {
+      "preference-failed": "Falha ao atualizar preferência",
+      "preference-updated": "Preferência atualizada com sucesso"
    }
 }

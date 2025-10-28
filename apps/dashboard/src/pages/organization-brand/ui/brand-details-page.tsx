@@ -1,13 +1,3 @@
-import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
-import { useTRPC } from "@/integrations/clients";
-import { useIsomorphicLayoutEffect } from "@packages/ui/hooks/use-isomorphic-layout-effect";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateEditBrandDialog } from "../features/create-edit-brand-dialog";
-import { BrandFileViewerModal } from "../features/brand-file-viewer-modal";
-import { BrandLogoUploadDialog } from "../features/brand-logo-upload-dialog";
-import { useState, useMemo } from "react";
-import { useSubscription } from "@trpc/tanstack-react-query";
-import { createToast } from "@/features/error-modal/lib/create-toast";
 import {
    Card,
    CardContent,
@@ -16,12 +6,22 @@ import {
    CardTitle,
 } from "@packages/ui/components/card";
 import { Markdown } from "@packages/ui/components/markdown";
+import { useIsomorphicLayoutEffect } from "@packages/ui/hooks/use-isomorphic-layout-effect";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSubscription } from "@trpc/tanstack-react-query";
+import { useMemo, useState } from "react";
 import { PendingComponent } from "@/default/pending";
+import { createToast } from "@/features/error-modal/lib/create-toast";
+import { useTRPC } from "@/integrations/clients";
+import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
+import { BrandFileViewerModal } from "../features/brand-file-viewer-modal";
+import { BrandLogoUploadDialog } from "../features/brand-logo-upload-dialog";
+import { CreateEditBrandDialog } from "../features/create-edit-brand-dialog";
 import { BrandDetailsActions } from "./brand-details-actions";
-import { BrandStatsCard } from "./brand-stats-card";
-import { BrandInfoCard } from "./brand-info-card";
-import { BrandFeaturesCard } from "./brand-features-card";
 import { BrandDetailsKnowledgeBaseCard } from "./brand-details-knowledge-base-card";
+import { BrandFeaturesCard } from "./brand-features-card";
+import { BrandInfoCard } from "./brand-info-card";
+import { BrandStatsCard } from "./brand-stats-card";
 
 export function BrandDetailsPage() {
    const trpc = useTRPC();
@@ -66,16 +66,16 @@ export function BrandDetailsPage() {
             brandId: brand?.id || "",
          },
          {
+            enabled: Boolean(brand && isGenerating),
             async onData(data) {
                createToast({
-                  type: "success",
                   message: `Brand features status updated to: ${data.status}`,
+                  type: "success",
                });
                await queryClient.invalidateQueries({
                   queryKey: trpc.brand.getByOrganization.queryKey(),
                });
             },
-            enabled: Boolean(brand && isGenerating),
          },
       ),
    );
@@ -93,8 +93,8 @@ export function BrandDetailsPage() {
                </CardHeader>
                <CardContent>
                   <CreateEditBrandDialog
-                     open={showCreateDialog}
                      onOpenChange={setShowCreateDialog}
+                     open={showCreateDialog}
                   />
                </CardContent>
             </Card>
@@ -149,14 +149,14 @@ export function BrandDetailsPage() {
 
          <CreateEditBrandDialog
             brand={brand}
-            open={showCreateDialog}
             onOpenChange={setShowCreateDialog}
+            open={showCreateDialog}
          />
          <BrandLogoUploadDialog
-            open={showLogoUploadDialog}
-            onOpenChange={setShowLogoUploadDialog}
-            currentLogo={photo?.data ?? ""}
             brandId={brand.id}
+            currentLogo={photo?.data ?? ""}
+            onOpenChange={setShowLogoUploadDialog}
+            open={showLogoUploadDialog}
          />
          <fileViewer.Modal />
       </>

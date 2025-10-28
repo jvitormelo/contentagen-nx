@@ -89,8 +89,8 @@ export function calculateTextStats(content: string) {
    const readTime = calculateReadTimeMinutes(wordCount);
 
    return {
-      wordsCount: wordCount.toString(),
       readTimeMinutes: readTime.toString(),
+      wordsCount: wordCount.toString(),
    };
 }
 
@@ -129,5 +129,5 @@ export function calculateReadabilityScore({ text }: { text: string }) {
    }
    const level = getReadabilityLevel(score);
 
-   return { score, level };
+   return { level, score };
 }

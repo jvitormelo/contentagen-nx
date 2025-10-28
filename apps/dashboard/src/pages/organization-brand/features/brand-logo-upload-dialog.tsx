@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTRPC } from "@/integrations/clients";
-import { toast } from "sonner";
+import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
+   CredenzaBody,
+   CredenzaClose,
    CredenzaContent,
+   CredenzaDescription,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaDescription,
-   CredenzaBody,
-   CredenzaFooter,
-   CredenzaClose,
 } from "@packages/ui/components/credenza";
 import {
    Dropzone,
    DropzoneContent,
    DropzoneEmptyState,
 } from "@packages/ui/components/dropzone";
-import { Button } from "@packages/ui/components/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useTRPC } from "@/integrations/clients";
 
 interface BrandLogoUploadDialogProps {
    open: boolean;
@@ -42,6 +42,9 @@ export function BrandLogoUploadDialog({
 
    const uploadLogoMutation = useMutation(
       trpc.brandFile.uploadLogo.mutationOptions({
+         onError: (error) => {
+            toast.error(`Failed to upload logo: ${error.message}`);
+         },
          onSuccess: async () => {
             toast.success("Logo uploaded successfully!");
             await queryClient.invalidateQueries({
@@ -50,9 +53,6 @@ export function BrandLogoUploadDialog({
             onOpenChange(false);
             setSelectedFile(null);
             setFilePreview(undefined);
-         },
-         onError: (error) => {
-            toast.error(`Failed to upload logo: ${error.message}`);
          },
       }),
    );
@@ -108,9 +108,9 @@ export function BrandLogoUploadDialog({
 
          await uploadLogoMutation.mutateAsync({
             brandId: brandId,
-            fileName: selectedFile.name,
-            fileBuffer: base64,
             contentType: selectedFile.type,
+            fileBuffer: base64,
+            fileName: selectedFile.name,
          });
       } catch (error) {
          console.error("Upload failed:", error);
@@ -119,7 +119,7 @@ export function BrandLogoUploadDialog({
    };
 
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>Upload Brand Logo</CredenzaTitle>
@@ -134,10 +134,10 @@ export function BrandLogoUploadDialog({
                   accept={{
                      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
                   }}
-                  maxSize={5 * 1024 * 1024} // 5MB
+                  disabled={uploadLogoMutation.isPending} // 5MB
                   maxFiles={1}
+                  maxSize={5 * 1024 * 1024}
                   onDrop={handleFileSelect}
-                  disabled={uploadLogoMutation.isPending}
                   src={selectedFile ? [selectedFile] : undefined}
                >
                   <DropzoneEmptyState>
@@ -165,8 +165,8 @@ export function BrandLogoUploadDialog({
                   <Button variant="outline">Cancel</Button>
                </CredenzaClose>
                <Button
-                  onClick={handleUpload}
                   disabled={!selectedFile || uploadLogoMutation.isPending}
+                  onClick={handleUpload}
                >
                   {uploadLogoMutation.isPending
                      ? "Uploading..."

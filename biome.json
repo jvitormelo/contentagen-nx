@@ -3,10 +3,10 @@
    "assist": {
       "actions": {
          "source": {
-            "organizeImports": "off",
-            "useSortedAttributes": "off",
-            "useSortedKeys": "off",
-            "useSortedProperties": "off"
+            "organizeImports": "on",
+            "useSortedAttributes": "on",
+            "useSortedKeys": "on",
+            "useSortedProperties": "on"
          }
       }
    },
@@ -20,11 +20,11 @@
       "lineWidth": 80
    },
    "html": {
+      "experimentalFullSupportEnabled": true,
       "formatter": {
-         "indentScriptAndStyle": true,
-         "enabled": true
-      },
-      "experimentalFullSupportEnabled": true
+         "enabled": true,
+         "indentScriptAndStyle": true
+      }
    },
    "javascript": {
       "assist": {

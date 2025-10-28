@@ -1,20 +1,20 @@
-import { useTRPC } from "@/integrations/clients";
+import { translate } from "@packages/localization";
 import {
    Card,
+   CardContent,
+   CardDescription,
    CardHeader,
    CardTitle,
-   CardDescription,
-   CardContent,
 } from "@packages/ui/components/card";
-import { Building2, Users, CalendarDays } from "lucide-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
-import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
-import { CreateOrganizationCredenza } from "../features/create-organization-credenza";
 import { InfoItem } from "@packages/ui/components/info-item";
 import { useIsomorphicLayoutEffect } from "@packages/ui/hooks/use-isomorphic-layout-effect";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Building2, CalendarDays, Users } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTRPC } from "@/integrations/clients";
+import { TalkingMascot } from "@/widgets/talking-mascot/ui/talking-mascot";
+import { CreateOrganizationCredenza } from "../features/create-organization-credenza";
 import { OrganizationPageMembersTable } from "./organization-page-members-table";
-import { translate } from "@packages/localization";
 
 export function OrganizationPage() {
    const [open, setOpen] = useState(false);
@@ -26,23 +26,23 @@ export function OrganizationPage() {
    const detailsInfoItems = useMemo(
       () => [
          {
+            icon: <Building2 className="w-4 h-4" />,
             label: translate("pages.organization.fields.name"),
             value: org?.name ?? "—",
-            icon: <Building2 className="w-4 h-4" />,
          },
          {
+            icon: <CalendarDays className="w-4 h-4" />,
             label: translate("pages.organization.fields.created-at"),
             value: org?.createdAt
                ? new Date(org.createdAt).toLocaleString()
                : "—",
-            icon: <CalendarDays className="w-4 h-4" />,
          },
          {
+            icon: <Users className="w-4 h-4" />,
             label: translate("pages.organization.fields.members"),
             value: Array.isArray(org?.members)
                ? String(org.members.length)
                : "—",
-            icon: <Users className="w-4 h-4" />,
          },
       ],
       [org],
@@ -72,8 +72,8 @@ export function OrganizationPage() {
                      <CardContent className="grid gap-2">
                         {detailsInfoItems.map((item) => (
                            <InfoItem
-                              key={item.label}
                               icon={item.icon}
+                              key={item.label}
                               label={item.label}
                               value={item.value}
                            />
@@ -87,7 +87,7 @@ export function OrganizationPage() {
                {translate("pages.organization.messages.no-organization")}
             </div>
          )}
-         <CreateOrganizationCredenza open={open} onOpenChange={setOpen} />
+         <CreateOrganizationCredenza onOpenChange={setOpen} open={open} />
       </div>
    );
 }

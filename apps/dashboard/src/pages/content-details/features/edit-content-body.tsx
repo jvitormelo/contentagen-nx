@@ -1,13 +1,13 @@
-import { useTRPC } from "@/integrations/clients";
 import type { ContentSelect } from "@packages/database/schema";
+import { translate } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
 import { useAppForm } from "@packages/ui/components/form";
 import { TiptapEditor } from "@packages/ui/components/tiptap-editor";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Check, X } from "lucide-react";
-import { translate } from "@packages/localization";
+import { useTRPC } from "@/integrations/clients";
 export function EditContentBody({
    content,
    setEditing,
@@ -42,22 +42,10 @@ export function EditContentBody({
 
    const editForm = useAppForm({
       defaultValues: { body: content?.body ?? "" },
-      validators: {
-         onBlur: z.object({
-            body: z
-               .string()
-               .min(
-                  1,
-                  translate(
-                     "pages.content-details.edit.validation.body-required",
-                  ),
-               ),
-         }),
-      },
       onSubmit: async ({ value, formApi }) => {
          await editBodyMutation.mutateAsync({
-            id: content.id,
             body: value.body,
+            id: content.id,
          });
          formApi.reset();
          await queryClient.invalidateQueries({
@@ -73,26 +61,38 @@ export function EditContentBody({
          });
          setEditing(false);
       },
+      validators: {
+         onBlur: z.object({
+            body: z
+               .string()
+               .min(
+                  1,
+                  translate(
+                     "pages.content-details.edit.validation.body-required",
+                  ),
+               ),
+         }),
+      },
    });
 
    return (
       <form
+         className="flex flex-col items-end gap-4"
          onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
             editForm.handleSubmit();
          }}
-         className="flex flex-col items-end gap-4"
       >
          <editForm.Subscribe>
             {(formState) => (
                <div className="flex items-center gap-2">
                   <Button
+                     aria-label={translate("pages.content-details.edit.save")}
+                     disabled={!formState.canSubmit || formState.isSubmitting}
+                     size="icon"
                      type="submit"
                      variant="ghost"
-                     size="icon"
-                     disabled={!formState.canSubmit || formState.isSubmitting}
-                     aria-label={translate("pages.content-details.edit.save")}
                   >
                      <span className="sr-only">
                         {translate("pages.content-details.edit.save")}
@@ -100,11 +100,11 @@ export function EditContentBody({
                      <Check size={20} />
                   </Button>
                   <Button
-                     type="button"
-                     variant="ghost"
-                     size="icon"
                      aria-label={translate("pages.content-details.edit.cancel")}
                      onClick={() => setEditing(false)}
+                     size="icon"
+                     type="button"
+                     variant="ghost"
                   >
                      <span className="sr-only">
                         {translate("pages.content-details.edit.cancel")}
@@ -119,13 +119,13 @@ export function EditContentBody({
             {(field) => (
                <field.FieldContainer>
                   <TiptapEditor
-                     value={field.state.value}
-                     onChange={field.handleChange}
+                     error={field.state.meta.errors.length > 0}
                      onBlur={field.handleBlur}
+                     onChange={field.handleChange}
                      placeholder={translate(
                         "pages.content-details.edit.placeholder",
                      )}
-                     error={field.state.meta.errors.length > 0}
+                     value={field.state.value}
                   />
                   <field.FieldMessage />
                </field.FieldContainer>

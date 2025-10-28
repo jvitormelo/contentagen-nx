@@ -58,6 +58,7 @@
          "default": "./src/components/*.ts",
          "types": "./dist/src/components/*.d.ts"
       },
+      "./globals.css": "./src/styles/globals.css",
       "./hooks/*": {
          "default": "./src/hooks/*.ts",
          "types": "./dist/src/hooks/*.d.ts"
@@ -66,19 +67,18 @@
          "default": "./src/lib/*.{ts,tsx}",
          "types": "./dist/src/lib/*.{d.ts,tsx}"
       },
-      "./globals.css": "./src/styles/globals.css",
       "./postcss.config": "./postcss.config.mjs"
    },
-   "name": "@packages/ui",
+   "files": [
+      "dist"
+   ],
    "license": "Apache-2.0",
+   "name": "@packages/ui",
    "private": true,
    "scripts": {
       "check": "biome check --write ./src",
       "typecheck": "bunx --bun tsc  "
    },
    "type": "module",
-   "files": [
-      "dist"
-   ],
    "version": "0.10.0"
 }

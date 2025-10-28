@@ -1,8 +1,8 @@
-import { brand } from "../schemas/brand";
-import { eq, and, sql } from "drizzle-orm";
-import type { BrandSelect, BrandInsert } from "../schemas/brand";
-import type { DatabaseInstance } from "../client";
 import { AppError, propagateError } from "@packages/utils/errors";
+import { and, eq, sql } from "drizzle-orm";
+import type { DatabaseInstance } from "../client";
+import type { BrandInsert, BrandSelect } from "../schemas/brand";
+import { brand } from "../schemas/brand";
 
 export async function createBrand(
    dbClient: DatabaseInstance,
@@ -84,8 +84,8 @@ export async function getBrandByOrgId(
 ) {
    try {
       const result = await dbClient.query.brand.findFirst({
-         where: eq(brand.organizationId, organizationId),
          orderBy: (brand, { desc }) => [desc(brand.createdAt)],
+         where: eq(brand.organizationId, organizationId),
          with: {
             features: {
                orderBy: (brandFeature, { desc }) => [
@@ -158,10 +158,10 @@ export async function searchBrands(
       const whereCondition = buildSearchWhereCondition(query, organizationId);
 
       return await dbClient.query.brand.findMany({
-         where: whereCondition,
          limit,
          offset,
          orderBy: (brand, { desc }) => [desc(brand.createdAt)],
+         where: whereCondition,
          with: {
             features: {
                limit: 3,

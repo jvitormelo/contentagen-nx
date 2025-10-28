@@ -1,11 +1,11 @@
-import { brandFeature } from "../schemas/brand-features";
-import { eq, and, sql, inArray, desc } from "drizzle-orm";
-import type {
-   BrandFeatureSelect,
-   BrandFeatureInsert,
-} from "../schemas/brand-features";
-import type { DatabaseInstance } from "../client";
 import { AppError, propagateError } from "@packages/utils/errors";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
+import type { DatabaseInstance } from "../client";
+import type {
+   BrandFeatureInsert,
+   BrandFeatureSelect,
+} from "../schemas/brand-features";
+import { brandFeature } from "../schemas/brand-features";
 
 const buildOwnerExists = (organizationId?: string) => {
    if (!organizationId) return sql`TRUE`;
@@ -127,12 +127,12 @@ export async function getFeaturesByBrandId(
       const orderByDirection = sortOrder === "asc" ? "asc" : "desc";
 
       return await dbClient.query.brandFeature.findMany({
-         where: eq(brandFeature.brandId, brandId),
          limit,
          offset,
          orderBy: [
             orderByDirection === "asc" ? orderByField : desc(orderByField),
          ],
+         where: eq(brandFeature.brandId, brandId),
          with: {
             brand: {
                columns: {
@@ -194,10 +194,10 @@ export async function searchFeatures(
       const whereCondition = buildWhereCondition();
 
       return await dbClient.query.brandFeature.findMany({
-         where: whereCondition,
          limit,
          offset,
          orderBy: [desc(brandFeature.extractedAt)],
+         where: whereCondition,
          with: {
             brand: {
                columns: {
@@ -241,9 +241,9 @@ export async function getRecentFeatures(
       const whereCondition = buildDateAndOwnerWhere(cutoffDate, organizationId);
 
       return await dbClient.query.brandFeature.findMany({
-         where: whereCondition,
          limit,
          orderBy: [desc(brandFeature.extractedAt)],
+         where: whereCondition,
          with: {
             brand: {
                columns: {
@@ -363,9 +363,9 @@ export async function getFeaturesStats(
          totalBrands > 0 ? totalFeatures / totalBrands : 0;
 
       return {
-         totalFeatures,
-         totalBrands,
          avgFeaturesPerBrand,
+         totalBrands,
+         totalFeatures,
       };
    } catch (err) {
       throw AppError.database(

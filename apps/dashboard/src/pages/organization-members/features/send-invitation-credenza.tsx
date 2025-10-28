@@ -1,21 +1,21 @@
-import { betterAuthClient, useTRPC } from "@/integrations/clients";
+import { translate } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
 import {
    Credenza,
+   CredenzaBody,
    CredenzaContent,
+   CredenzaDescription,
+   CredenzaFooter,
    CredenzaHeader,
    CredenzaTitle,
-   CredenzaFooter,
-   CredenzaBody,
-   CredenzaDescription,
 } from "@packages/ui/components/credenza";
 import { useAppForm } from "@packages/ui/components/form";
 import { Input } from "@packages/ui/components/input";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, type FormEvent } from "react";
+import { type FormEvent, useCallback } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { translate } from "@packages/localization";
+import { betterAuthClient, useTRPC } from "@/integrations/clients";
 
 export function SendInvitationCredenza({
    open,
@@ -37,10 +37,16 @@ export function SendInvitationCredenza({
          await betterAuthClient.organization.inviteMember(
             {
                email: values.email,
-               role: "member",
                organizationId,
+               role: "member",
             },
             {
+               onError: (e) => {
+                  console.error("Error sending invitation:", e);
+                  toast.error(
+                     translate("pages.organization.toasts.invitation-failed"),
+                  );
+               },
                onSuccess: async () => {
                   toast.success(
                      translate("pages.organization.toasts.invitation-sent", {
@@ -51,12 +57,6 @@ export function SendInvitationCredenza({
                      queryKey:
                         trpc.authHelpers.getDefaultOrganization.queryKey(),
                   });
-               },
-               onError: (e) => {
-                  console.error("Error sending invitation:", e);
-                  toast.error(
-                     translate("pages.organization.toasts.invitation-failed"),
-                  );
                },
             },
          );
@@ -71,13 +71,13 @@ export function SendInvitationCredenza({
 
    const form = useAppForm({
       defaultValues: { email: "" },
-      validators: {
-         onBlur: schema,
-      },
       onSubmit: async ({ value, formApi }) => {
          await sendInvitation(value);
          formApi.reset();
          onOpenChange(false);
+      },
+      validators: {
+         onBlur: schema,
       },
    });
 
@@ -91,7 +91,7 @@ export function SendInvitationCredenza({
    );
 
    return (
-      <Credenza open={open} onOpenChange={onOpenChange}>
+      <Credenza onOpenChange={onOpenChange} open={open}>
          <CredenzaContent>
             <CredenzaHeader>
                <CredenzaTitle>

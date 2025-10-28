@@ -1,24 +1,24 @@
+import type { RouterOutput } from "@packages/api/client";
+import { Button } from "@packages/ui/components/button";
 import {
    Card,
    CardContent,
+   CardDescription,
    CardHeader,
    CardTitle,
-   CardDescription,
 } from "@packages/ui/components/card";
-import { Button } from "@packages/ui/components/button";
-import { ExternalLink, RefreshCw, Edit, Trash, Upload } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTRPC } from "@/integrations/clients";
-import { createToast } from "@/features/error-modal/lib/create-toast";
 import {
    Tooltip,
-   TooltipTrigger,
    TooltipContent,
+   TooltipTrigger,
 } from "@packages/ui/components/tooltip";
-import { CreateEditBrandDialog } from "../features/create-edit-brand-dialog";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Edit, ExternalLink, RefreshCw, Trash, Upload } from "lucide-react";
 import { useState } from "react";
+import { createToast } from "@/features/error-modal/lib/create-toast";
+import { useTRPC } from "@/integrations/clients";
+import { CreateEditBrandDialog } from "../features/create-edit-brand-dialog";
 import { DeleteBrandConfirmationDialog } from "../features/delete-brand-confirmation-dialog";
-import type { RouterOutput } from "@packages/api/client";
 
 interface BrandDetailsActionsProps {
    brand: RouterOutput["brand"]["list"]["items"][number];
@@ -36,19 +36,19 @@ export function BrandDetailsActions({
 
    const analyzeMutation = useMutation(
       trpc.brand.analyze.mutationOptions({
+         onError: (error) => {
+            createToast({
+               message: `Failed to start analysis: ${error.message ?? "Unknown error"}`,
+               type: "danger",
+            });
+         },
          onSuccess: () => {
             createToast({
-               type: "success",
                message: "Brand analysis started",
+               type: "success",
             });
             queryClient.invalidateQueries({
                queryKey: trpc.brand.getByOrganization.queryKey(),
-            });
-         },
-         onError: (error) => {
-            createToast({
-               type: "danger",
-               message: `Failed to start analysis: ${error.message ?? "Unknown error"}`,
             });
          },
       }),
@@ -66,34 +66,34 @@ export function BrandDetailsActions({
 
    const actions = [
       {
+         disabled: !brand.websiteUrl,
          icon: ExternalLink,
          label: "Visit Website",
          onClick: handleVisitWebsite,
-         disabled: !brand.websiteUrl,
       },
       {
+         disabled: analyzeMutation.isPending,
          icon: RefreshCw,
          label: analyzeMutation.isPending ? "Analyzing..." : "Refresh Analysis",
          onClick: handleAnalyze,
-         disabled: analyzeMutation.isPending,
       },
       {
+         disabled: !onLogoUpload,
          icon: Upload,
          label: "Upload Logo",
          onClick: onLogoUpload,
-         disabled: !onLogoUpload,
       },
       {
+         disabled: false,
          icon: Edit,
          label: "Edit Brand",
          onClick: () => setShowEditDialog(true),
-         disabled: false,
       },
       {
+         disabled: false,
          icon: Trash,
          label: "Delete Brand",
          onClick: () => setShowDeleteDialog(true),
-         disabled: false,
       },
    ];
 
@@ -111,10 +111,10 @@ export function BrandDetailsActions({
                   <Tooltip key={`brand-action-${index + 1}`}>
                      <TooltipTrigger asChild>
                         <Button
+                           disabled={action.disabled}
+                           onClick={action.onClick}
                            size="icon"
                            variant="outline"
-                           onClick={action.onClick}
-                           disabled={action.disabled}
                         >
                            <action.icon />
                         </Button>
@@ -127,14 +127,14 @@ export function BrandDetailsActions({
 
          <CreateEditBrandDialog
             brand={brand}
-            open={showEditDialog}
             onOpenChange={setShowEditDialog}
+            open={showEditDialog}
          />
 
          <DeleteBrandConfirmationDialog
             brand={brand}
-            open={showDeleteDialog}
             onOpenChange={setShowDeleteDialog}
+            open={showDeleteDialog}
          />
       </>
    );

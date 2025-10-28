@@ -1,36 +1,35 @@
-import { useState } from "react";
 import { translate } from "@packages/localization";
-
-import {
-   Card,
-   CardHeader,
-   CardTitle,
-   CardDescription,
-   CardContent,
-} from "@packages/ui/components/card";
-import { Button } from "@packages/ui/components/button";
 import {
    Avatar,
-   AvatarImage,
    AvatarFallback,
+   AvatarImage,
 } from "@packages/ui/components/avatar";
+import { Button } from "@packages/ui/components/button";
 import {
-   MoreHorizontal,
-   Mail as MailIcon,
-   KeyIcon,
-   User as UserIcon,
-} from "lucide-react";
+   Card,
+   CardContent,
+   CardDescription,
+   CardHeader,
+   CardTitle,
+} from "@packages/ui/components/card";
 import {
    DropdownMenu,
-   DropdownMenuTrigger,
    DropdownMenuContent,
    DropdownMenuItem,
+   DropdownMenuTrigger,
 } from "@packages/ui/components/dropdown-menu";
+import { InfoItem } from "@packages/ui/components/info-item";
+import {
+   KeyIcon,
+   Mail as MailIcon,
+   MoreHorizontal,
+   User as UserIcon,
+} from "lucide-react";
+import { useState } from "react";
+import { betterAuthClient } from "@/integrations/clients";
 import { UpdateEmailForm } from "../features/update-email-form";
 import { UpdatePasswordForm } from "../features/update-password-form";
 import { UpdateProfileForm } from "../features/update-profile-form";
-import { betterAuthClient } from "@/integrations/clients";
-import { InfoItem } from "@packages/ui/components/info-item";
 
 export function ProfileInformation() {
    const { data: session } = betterAuthClient.useSession();
@@ -65,7 +64,7 @@ export function ProfileInformation() {
                </div>
                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                     <Button variant="ghost" size="icon">
+                     <Button size="icon" variant="ghost">
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">
                            {translate("pages.profile.information.more-options")}
@@ -101,8 +100,8 @@ export function ProfileInformation() {
             <CardContent className="flex flex-col items-center justify-center gap-4 md:flex-row">
                <Avatar className="h-20 w-20">
                   <AvatarImage
-                     src={session?.user?.image || undefined}
                      alt={session?.user?.name || "Profile picture"}
+                     src={session?.user?.image || undefined}
                   />
                   <AvatarFallback className="text-lg">
                      {getInitials(
@@ -113,40 +112,40 @@ export function ProfileInformation() {
                </Avatar>
                <div className="flex flex-col gap-4 w-full h-full">
                   <InfoItem
+                     className="normal-case"
                      icon={<UserIcon className="h-4 w-4" />}
                      label={translate("pages.profile.information.fields.name")}
                      value={
                         session?.user?.name ||
                         translate("pages.profile.information.fields.anonymous")
                      }
-                     className="normal-case"
                   />
                   <InfoItem
+                     className="normal-case"
                      icon={<MailIcon className="h-4 w-4" />}
                      label={translate("pages.profile.information.fields.email")}
                      value={
                         session?.user?.email ||
                         translate("pages.profile.information.fields.no-email")
                      }
-                     className="normal-case"
                   />
                </div>
             </CardContent>
          </Card>
          <UpdateEmailForm
-            open={showEmailModal}
-            onOpenChange={setShowEmailModal}
             currentEmail={session?.user?.email || ""}
+            onOpenChange={setShowEmailModal}
+            open={showEmailModal}
          />
          <UpdatePasswordForm
-            open={showPasswordModal}
             onOpenChange={setShowPasswordModal}
+            open={showPasswordModal}
          />
          <UpdateProfileForm
-            open={showProfileModal}
-            onOpenChange={setShowProfileModal}
-            currentName={session?.user?.name || ""}
             currentImage={session?.user?.image || ""}
+            currentName={session?.user?.name || ""}
+            onOpenChange={setShowProfileModal}
+            open={showProfileModal}
          />
       </>
    );

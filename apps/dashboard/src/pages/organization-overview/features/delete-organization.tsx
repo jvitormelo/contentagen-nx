@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { DeleteConfirmationCredenza } from "@packages/ui/components/delete-confirmation-credenza";
+import { useState } from "react";
 
 interface DeleteOrganizationFeatureProps {
    onDelete?: () => void;
@@ -23,10 +23,10 @@ export function DeleteOrganizationFeature({
 
    return (
       <DeleteConfirmationCredenza
-         open={dialogOpen}
-         onOpenChange={setDialogOpen}
-         onDelete={handleDelete}
          message="Are you sure you want to delete this organization? This action cannot be undone and will permanently remove all organization data, including members, agents, and content."
+         onDelete={handleDelete}
+         onOpenChange={setDialogOpen}
+         open={dialogOpen}
       />
    );
 }

@@ -1,4 +1,4 @@
-import { useTRPC } from "@/integrations/clients";
+import { translate } from "@packages/localization";
 import {
    Card,
    CardAction,
@@ -8,13 +8,13 @@ import {
    CardTitle,
 } from "@packages/ui/components/card";
 import { Switch } from "@packages/ui/components/switch";
-import { createToast } from "@/features/error-modal/lib/create-toast";
 import {
    useMutation,
    useQueryClient,
    useSuspenseQuery,
 } from "@tanstack/react-query";
-import { translate } from "@packages/localization";
+import { createToast } from "@/features/error-modal/lib/create-toast";
+import { useTRPC } from "@/integrations/clients";
 
 export function WorkflowPreferences() {
    const trpc = useTRPC();
@@ -40,13 +40,13 @@ export function WorkflowPreferences() {
          });
 
          createToast({
-            type: "success",
             message: translate("pages.profile.toast.preference-updated"),
+            type: "success",
          });
       } catch (error) {
          createToast({
-            type: "danger",
             message: translate("pages.profile.toast.preference-failed"),
+            type: "danger",
          });
          console.error("Error updating workflow preference:", error);
       }
@@ -79,8 +79,8 @@ export function WorkflowPreferences() {
                   </CardDescription>
                   <CardAction>
                      <Switch
-                        id="notify-missing-images"
                         checked={data.notifyMissingImages}
+                        id="notify-missing-images"
                         onCheckedChange={handleToggleMissingImages}
                      />
                   </CardAction>

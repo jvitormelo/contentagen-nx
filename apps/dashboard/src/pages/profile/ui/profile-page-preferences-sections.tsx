@@ -1,13 +1,13 @@
-import { ThemeToggler } from "@/layout/theme-provider";
-import { LanguageToggler } from "@/layout/language-toggler";
+import { translate } from "@packages/localization";
 import {
    Card,
    CardContent,
    CardHeader,
    CardTitle,
 } from "@packages/ui/components/card";
+import { LanguageToggler } from "@/layout/language-toggler";
+import { ThemeToggler } from "@/layout/theme-provider";
 import { WorkflowPreferences } from "./workflow-preferences";
-import { translate } from "@packages/localization";
 
 export function PreferencesSection() {
    return (
