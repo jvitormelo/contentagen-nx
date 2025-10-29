@@ -3,7 +3,58 @@ import React from "react";
 import { Button } from "../components/button";
 import { HeroHeader } from "./header";
 
-export function HeroSection1({ imgUrl }: { imgUrl: string }) {
+export interface HeroSection1Content {
+   title: string;
+   description: string;
+   primaryButtonText: string;
+   primaryButtonLink: string;
+   secondaryButtonText: string;
+   secondaryButtonLink: string;
+   trustedByText: string;
+   logos: Array<{
+      alt: string;
+      src: string;
+      height: number;
+   }>;
+   imgUrl: string;
+}
+
+interface HeroSection1Props {
+   content: HeroSection1Content;
+}
+
+export const defaultContent: HeroSection1Content = {
+   description:
+      "One tool that does it all. Search, generate, analyze, and chat—right inside Tailark.",
+   imgUrl: "",
+   logos: [
+      {
+         alt: "Column Logo",
+         height: 16,
+         src: "https://html.tailus.io/blocks/customers/column.svg",
+      },
+      {
+         alt: "Nvidia Logo",
+         height: 20,
+         src: "https://html.tailus.io/blocks/customers/nvidia.svg",
+      },
+      {
+         alt: "GitHub Logo",
+         height: 16,
+         src: "https://html.tailus.io/blocks/customers/github.svg",
+      },
+   ],
+   primaryButtonLink: "#link",
+   primaryButtonText: "Get Started",
+   secondaryButtonLink: "#link",
+   secondaryButtonText: "Watch video",
+   title: "Simple payments for startups",
+   trustedByText: "Trusted by teams at :",
+};
+
+export function HeroSection1({ content = defaultContent }: HeroSection1Props) {
+   const mergedContent = { ...defaultContent, ...content };
+
    return (
       <>
          <HeroHeader />
@@ -14,18 +65,17 @@ export function HeroSection1({ imgUrl }: { imgUrl: string }) {
                      <div className="md:w-1/2">
                         <div>
                            <h1 className="max-w-md text-balance text-5xl font-medium md:text-6xl">
-                              Simple payments for startups
+                              {mergedContent.title}
                            </h1>
                            <p className="text-muted-foreground my-8 max-w-2xl text-balance text-xl">
-                              One tool that does it all. Search, generate,
-                              analyze, and chat—right inside Tailark.
+                              {mergedContent.description}
                            </p>
 
                            <div className="flex items-center gap-3">
                               <Button asChild className="pr-4.5" size="lg">
-                                 <a href="#link">
+                                 <a href={mergedContent.primaryButtonLink}>
                                     <span className="text-nowrap">
-                                       Get Started
+                                       {mergedContent.primaryButtonText}
                                     </span>
                                     <ChevronRight className="opacity-50" />
                                  </a>
@@ -37,10 +87,10 @@ export function HeroSection1({ imgUrl }: { imgUrl: string }) {
                                  size="lg"
                                  variant="outline"
                               >
-                                 <a href="#link">
+                                 <a href={mergedContent.secondaryButtonLink}>
                                     <CirclePlay className="fill-primary/25 stroke-primary" />
                                     <span className="text-nowrap">
-                                       Watch video
+                                       {mergedContent.secondaryButtonText}
                                     </span>
                                  </a>
                               </Button>
@@ -49,36 +99,20 @@ export function HeroSection1({ imgUrl }: { imgUrl: string }) {
 
                         <div className="mt-10">
                            <p className="text-muted-foreground">
-                              Trusted by teams at :
+                              {mergedContent.trustedByText}
                            </p>
                            <div className="mt-6 grid max-w-sm grid-cols-3 gap-6">
-                              <div className="flex">
-                                 <img
-                                    alt="Column Logo"
-                                    className="h-4 w-fit"
-                                    height="16"
-                                    src="https://html.tailus.io/blocks/customers/column.svg"
-                                    width="auto"
-                                 />
-                              </div>
-                              <div className="flex">
-                                 <img
-                                    alt="Nvidia Logo"
-                                    className="h-5 w-fit"
-                                    height="20"
-                                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                                    width="auto"
-                                 />
-                              </div>
-                              <div className="flex">
-                                 <img
-                                    alt="GitHub Logo"
-                                    className="h-4 w-fit"
-                                    height="16"
-                                    src="https://html.tailus.io/blocks/customers/github.svg"
-                                    width="auto"
-                                 />
-                              </div>
+                              {mergedContent.logos.map((logo, index) => (
+                                 <div className="flex" key={index}>
+                                    <img
+                                       alt={logo.alt}
+                                       className="h-4 w-fit"
+                                       height={logo.height}
+                                       src={logo.src}
+                                       width="auto"
+                                    />
+                                 </div>
+                              ))}
                            </div>
                         </div>
                      </div>
@@ -90,7 +124,7 @@ export function HeroSection1({ imgUrl }: { imgUrl: string }) {
                            <img
                               alt="app screen"
                               className="object-top-left size-full object-cover w-20 h-20 shadow-lg"
-                              src={imgUrl}
+                              src={mergedContent.imgUrl}
                            />
                         </div>
                      </div>

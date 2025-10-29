@@ -1,17 +1,171 @@
-import mascot from "@packages/brand/logo.svg";
-import { Features } from "@packages/ui/blocks/features-one";
-import { HeroSection1 } from "@packages/ui/blocks/hero-section-one";
+import {
+   FeaturesOne,
+   defaultContent as featureOneAutocomplete,
+} from "@packages/ui/blocks/features-one";
+import { FooterSection } from "@packages/ui/blocks/footer-one";
+import {
+   defaultContent,
+   HeroSection1,
+} from "@packages/ui/blocks/hero-section-one";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { getBlockDefinition } from "./block-registry";
+import { BlockBrowser } from "./components/block-browser";
+import { BlockSelector } from "./components/block-selector";
+import { PropertyPanel } from "./components/property-panel";
 
 export const Route = createFileRoute("/lp-builder/")({
    component: RouteComponent,
 });
 
+interface BlockInstance {
+   id: string;
+   blockDefId: string;
+   name: string;
+   content: any;
+}
+
 function RouteComponent() {
+   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
+   const [blockBrowserOpen, setBlockBrowserOpen] = useState(false);
+   const [blocks, setBlocks] = useState<BlockInstance[]>([
+      {
+         blockDefId: "hero-section-1",
+         content: defaultContent,
+         id: "block-1",
+         name: "Hero Section 1",
+      },
+      {
+         blockDefId: "features-one",
+         content: featureOneAutocomplete,
+         id: "block-2",
+         name: "Features Section 1",
+      },
+      {
+         blockDefId: "footer-one",
+         content: {},
+         id: "block-3",
+         name: "Footer Section 1",
+      },
+   ]);
+
+   // Set first block as selected on mount
+   if (selectedBlock === null && blocks.length > 0 && blocks[0]?.id) {
+      setSelectedBlock(blocks[0].id);
+   }
+
+   const handleAddBlock = (blockDefId: string) => {
+      const blockDef = getBlockDefinition(blockDefId);
+      if (!blockDef) return;
+
+      const newBlock: BlockInstance = {
+         blockDefId: blockDefId,
+         content: blockDef.defaultContent,
+         id: `block-${Date.now()}`,
+         name: blockDef.name,
+      };
+
+      setBlocks((prev) => [...prev, newBlock]);
+      setSelectedBlock(newBlock.id);
+   };
+
+   const handleRemoveBlock = (blockId: string) => {
+      setBlocks((prev) => prev.filter((b) => b.id !== blockId));
+      if (selectedBlock === blockId) {
+         setSelectedBlock(blocks[0]?.id || null);
+      }
+   };
+
+   const handlePropertyChange = (key: string, value: any) => {
+      if (!selectedBlock) return;
+
+      setBlocks((prev) =>
+         prev.map((block) => {
+            if (block.id !== selectedBlock) return block;
+
+            let updatedContent = { ...block.content };
+
+            // Handle nested properties like "testimonial.quote"
+            if (key.includes(".")) {
+               const [parentKey, childKey] = key.split(".");
+               updatedContent = {
+                  ...updatedContent,
+                  [parentKey]: {
+                     ...(updatedContent[parentKey] as object),
+                     [childKey]: value,
+                  },
+               };
+            } else {
+               // Handle direct property updates (including arrays)
+               updatedContent[key] = value;
+            }
+
+            return {
+               ...block,
+               content: updatedContent,
+            };
+         }),
+      );
+   };
+
+   const selectedBlockData = blocks.find((b) => b.id === selectedBlock);
+   const selectedBlockDef = selectedBlockData
+      ? getBlockDefinition(selectedBlockData.blockDefId)
+      : null;
+
    return (
-      <div className="flex flex-col min-h-screen">
-         <HeroSection1 imgUrl={mascot}></HeroSection1>
-         <Features></Features>
+      <div className="flex h-screen bg-background">
+         {/* Block Browser Dialog */}
+         <BlockBrowser
+            onOpenChange={setBlockBrowserOpen}
+            onSelectBlock={handleAddBlock}
+            open={blockBrowserOpen}
+         />
+
+         {/* Left Sidebar - Block Selector */}
+         <BlockSelector
+            blocks={blocks.map((b) => ({
+               blockDefId: b.blockDefId,
+               id: b.id,
+               name: b.name,
+            }))}
+            onAddBlock={() => setBlockBrowserOpen(true)}
+            onRemoveBlock={handleRemoveBlock}
+            onSelectBlock={setSelectedBlock}
+            selectedBlock={selectedBlock}
+         />
+
+         {/* Main Content Area */}
+         <div className="flex-1 overflow-y-auto">
+            <div className="flex flex-col min-h-screen pb-20">
+               {blocks.map((block) => {
+                  if (block.blockDefId === "hero-section-1") {
+                     return (
+                        <HeroSection1 content={block.content} key={block.id} />
+                     );
+                  }
+                  if (block.blockDefId === "features-one") {
+                     return (
+                        <FeaturesOne content={block.content} key={block.id} />
+                     );
+                  }
+                  if (block.blockDefId === "footer-one") {
+                     return <FooterSection key={block.id} />;
+                  }
+                  return null;
+               })}
+            </div>
+         </div>
+
+         {/* Right Sidebar - Property Panel */}
+         {selectedBlockData && selectedBlockDef && (
+            <PropertyPanel
+               blockName={selectedBlockData.name}
+               onChange={handlePropertyChange}
+               properties={selectedBlockDef.propsConfig}
+               values={selectedBlockData.content}
+            />
+         )}
       </div>
    );
 }
