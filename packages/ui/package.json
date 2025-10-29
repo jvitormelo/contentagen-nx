@@ -54,6 +54,10 @@
       "typescript": "catalog:development"
    },
    "exports": {
+      "./blocks/*": {
+         "default": "./src/blocks/*.ts",
+         "types": "./dist/src/blocks/*.d.ts"
+      },
       "./components/*": {
          "default": "./src/components/*.ts",
          "types": "./dist/src/components/*.d.ts"

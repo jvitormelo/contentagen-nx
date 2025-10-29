@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
+import { Route as LpBuilderIndexRouteImport } from './routes/lp-builder/index'
 import { Route as CallbackAuthedRouteImport } from './routes/callback/_authed'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
@@ -22,7 +23,6 @@ import { Route as DashboardProfileRouteImport } from './routes/_dashboard/profil
 import { Route as DashboardHomeRouteImport } from './routes/_dashboard/home'
 import { Route as DashboardApikeyRouteImport } from './routes/_dashboard/apikey'
 import { Route as DashboardOrganizationIndexRouteImport } from './routes/_dashboard/organization/index'
-import { Route as DashboardLpBuilderIndexRouteImport } from './routes/_dashboard/lp-builder/index'
 import { Route as DashboardIdeasIndexRouteImport } from './routes/_dashboard/ideas/index'
 import { Route as DashboardContentIndexRouteImport } from './routes/_dashboard/content/index'
 import { Route as DashboardCompetitorsIndexRouteImport } from './routes/_dashboard/competitors/index'
@@ -60,6 +60,11 @@ const DashboardAgentsRoute = DashboardAgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
   getParentRoute: () => DashboardRoute,
+} as any)
+const LpBuilderIndexRoute = LpBuilderIndexRouteImport.update({
+  id: '/lp-builder/',
+  path: '/lp-builder/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CallbackAuthedRoute = CallbackAuthedRouteImport.update({
   id: '/_authed',
@@ -106,11 +111,6 @@ const DashboardOrganizationIndexRoute =
     path: '/organization/',
     getParentRoute: () => DashboardRoute,
   } as any)
-const DashboardLpBuilderIndexRoute = DashboardLpBuilderIndexRouteImport.update({
-  id: '/lp-builder/',
-  path: '/lp-builder/',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardIdeasIndexRoute = DashboardIdeasIndexRouteImport.update({
   id: '/ideas/',
   path: '/ideas/',
@@ -204,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/callback': typeof CallbackAuthedRouteWithChildren
+  '/lp-builder': typeof LpBuilderIndexRoute
   '/agents': typeof DashboardAgentsFlowRouteWithChildren
   '/competitors/$id': typeof DashboardCompetitorsIdRoute
   '/content/$id': typeof DashboardContentIdRoute
@@ -214,7 +215,6 @@ export interface FileRoutesByFullPath {
   '/competitors': typeof DashboardCompetitorsIndexRoute
   '/content': typeof DashboardContentIndexRoute
   '/ideas': typeof DashboardIdeasIndexRoute
-  '/lp-builder': typeof DashboardLpBuilderIndexRoute
   '/organization': typeof DashboardOrganizationIndexRoute
   '/agents/$agentId/edit': typeof DashboardAgentsAgentIdEditRoute
   '/agents/manual': typeof DashboardAgentsFlowManualRoute
@@ -232,6 +232,7 @@ export interface FileRoutesByTo {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/callback': typeof CallbackAuthedRouteWithChildren
+  '/lp-builder': typeof LpBuilderIndexRoute
   '/agents': typeof DashboardAgentsIndexRoute
   '/competitors/$id': typeof DashboardCompetitorsIdRoute
   '/content/$id': typeof DashboardContentIdRoute
@@ -241,7 +242,6 @@ export interface FileRoutesByTo {
   '/competitors': typeof DashboardCompetitorsIndexRoute
   '/content': typeof DashboardContentIndexRoute
   '/ideas': typeof DashboardIdeasIndexRoute
-  '/lp-builder': typeof DashboardLpBuilderIndexRoute
   '/organization': typeof DashboardOrganizationIndexRoute
   '/agents/$agentId/edit': typeof DashboardAgentsAgentIdEditRoute
   '/agents/manual': typeof DashboardAgentsFlowManualRoute
@@ -262,6 +262,7 @@ export interface FileRoutesById {
   '/auth/sign-up': typeof AuthSignUpRoute
   '/callback': typeof CallbackRouteWithChildren
   '/callback/_authed': typeof CallbackAuthedRouteWithChildren
+  '/lp-builder/': typeof LpBuilderIndexRoute
   '/_dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/_dashboard/agents/_flow': typeof DashboardAgentsFlowRouteWithChildren
   '/_dashboard/competitors/$id': typeof DashboardCompetitorsIdRoute
@@ -273,7 +274,6 @@ export interface FileRoutesById {
   '/_dashboard/competitors/': typeof DashboardCompetitorsIndexRoute
   '/_dashboard/content/': typeof DashboardContentIndexRoute
   '/_dashboard/ideas/': typeof DashboardIdeasIndexRoute
-  '/_dashboard/lp-builder/': typeof DashboardLpBuilderIndexRoute
   '/_dashboard/organization/': typeof DashboardOrganizationIndexRoute
   '/_dashboard/agents/$agentId/edit': typeof DashboardAgentsAgentIdEditRoute
   '/_dashboard/agents/_flow/manual': typeof DashboardAgentsFlowManualRoute
@@ -293,6 +293,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/callback'
+    | '/lp-builder'
     | '/agents'
     | '/competitors/$id'
     | '/content/$id'
@@ -303,7 +304,6 @@ export interface FileRouteTypes {
     | '/competitors'
     | '/content'
     | '/ideas'
-    | '/lp-builder'
     | '/organization'
     | '/agents/$agentId/edit'
     | '/agents/manual'
@@ -321,6 +321,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/callback'
+    | '/lp-builder'
     | '/agents'
     | '/competitors/$id'
     | '/content/$id'
@@ -330,7 +331,6 @@ export interface FileRouteTypes {
     | '/competitors'
     | '/content'
     | '/ideas'
-    | '/lp-builder'
     | '/organization'
     | '/agents/$agentId/edit'
     | '/agents/manual'
@@ -350,6 +350,7 @@ export interface FileRouteTypes {
     | '/auth/sign-up'
     | '/callback'
     | '/callback/_authed'
+    | '/lp-builder/'
     | '/_dashboard/agents'
     | '/_dashboard/agents/_flow'
     | '/_dashboard/competitors/$id'
@@ -361,7 +362,6 @@ export interface FileRouteTypes {
     | '/_dashboard/competitors/'
     | '/_dashboard/content/'
     | '/_dashboard/ideas/'
-    | '/_dashboard/lp-builder/'
     | '/_dashboard/organization/'
     | '/_dashboard/agents/$agentId/edit'
     | '/_dashboard/agents/_flow/manual'
@@ -374,6 +374,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   CallbackRoute: typeof CallbackRouteWithChildren
+  LpBuilderIndexRoute: typeof LpBuilderIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -405,6 +406,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/agents'
       preLoaderRoute: typeof DashboardAgentsRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/lp-builder/': {
+      id: '/lp-builder/'
+      path: '/lp-builder'
+      fullPath: '/lp-builder'
+      preLoaderRoute: typeof LpBuilderIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/callback/_authed': {
       id: '/callback/_authed'
@@ -467,13 +475,6 @@ declare module '@tanstack/react-router' {
       path: '/organization'
       fullPath: '/organization'
       preLoaderRoute: typeof DashboardOrganizationIndexRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/_dashboard/lp-builder/': {
-      id: '/_dashboard/lp-builder/'
-      path: '/lp-builder'
-      fullPath: '/lp-builder'
-      preLoaderRoute: typeof DashboardLpBuilderIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/ideas/': {
@@ -629,7 +630,6 @@ interface DashboardRouteChildren {
   DashboardCompetitorsIndexRoute: typeof DashboardCompetitorsIndexRoute
   DashboardContentIndexRoute: typeof DashboardContentIndexRoute
   DashboardIdeasIndexRoute: typeof DashboardIdeasIndexRoute
-  DashboardLpBuilderIndexRoute: typeof DashboardLpBuilderIndexRoute
   DashboardOrganizationIndexRoute: typeof DashboardOrganizationIndexRoute
 }
 
@@ -646,7 +646,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCompetitorsIndexRoute: DashboardCompetitorsIndexRoute,
   DashboardContentIndexRoute: DashboardContentIndexRoute,
   DashboardIdeasIndexRoute: DashboardIdeasIndexRoute,
-  DashboardLpBuilderIndexRoute: DashboardLpBuilderIndexRoute,
   DashboardOrganizationIndexRoute: DashboardOrganizationIndexRoute,
 }
 
@@ -699,6 +698,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   CallbackRoute: CallbackRouteWithChildren,
+  LpBuilderIndexRoute: LpBuilderIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

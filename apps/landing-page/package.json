@@ -10,7 +10,7 @@
       "@packages/localization": "workspace:*",
       "@packages/posthog": "workspace:*",
       "@packages/ui": "workspace:*",
-      "@tailwindcss/vite": "catalog:ui",
+      "@tailwindcss/vite": "catalog:vite",
       "astro": "catalog:astro",
       "react": "catalog:react",
       "react-dom": "catalog:react",
