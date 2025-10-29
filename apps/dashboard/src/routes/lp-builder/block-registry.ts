@@ -1,4 +1,5 @@
 import { defaultContent as featuresOneDefault } from "@packages/ui/blocks/features-one";
+import { defaultContent as footerOneDefault } from "@packages/ui/blocks/footer-one";
 import { defaultContent as heroSection1Default } from "@packages/ui/blocks/hero-section-one";
 import type React from "react";
 
@@ -97,11 +98,61 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "footer-one": {
       category: "footer",
       component: null as any,
-      defaultContent: {},
+      defaultContent: footerOneDefault,
       description: "Simple footer with links and copyright",
       id: "footer-one",
       name: "Footer Section 1",
-      propsConfig: [],
+      propsConfig: [
+         {
+            group: "General",
+            key: "homeLink",
+            label: "Home Link",
+            type: "url" as const,
+         },
+         {
+            group: "General",
+            key: "copyrightText",
+            label: "Copyright Text",
+            type: "text" as const,
+         },
+         {
+            arrayItemSchema: [
+               { key: "title", label: "Title", type: "text" as const },
+               { key: "href", label: "URL", type: "url" as const },
+            ],
+            group: "Navigation",
+            key: "links",
+            label: "Footer Links",
+            type: "array" as const,
+         },
+         {
+            arrayItemSchema: [
+               { key: "name", label: "Name", type: "text" as const },
+               { key: "ariaLabel", label: "Aria Label", type: "text" as const },
+               { key: "href", label: "URL", type: "url" as const },
+               { key: "svgPath", label: "SVG Path", type: "textarea" as const },
+               {
+                  key: "svgViewBox",
+                  label: "SVG ViewBox",
+                  type: "text" as const,
+               },
+               {
+                  key: "svgStrokeWidth",
+                  label: "SVG Stroke Width",
+                  type: "text" as const,
+               },
+               {
+                  key: "svgColor",
+                  label: "SVG Color",
+                  type: "text" as const,
+               },
+            ],
+            group: "Social Media",
+            key: "socialLinks",
+            label: "Social Links",
+            type: "array" as const,
+         },
+      ],
    },
    "hero-section-1": {
       category: "hero",

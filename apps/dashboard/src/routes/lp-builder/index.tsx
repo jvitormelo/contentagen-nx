@@ -2,7 +2,10 @@ import {
    FeaturesOne,
    defaultContent as featureOneAutocomplete,
 } from "@packages/ui/blocks/features-one";
-import { FooterSection } from "@packages/ui/blocks/footer-one";
+import {
+   FooterSection,
+   defaultContent as footerOneDefault,
+} from "@packages/ui/blocks/footer-one";
 import {
    defaultContent,
    HeroSection1,
@@ -43,7 +46,7 @@ function RouteComponent() {
       },
       {
          blockDefId: "footer-one",
-         content: {},
+         content: footerOneDefault,
          id: "block-3",
          name: "Footer Section 1",
       },
@@ -74,6 +77,15 @@ function RouteComponent() {
       if (selectedBlock === blockId) {
          setSelectedBlock(blocks[0]?.id || null);
       }
+   };
+
+   const handleReorderBlocks = (reorderedBlockOptions: BlockOption[]) => {
+      // Map the reordered block options back to full block instances
+      const reorderedBlocks = reorderedBlockOptions
+         .map((option) => blocks.find((b) => b.id === option.id))
+         .filter((b): b is BlockInstance => b !== undefined);
+
+      setBlocks(reorderedBlocks);
    };
 
    const handlePropertyChange = (key: string, value: any) => {
@@ -131,6 +143,7 @@ function RouteComponent() {
             }))}
             onAddBlock={() => setBlockBrowserOpen(true)}
             onRemoveBlock={handleRemoveBlock}
+            onReorderBlocks={handleReorderBlocks}
             onSelectBlock={setSelectedBlock}
             selectedBlock={selectedBlock}
          />
@@ -150,7 +163,9 @@ function RouteComponent() {
                      );
                   }
                   if (block.blockDefId === "footer-one") {
-                     return <FooterSection key={block.id} />;
+                     return (
+                        <FooterSection content={block.content} key={block.id} />
+                     );
                   }
                   return null;
                })}
