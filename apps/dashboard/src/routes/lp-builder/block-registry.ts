@@ -1,6 +1,7 @@
 import { defaultContent as featuresOneDefault } from "@packages/ui/blocks/features-one";
 import { defaultContent as footerOneDefault } from "@packages/ui/blocks/footer-one";
 import { defaultContent as heroSection1Default } from "@packages/ui/blocks/hero-section-one";
+import { defaultContent as pricingTableDefault } from "@packages/ui/blocks/pricing-table";
 import type React from "react";
 
 export type BlockCategory =
@@ -8,7 +9,8 @@ export type BlockCategory =
    | "features"
    | "footer"
    | "cta"
-   | "testimonial";
+   | "testimonial"
+   | "pricing";
 
 export interface BlockDefinition {
    id: string;
@@ -196,6 +198,111 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
          { key: "imgUrl", label: "Image URL", type: "url" as const },
       ],
    },
+   "pricing-table": {
+      category: "pricing",
+      component: null as any,
+      defaultContent: pricingTableDefault,
+      description: "Interactive pricing table with plan comparison",
+      id: "pricing-table",
+      name: "Pricing Table",
+      propsConfig: [
+         {
+            group: "Labels",
+            key: "monthlyLabel",
+            label: "Monthly Label",
+            type: "text" as const,
+         },
+         {
+            group: "Labels",
+            key: "yearlyLabel",
+            label: "Yearly Label",
+            type: "text" as const,
+         },
+         {
+            group: "Labels",
+            key: "monthLabel",
+            label: "Month Label",
+            type: "text" as const,
+         },
+         {
+            group: "Labels",
+            key: "yearLabel",
+            label: "Year Label",
+            type: "text" as const,
+         },
+         {
+            group: "Labels",
+            key: "popularLabel",
+            label: "Popular Label",
+            type: "text" as const,
+         },
+         {
+            group: "Labels",
+            key: "featuresHeaderLabel",
+            label: "Features Header Label",
+            type: "text" as const,
+         },
+         {
+            group: "Labels",
+            key: "buttonText",
+            label: "Button Text",
+            type: "text" as const,
+         },
+         {
+            group: "Settings",
+            key: "defaultPlan",
+            label: "Default Plan",
+            type: "text" as const,
+         },
+         {
+            group: "Settings",
+            key: "defaultInterval",
+            label: "Default Interval",
+            options: ["monthly", "yearly"],
+            type: "select" as const,
+         },
+         {
+            arrayItemSchema: [
+               { key: "name", label: "Name", type: "text" as const },
+               { key: "level", label: "Level", type: "text" as const },
+               {
+                  key: "price.monthly",
+                  label: "Monthly Price",
+                  type: "text" as const,
+               },
+               {
+                  key: "price.yearly",
+                  label: "Yearly Price",
+                  type: "text" as const,
+               },
+               {
+                  key: "popular",
+                  label: "Popular",
+                  options: ["true", "false"],
+                  type: "select" as const,
+               },
+            ],
+            group: "Plans",
+            key: "plans",
+            label: "Pricing Plans",
+            type: "array" as const,
+         },
+         {
+            arrayItemSchema: [
+               { key: "name", label: "Feature Name", type: "text" as const },
+               {
+                  key: "included",
+                  label: "Included In",
+                  type: "text" as const,
+               },
+            ],
+            group: "Features",
+            key: "features",
+            label: "Feature List",
+            type: "array" as const,
+         },
+      ],
+   },
 };
 
 export const BLOCK_CATEGORIES: Record<
@@ -217,6 +324,10 @@ export const BLOCK_CATEGORIES: Record<
    hero: {
       description: "Eye-catching headers for your landing page",
       name: "Hero Sections",
+   },
+   pricing: {
+      description: "Display pricing plans and comparisons",
+      name: "Pricing",
    },
    testimonial: {
       description: "Build trust with customer testimonials",

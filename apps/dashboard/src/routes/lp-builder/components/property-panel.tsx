@@ -59,7 +59,28 @@ function ArrayEditor({
    const handleAddItem = () => {
       const newItem: Record<string, any> = {};
       schema.forEach((field) => {
-         newItem[field.key] = "";
+         // Handle nested properties like "price.monthly"
+         if (field.key.includes(".")) {
+            const keys = field.key.split(".");
+            let current = newItem;
+
+            // Create nested structure
+            for (let i = 0; i < keys.length - 1; i++) {
+               const key = keys[i];
+               if (key && !current[key]) {
+                  current[key] = {};
+               }
+               current = current[key];
+            }
+
+            // Set the final value
+            const finalKey = keys[keys.length - 1];
+            if (finalKey) {
+               current[finalKey] = "";
+            }
+         } else {
+            newItem[field.key] = "";
+         }
       });
       onChange(propKey, [...items, newItem]);
       // Auto-expand newly added item
@@ -79,7 +100,33 @@ function ArrayEditor({
 
    const handleUpdateItem = (index: number, fieldKey: string, value: any) => {
       const newItems = [...items];
-      newItems[index] = { ...newItems[index], [fieldKey]: value };
+
+      // Handle nested properties like "price.monthly"
+      if (fieldKey.includes(".")) {
+         const keys = fieldKey.split(".");
+         const updatedItem = { ...newItems[index] };
+         let current: any = updatedItem;
+
+         // Navigate to the parent object
+         for (let i = 0; i < keys.length - 1; i++) {
+            const key = keys[i];
+            if (key) {
+               current[key] = { ...current[key] };
+               current = current[key];
+            }
+         }
+
+         // Set the final value
+         const finalKey = keys[keys.length - 1];
+         if (finalKey) {
+            current[finalKey] = value;
+         }
+
+         newItems[index] = updatedItem;
+      } else {
+         newItems[index] = { ...newItems[index], [fieldKey]: value };
+      }
+
       onChange(propKey, newItems);
    };
 
@@ -144,64 +191,71 @@ function ArrayEditor({
                   </div>
                   {isExpanded && (
                      <div className="p-3 space-y-3">
-                        {schema.map((field) => (
-                           <div className="space-y-1" key={field.key}>
-                              <Label
-                                 className="text-xs"
-                                 htmlFor={`${propKey}-${index}-${field.key}`}
-                              >
-                                 {field.label}
-                              </Label>
-                              {field.type === "select" && field.options ? (
-                                 <select
-                                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                                    id={`${propKey}-${index}-${field.key}`}
-                                    onChange={(e) =>
-                                       handleUpdateItem(
-                                          index,
-                                          field.key,
-                                          e.target.value,
-                                       )
-                                    }
-                                    value={item[field.key] || ""}
+                        {schema.map((field) => {
+                           // Get the value, handling nested properties
+                           const fieldValue = field.key.includes(".")
+                              ? getNestedValue(item, field.key)
+                              : item[field.key] || "";
+
+                           return (
+                              <div className="space-y-1" key={field.key}>
+                                 <Label
+                                    className="text-xs"
+                                    htmlFor={`${propKey}-${index}-${field.key}`}
                                  >
-                                    <option value="">Select...</option>
-                                    {field.options.map((option) => (
-                                       <option key={option} value={option}>
-                                          {option}
-                                       </option>
-                                    ))}
-                                 </select>
-                              ) : field.type === "textarea" ? (
-                                 <Textarea
-                                    className="min-h-20 text-xs"
-                                    id={`${propKey}-${index}-${field.key}`}
-                                    onChange={(e) =>
-                                       handleUpdateItem(
-                                          index,
-                                          field.key,
-                                          e.target.value,
-                                       )
-                                    }
-                                    value={item[field.key] || ""}
-                                 />
-                              ) : (
-                                 <Input
-                                    className="text-xs h-8"
-                                    id={`${propKey}-${index}-${field.key}`}
-                                    onChange={(e) =>
-                                       handleUpdateItem(
-                                          index,
-                                          field.key,
-                                          e.target.value,
-                                       )
-                                    }
-                                    type={field.type}
-                                    value={item[field.key] || ""}
-                                 />
-                              )}
-                           </div>
-                        ))}
+                                    {field.label}
+                                 </Label>
+                                 {field.type === "select" && field.options ? (
+                                    <select
+                                       className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                       id={`${propKey}-${index}-${field.key}`}
+                                       onChange={(e) =>
+                                          handleUpdateItem(
+                                             index,
+                                             field.key,
+                                             e.target.value,
+                                          )
+                                       }
+                                       value={fieldValue}
+                                    >
+                                       <option value="">Select...</option>
+                                       {field.options.map((option) => (
+                                          <option key={option} value={option}>
+                                             {option}
+                                          </option>
+                                       ))}
+                                    </select>
+                                 ) : field.type === "textarea" ? (
+                                    <Textarea
+                                       className="min-h-20 text-xs"
+                                       id={`${propKey}-${index}-${field.key}`}
+                                       onChange={(e) =>
+                                          handleUpdateItem(
+                                             index,
+                                             field.key,
+                                             e.target.value,
+                                          )
+                                       }
+                                       value={fieldValue}
+                                    />
+                                 ) : (
+                                    <Input
+                                       className="text-xs h-8"
+                                       id={`${propKey}-${index}-${field.key}`}
+                                       onChange={(e) =>
+                                          handleUpdateItem(
+                                             index,
+                                             field.key,
+                                             e.target.value,
+                                          )
+                                       }
+                                       type={field.type}
+                                       value={fieldValue}
+                                    />
+                                 )}
+                              </div>
+                           );
+                        })}
                      </div>
                   )}
                </div>

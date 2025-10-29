@@ -10,11 +10,15 @@ import {
    defaultContent,
    HeroSection1,
 } from "@packages/ui/blocks/hero-section-one";
+import {
+   PricingTable,
+   defaultContent as pricingTableDefault,
+} from "@packages/ui/blocks/pricing-table";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { getBlockDefinition } from "./block-registry";
 import { BlockBrowser } from "./components/block-browser";
-import { BlockSelector } from "./components/block-selector";
+import { type BlockOption, BlockSelector } from "./components/block-selector";
 import { PropertyPanel } from "./components/property-panel";
 
 export const Route = createFileRoute("/lp-builder/")({
@@ -102,9 +106,9 @@ function RouteComponent() {
                const [parentKey, childKey] = key.split(".");
                updatedContent = {
                   ...updatedContent,
-                  [parentKey]: {
-                     ...(updatedContent[parentKey] as object),
-                     [childKey]: value,
+                  [parentKey as string]: {
+                     ...(updatedContent[parentKey as string] as object),
+                     [childKey as string]: value,
                   },
                };
             } else {
@@ -165,6 +169,11 @@ function RouteComponent() {
                   if (block.blockDefId === "footer-one") {
                      return (
                         <FooterSection content={block.content} key={block.id} />
+                     );
+                  }
+                  if (block.blockDefId === "pricing-table") {
+                     return (
+                        <PricingTable content={block.content} key={block.id} />
                      );
                   }
                   return null;
