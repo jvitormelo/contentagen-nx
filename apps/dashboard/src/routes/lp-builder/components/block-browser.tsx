@@ -42,7 +42,7 @@ export function BlockBrowser({
 
    return (
       <Dialog onOpenChange={onOpenChange} open={open}>
-         <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+         <DialogContent className="max-h-[80vh] flex flex-col">
             <DialogHeader>
                <DialogTitle>Add Block</DialogTitle>
                <DialogDescription>

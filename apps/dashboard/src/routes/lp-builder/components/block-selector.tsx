@@ -15,6 +15,12 @@ import {
    verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import {
+   Accordion,
+   AccordionContent,
+   AccordionItem,
+   AccordionTrigger,
+} from "@packages/ui/components/accordion";
 import { Button } from "@packages/ui/components/button";
 import { GripVertical, Plus, Trash2 } from "lucide-react";
 import type React from "react";
@@ -33,6 +39,8 @@ interface BlockSelectorProps {
    onAddBlock: () => void;
    onRemoveBlock: (blockId: string) => void;
    onReorderBlocks: (blocks: BlockOption[]) => void;
+   selectedTheme: string;
+   onThemeChange: (theme: string) => void;
 }
 
 interface SortableBlockItemProps {
@@ -101,6 +109,13 @@ function SortableBlockItem({
    );
 }
 
+const THEME_COLORS: Record<string, string> = {
+   bold: "oklch(0.55 0.25 330)",
+   clean: "oklch(0.45 0.15 250)",
+   default: "oklch(0.5547 0.2503 297.0156)",
+   elegant: "oklch(0.35 0.08 40)",
+};
+
 export function BlockSelector({
    blocks,
    selectedBlock,
@@ -108,6 +123,8 @@ export function BlockSelector({
    onAddBlock,
    onRemoveBlock,
    onReorderBlocks,
+   selectedTheme,
+   onThemeChange,
 }: BlockSelectorProps) {
    const sensors = useSensors(
       useSensor(PointerSensor),
@@ -135,6 +152,45 @@ export function BlockSelector({
             <p className="text-xs text-muted-foreground">
                Select a block to edit
             </p>
+         </div>
+         <div className="border-b border-border p-4">
+            <Accordion className="w-full" collapsible type="single">
+               <AccordionItem className="border-0" value="themes">
+                  <AccordionTrigger className="py-2 px-0 hover:no-underline">
+                     <span className="text-sm font-medium">
+                        Theme:{" "}
+                        <span className="font-semibold capitalize">
+                           {selectedTheme || "Select"}
+                        </span>
+                     </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4 pb-0">
+                     <div className="grid grid-cols-2 gap-3">
+                        {Object.entries(THEME_COLORS).map(
+                           ([themeKey, color]) => (
+                              <button
+                                 className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all ${
+                                    selectedTheme === themeKey
+                                       ? "border-primary bg-accent"
+                                       : "border-border hover:border-primary/50"
+                                 }`}
+                                 key={themeKey}
+                                 onClick={() => onThemeChange(themeKey)}
+                              >
+                                 <div
+                                    className="h-10 w-10 rounded"
+                                    style={{ backgroundColor: color }}
+                                 />
+                                 <span className="text-xs font-medium capitalize">
+                                    {themeKey}
+                                 </span>
+                              </button>
+                           ),
+                        )}
+                     </div>
+                  </AccordionContent>
+               </AccordionItem>
+            </Accordion>
          </div>
          <div className="flex-1 overflow-y-auto p-4">
             <DndContext
