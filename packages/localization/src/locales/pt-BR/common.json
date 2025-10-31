@@ -28,7 +28,13 @@
       "validationError": "Por favor, descreva o que aconteceu antes de enviar"
    },
    "form": {
+      "current-email": "Email Atual",
+      "email": "Email",
       "field-required": "Este campo é obrigatório"
+   },
+   "languages": {
+      "en": "Inglês",
+      "pt": "Português"
    },
    "messages": {
       "loading": "Carregando..."
@@ -40,6 +46,11 @@
       "active": "Ativo",
       "inactive": "Inativo",
       "loading": "Carregando..."
+   },
+   "themes": {
+      "dark": "Tema escuro",
+      "light": "Tema claro",
+      "system": "Seguir o sistema"
    },
    "time": {
       "last-modified": "Última Modificação",
