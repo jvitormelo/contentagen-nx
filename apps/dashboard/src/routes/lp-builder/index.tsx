@@ -16,7 +16,10 @@ import { useEffect, useState } from "react";
 import { BlockBrowser } from "./_components/block-browser";
 import { type BlockOption, BlockSelector } from "./_components/block-selector";
 import { PropertyPanel } from "./_components/property-panel";
-import { getBlockDefinition } from "./_utils/block-registry";
+import {
+   type BlockCategory,
+   getBlockDefinition,
+} from "./_utils/block-registry";
 
 export const Route = createFileRoute("/lp-builder/")({
    component: RouteComponent,
@@ -32,6 +35,8 @@ interface BlockInstance {
 function RouteComponent() {
    const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
    const [selectedTheme, setSelectedTheme] = useState<string>("default");
+   const [selectedCategory, setSelectedCategory] =
+      useState<BlockCategory | null>(null);
 
    const [blockBrowserOpen, setBlockBrowserOpen] = useState(false);
    const [blocks, setBlocks] = useState<BlockInstance[]>([
@@ -163,6 +168,7 @@ function RouteComponent() {
             onOpenChange={setBlockBrowserOpen}
             onSelectBlock={handleAddBlock}
             open={blockBrowserOpen}
+            selectedCategory={selectedCategory}
          />
 
          {/* Left Sidebar - Block Selector */}
@@ -172,7 +178,10 @@ function RouteComponent() {
                id: b.id,
                name: b.name,
             }))}
-            onAddBlock={() => setBlockBrowserOpen(true)}
+            onAddBlock={(category) => {
+               setSelectedCategory(category);
+               setBlockBrowserOpen(true);
+            }}
             onRemoveBlock={handleRemoveBlock}
             onReorderBlocks={handleReorderBlocks}
             onSelectBlock={setSelectedBlock}

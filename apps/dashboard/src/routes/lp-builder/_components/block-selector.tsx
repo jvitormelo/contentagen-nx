@@ -24,6 +24,9 @@ import {
 import { Button } from "@packages/ui/components/button";
 import { GripVertical, Plus, Trash2 } from "lucide-react";
 import type React from "react";
+import { useState } from "react";
+import type { BlockCategory } from "../_utils/block-registry";
+import { CategorySelector } from "./category-selector";
 
 export interface BlockOption {
    id: string;
@@ -36,7 +39,7 @@ interface BlockSelectorProps {
    blocks: BlockOption[];
    selectedBlock: string | null;
    onSelectBlock: (blockId: string) => void;
-   onAddBlock: () => void;
+   onAddBlock: (category: BlockCategory) => void;
    onRemoveBlock: (blockId: string) => void;
    onReorderBlocks: (blocks: BlockOption[]) => void;
    selectedTheme: string;
@@ -126,6 +129,8 @@ export function BlockSelector({
    selectedTheme,
    onThemeChange,
 }: BlockSelectorProps) {
+   const [isCategorySelectorOpen, setIsCategorySelectorOpen] = useState(false);
+
    const sensors = useSensors(
       useSensor(PointerSensor),
       useSensor(KeyboardSensor, {
@@ -143,6 +148,14 @@ export function BlockSelector({
          const reorderedBlocks = arrayMove(blocks, oldIndex, newIndex);
          onReorderBlocks(reorderedBlocks);
       }
+   };
+
+   const handleOpenCategorySelector = () => {
+      setIsCategorySelectorOpen(true);
+   };
+
+   const handleCategorySelected = (category: BlockCategory) => {
+      onAddBlock(category);
    };
 
    return (
@@ -218,11 +231,20 @@ export function BlockSelector({
             </DndContext>
          </div>
          <div className="border-t border-border p-4">
-            <Button className="w-full" onClick={onAddBlock} variant="outline">
+            <Button
+               className="w-full"
+               onClick={handleOpenCategorySelector}
+               variant="outline"
+            >
                <Plus className="h-4 w-4 mr-2" />
                Add Block
             </Button>
          </div>
+         <CategorySelector
+            onCategorySelected={handleCategorySelected}
+            onOpenChange={setIsCategorySelectorOpen}
+            open={isCategorySelectorOpen}
+         />
       </div>
    );
 }

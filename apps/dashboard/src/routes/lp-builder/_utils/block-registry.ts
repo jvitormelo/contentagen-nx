@@ -1,7 +1,19 @@
-import { defaultContent as featuresOneDefault } from "@packages/ui/blocks/features-one";
-import { defaultContent as footerOneDefault } from "@packages/ui/blocks/footer-one";
-import { defaultContent as heroSection1Default } from "@packages/ui/blocks/hero-section-one";
-import { defaultContent as pricingTableDefault } from "@packages/ui/blocks/pricing-table";
+import {
+   FeaturesOne,
+   defaultContent as featuresOneDefault,
+} from "@packages/ui/blocks/features-one";
+import {
+   FooterSection,
+   defaultContent as footerOneDefault,
+} from "@packages/ui/blocks/footer-one";
+import {
+   HeroSection1,
+   defaultContent as heroSection1Default,
+} from "@packages/ui/blocks/hero-section-one";
+import {
+   PricingTable,
+   defaultContent as pricingTableDefault,
+} from "@packages/ui/blocks/pricing-table";
 import type React from "react";
 
 export type BlockCategory =
@@ -26,7 +38,7 @@ export interface BlockDefinition {
 export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "features-one": {
       category: "features",
-      component: null as any,
+      component: FeaturesOne,
       defaultContent: featuresOneDefault,
       description: "Features section with table, cards, and testimonial",
       id: "features-one",
@@ -99,7 +111,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    },
    "footer-one": {
       category: "footer",
-      component: null as any,
+      component: FooterSection,
       defaultContent: footerOneDefault,
       description: "Simple footer with links and copyright",
       id: "footer-one",
@@ -158,7 +170,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    },
    "hero-section-1": {
       category: "hero",
-      component: null as any, // Will be loaded dynamically
+      component: HeroSection1,
       defaultContent: heroSection1Default,
       description: "Modern hero section with image and CTA buttons",
       id: "hero-section-1",
@@ -200,7 +212,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    },
    "pricing-table": {
       category: "pricing",
-      component: null as any,
+      component: PricingTable,
       defaultContent: pricingTableDefault,
       description: "Interactive pricing table with plan comparison",
       id: "pricing-table",
@@ -304,44 +316,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
       ],
    },
 };
-
-export const BLOCK_CATEGORIES: Record<
-   BlockCategory,
-   { name: string; description: string }
-> = {
-   cta: {
-      description: "Drive conversions with compelling CTAs",
-      name: "Call to Action",
-   },
-   features: {
-      description: "Showcase your product features and benefits",
-      name: "Features",
-   },
-   footer: {
-      description: "Page footers with links and information",
-      name: "Footers",
-   },
-   hero: {
-      description: "Eye-catching headers for your landing page",
-      name: "Hero Sections",
-   },
-   pricing: {
-      description: "Display pricing plans and comparisons",
-      name: "Pricing",
-   },
-   testimonial: {
-      description: "Build trust with customer testimonials",
-      name: "Testimonials",
-   },
-};
-
-export function getBlocksByCategory(
-   category: BlockCategory,
-): BlockDefinition[] {
-   return Object.values(BLOCK_REGISTRY).filter(
-      (block) => block.category === category,
-   );
-}
+export const ALL_BLOCKS: BlockDefinition[] = Object.values(BLOCK_REGISTRY);
 
 export function getBlockDefinition(
    blockId: string,
