@@ -23,8 +23,7 @@ import { Skeleton } from "@packages/ui/components/skeleton";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import {
-   Building2,
-   KeyIcon,
+   Crown,
    LogOutIcon,
    MoreVerticalIcon,
    UserCircleIcon,
@@ -36,6 +35,7 @@ import {
    type Session,
    useTRPC,
 } from "@/integrations/clients";
+import { SubscriptionPlansCredenza } from "@/widgets/subscription/ui/subscription-plans-credenza";
 
 function UserAvatarInfo({
    name,
@@ -102,11 +102,8 @@ function NavUserContent({ session }: { session: Session | null }) {
    const router = useRouter();
    const trpc = useTRPC();
    const queryClient = useQueryClient();
-   const { data: customer } = useSuspenseQuery(
-      trpc.authHelpers.getCustomerState.queryOptions(),
-   );
-   const { data: organization } = useSuspenseQuery(
-      trpc.authHelpers.getDefaultOrganization.queryOptions(),
+   const { data: billingInfo } = useSuspenseQuery(
+      trpc.authHelpers.getBillingInfo.queryOptions(),
    );
    const handleLogout = useCallback(async () => {
       await betterAuthClient.signOut(
@@ -180,34 +177,18 @@ function NavUserContent({ session }: { session: Session | null }) {
                            </Link>
                         </Button>
                      </DropdownMenuItem>
-                     {customer.activeSubscriptions && (
+                     {billingInfo?.billingState === "no_subscription" && (
                         <DropdownMenuItem asChild>
-                           <Button
-                              asChild
-                              className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
-                              onClick={() => setOpenMobile(false)}
-                              variant="ghost"
-                           >
-                              <Link to="/apikey">
-                                 <KeyIcon />
-                                 Api keys
-                              </Link>
-                           </Button>
-                        </DropdownMenuItem>
-                     )}
-                     {(customer.activeSubscriptions || organization) && (
-                        <DropdownMenuItem asChild>
-                           <Button
-                              asChild
-                              className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
-                              onClick={() => setOpenMobile(false)}
-                              variant="ghost"
-                           >
-                              <Link to="/organization">
-                                 <Building2 />
-                                 Organizations
-                              </Link>
-                           </Button>
+                           <SubscriptionPlansCredenza>
+                              <Button
+                                 className="w-full items-center cursor-pointer justify-start flex gap-2 h-12"
+                                 onClick={() => setOpenMobile(false)}
+                                 variant="ghost"
+                              >
+                                 <Crown className="h-4 w-4" />
+                                 Upgrade Plan
+                              </Button>
+                           </SubscriptionPlansCredenza>
                         </DropdownMenuItem>
                      )}
                   </DropdownMenuGroup>
