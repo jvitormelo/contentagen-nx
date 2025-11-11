@@ -10,7 +10,6 @@ import {
    redirect,
    Scripts,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { I18nextProvider } from "react-i18next";
 import { ErrorModalProvider } from "@/features/error-modal/lib/error-modal-context";
 import { ErrorModal } from "@/features/error-modal/ui/error-modal";
@@ -19,7 +18,9 @@ import { ThemeProvider } from "@/layout/theme-provider";
 import type { RouterContext } from "../router";
 import "@packages/localization";
 import i18n, { getCurrentLanguage } from "@packages/localization";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { NotFoundComponent } from "@/default/not-found";
+
 export const Route = createRootRouteWithContext<RouterContext>()({
    component: RootComponent,
 
@@ -103,8 +104,9 @@ function RootComponent() {
                      <ErrorModalProvider>
                         <ErrorModalWithMutation />
                         <Toaster />
-                        <Outlet /> {/* Start rendering router matches */}
-                        <TanStackRouterDevtools position="bottom-left" />
+                        <Outlet />
+                        <TanStackRouterDevtools position="bottom-left" />{" "}
+                        {/* Start rendering router matches */}
                      </ErrorModalProvider>
                   </ThemeProvider>
                </PostHogWrapper>

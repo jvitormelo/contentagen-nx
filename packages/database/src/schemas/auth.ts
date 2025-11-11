@@ -73,13 +73,38 @@ export const verification = pgTable("verification", {
    value: text("value").notNull(),
 });
 
+export const team = pgTable("team", {
+   createdAt: timestamp("created_at").notNull(),
+   description: text("description").default(""),
+   id: text("id").primaryKey(),
+   name: text("name").notNull(),
+   organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+   updatedAt: timestamp("updated_at").$onUpdate(
+      () => /* @__PURE__ */ new Date(),
+   ),
+});
+
+export const teamMember = pgTable("team_member", {
+   createdAt: timestamp("created_at"),
+   id: text("id").primaryKey(),
+   teamId: text("team_id")
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+   userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+});
+
 export const organization = pgTable("organization", {
    createdAt: timestamp("created_at").notNull(),
+   description: text("description").default(""),
    id: text("id").primaryKey(),
    logo: text("logo"),
    metadata: text("metadata"),
    name: text("name").notNull(),
-   slug: text("slug").unique(),
+   slug: text("slug").notNull().unique(),
 });
 
 export const member = pgTable("member", {
@@ -107,27 +132,6 @@ export const invitation = pgTable("invitation", {
    role: text("role"),
    status: text("status").default("pending").notNull(),
    teamId: text("team_id"),
-});
-
-export const team = pgTable("team", {
-   createdAt: timestamp("created_at").notNull(),
-   id: text("id").primaryKey(),
-   name: text("name").notNull(),
-   organizationId: text("organization_id")
-      .notNull()
-      .references(() => organization.id, { onDelete: "cascade" }),
-   updatedAt: timestamp("updated_at"),
-});
-
-export const teamMember = pgTable("team_member", {
-   createdAt: timestamp("created_at"),
-   id: text("id").primaryKey(),
-   teamId: text("team_id")
-      .notNull()
-      .references(() => team.id, { onDelete: "cascade" }),
-   userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
 });
 
 export const apikey = pgTable("apikey", {

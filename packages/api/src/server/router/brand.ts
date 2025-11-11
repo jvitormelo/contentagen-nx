@@ -9,8 +9,6 @@ import {
    deleteBrand,
    getBrandById,
    getBrandByOrgId,
-   getTotalBrands,
-   searchBrands,
    updateBrand,
 } from "@packages/database/repositories/brand-repository";
 import { BrandInsertSchema } from "@packages/database/schema";
@@ -329,38 +327,6 @@ export const brandRouter = router({
             if (!opts.input?.brandId || opts.input.brandId === event.brandId) {
                yield event;
             }
-         }
-      }),
-
-   search: protectedProcedure
-      .input(
-         z.object({
-            limit: z.number().min(1).max(100).optional().default(20),
-            page: z.number().min(1).optional().default(1),
-            query: z.string().min(1),
-         }),
-      )
-      .query(async ({ ctx, input }) => {
-         try {
-            const resolvedCtx = await ctx;
-            const organizationId =
-               resolvedCtx.session?.session?.activeOrganizationId;
-
-            if (!organizationId) {
-               throw APIError.unauthorized("Organization must be specified.");
-            }
-
-            const brands = await searchBrands(resolvedCtx.db, {
-               limit: input.limit,
-               organizationId,
-               page: input.page,
-               query: input.query,
-            });
-            return { items: brands };
-         } catch (err) {
-            console.error("Error searching brands:", err);
-            propagateError(err);
-            throw APIError.internal("Failed to search brands.");
          }
       }),
 

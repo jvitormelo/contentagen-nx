@@ -1,6 +1,6 @@
 import { useIsomorphicLayoutEffect } from "@packages/ui/hooks/use-isomorphic-layout-effect";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useTRPC } from "@/integrations/clients";
 import { SubscriptionReminderCredenza } from "../ui/subscription-reminder-credenza";
@@ -12,7 +12,7 @@ export function useSubscriptionReminder() {
    const trpc = useTRPC();
 
    const { data: shouldShow } = useSuspenseQuery(
-      trpc.authHelpers.subscriptionReminder.queryOptions(),
+      trpc.subscription.subscriptionReminder.queryOptions(),
    );
 
    const isDismissed = useCallback(() => {
