@@ -15,7 +15,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { BlockBrowser } from "./_components/block-browser";
 import { type BlockOption, BlockSelector } from "./_components/block-selector";
-import { PropertyPanel } from "./_components/property-panel";
 import {
    type BlockCategory,
    getBlockDefinition,
@@ -124,43 +123,6 @@ function RouteComponent() {
       setBlocks(reorderedBlocks);
    };
 
-   const handlePropertyChange = (key: string, value: any) => {
-      if (!selectedBlock) return;
-
-      setBlocks((prev) =>
-         prev.map((block) => {
-            if (block.id !== selectedBlock) return block;
-
-            let updatedContent = { ...block.content };
-
-            // Handle nested properties like "testimonial.quote"
-            if (key.includes(".")) {
-               const [parentKey, childKey] = key.split(".");
-               updatedContent = {
-                  ...updatedContent,
-                  [parentKey as string]: {
-                     ...(updatedContent[parentKey as string] as object),
-                     [childKey as string]: value,
-                  },
-               };
-            } else {
-               // Handle direct property updates (including arrays)
-               updatedContent[key] = value;
-            }
-
-            return {
-               ...block,
-               content: updatedContent,
-            };
-         }),
-      );
-   };
-
-   const selectedBlockData = blocks.find((b) => b.id === selectedBlock);
-   const selectedBlockDef = selectedBlockData
-      ? getBlockDefinition(selectedBlockData.blockDefId)
-      : null;
-
    return (
       <div className="flex h-screen bg-background">
          {/* Block Browser Dialog */}
@@ -221,16 +183,6 @@ function RouteComponent() {
                })}
             </div>
          </div>
-
-         {/* Right Sidebar - Property Panel */}
-         {selectedBlockData && selectedBlockDef && (
-            <PropertyPanel
-               blockName={selectedBlockData.name}
-               onChange={handlePropertyChange}
-               properties={selectedBlockDef.propsConfig}
-               values={selectedBlockData.content}
-            />
-         )}
       </div>
    );
 }

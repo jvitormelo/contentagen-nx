@@ -54,7 +54,7 @@ export function HeroSection1({ content = defaultContent }: HeroSection1Props) {
    const mergedContent = { ...defaultContent, ...content };
 
    return (
-      <section className="bg-muted/50">
+      <section className="bg-background">
          <div className="relative py-36">
             <div className="relative z-10 mx-auto w-full max-w-5xl px-6">
                <div className="md:w-1/2">
