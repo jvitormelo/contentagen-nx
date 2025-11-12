@@ -32,7 +32,7 @@ export interface BlockOption {
    id: string;
    name: string;
    icon?: React.ReactNode;
-   blockDefId: string; // Reference to block registry
+   blockDefId: string;
 }
 
 interface BlockSelectorProps {
