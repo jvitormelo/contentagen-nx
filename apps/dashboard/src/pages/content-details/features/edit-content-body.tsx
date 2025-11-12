@@ -1,8 +1,9 @@
 import type { ContentSelect } from "@packages/database/schema";
 import { translate } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
-import { useAppForm } from "@packages/ui/components/form";
+import { FieldContainer, FieldMessage } from "@packages/ui/components/form";
 import { TiptapEditor } from "@packages/ui/components/tiptap-editor";
+import { Field, useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
@@ -40,7 +41,7 @@ export function EditContentBody({
       }),
    );
 
-   const editForm = useAppForm({
+   const editForm = useForm({
       defaultValues: { body: content?.body ?? "" },
       onSubmit: async ({ value, formApi }) => {
          await editBodyMutation.mutateAsync({
@@ -115,9 +116,22 @@ export function EditContentBody({
             )}
          </editForm.Subscribe>
 
-         <editForm.AppField name="body">
+         <Field
+            form={editForm}
+            name="body"
+            validators={{
+               onBlur: z
+                  .string()
+                  .min(
+                     1,
+                     translate(
+                        "pages.content-details.edit.validation.body-required",
+                     ),
+                  ),
+            }}
+         >
             {(field) => (
-               <field.FieldContainer>
+               <FieldContainer>
                   <TiptapEditor
                      error={field.state.meta.errors.length > 0}
                      onBlur={field.handleBlur}
@@ -127,10 +141,10 @@ export function EditContentBody({
                      )}
                      value={field.state.value}
                   />
-                  <field.FieldMessage />
-               </field.FieldContainer>
+                  <FieldMessage />
+               </FieldContainer>
             )}
-         </editForm.AppField>
+         </Field>
       </form>
    );
 }

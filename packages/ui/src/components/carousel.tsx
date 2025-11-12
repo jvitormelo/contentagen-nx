@@ -117,6 +117,7 @@ function Carousel({
             scrollPrev,
          }}
       >
+         {/** biome-ignore lint/a11y/useSemanticElements: <no> */}
          <div
             aria-roledescription="carousel"
             className={cn("relative", className)}
@@ -131,17 +132,12 @@ function Carousel({
    );
 }
 
-function CarouselContent({
-   className,
-   ...props
-}: React.ComponentProps<"div"> & {
-   containerClassName?: string;
-}) {
+function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
    const { carouselRef, orientation } = useCarousel();
 
    return (
       <div
-         className={cn("overflow-hidden", props.containerClassName)}
+         className="overflow-hidden"
          data-slot="carousel-content"
          ref={carouselRef}
       >
@@ -161,6 +157,7 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
    const { orientation } = useCarousel();
 
    return (
+      // biome-ignore lint/a11y/useSemanticElements: <no>
       <div
          aria-roledescription="slide"
          className={cn(

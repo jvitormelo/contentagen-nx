@@ -1,176 +1,137 @@
 {
    "billing": {
-      "approaching-limit": "Approaching limit",
-      "current-plan": "Current Plan",
-      "current-plan-description": "This is your current subscription plan details. You can manage your subscription or view usage metrics below.",
-      "current-plan-title": "Current plan",
+      "actions": {
+         "portal": "Open portal",
+         "title": "Manage subscription"
+      },
       "description": "Manage your subscription and billing information.",
-      "loading": "Current plan",
-      "manage-billing": "Manage Billing",
-      "manage-subscription": "Manage subscription",
       "next-billing": "Next billing date:",
-      "no-active-plan": "No active plan",
-      "no-active-plan-description": "You don't have an active subscription plan.",
-      "no-usage-meters": "No usage meters available for this plan.",
-      "plan-features": "Plan Features",
-      "remaining": "Remaining:",
-      "remaining-value": "Remaining value:",
-      "title": "Billing & Subscription",
-      "upgrade": "Upgrade Plan",
-      "usage": "Usage",
-      "usage-this-month": "Usage this month",
-      "usage-this-month-loading": "Usage This Month",
-      "usage-units": "units"
+      "state": {
+         "active": {
+            "description": "View your credit usage for this month.",
+            "legend": "Credits used this month: ",
+            "title": "Credit usage"
+         },
+         "error": {
+            "description": "An error occurred while loading your subscription information.",
+            "title": "Loading error"
+         },
+         "not-active": {
+            "action": "Upgrade subscription",
+            "description": "You don't have an active subscription at the moment. Upgrade to continue enjoying our services.",
+            "title": "Inactive subscription"
+         },
+         "organization": {
+            "description": "Subscriptions are managed by the organization you belong to.",
+            "title": "Organization subscription"
+         }
+      },
+      "title": "Subscription"
    },
-   "forms": {
-      "update-email": {
-         "actions": {
-            "cancel": "Cancel",
-            "send": "Send Verification"
-         },
-         "confirm": {
-            "cancel": "Cancel",
-            "confirm": "Yes, Change Email",
-            "description": "Are you sure you want to change your email address?",
-            "title": "Confirm Email Change"
-         },
-         "fields": {
-            "current-email": {
-               "label": "Current Email"
-            },
-            "new-email": {
-               "label": "New Email",
-               "placeholder": "Enter new email address"
-            }
-         },
-         "messages": {
-            "error": "Failed to change email.",
-            "loading": "Sending verification email...",
-            "success": "Verification email sent. Please check your inbox."
-         },
-         "title": "Change Email Address",
-         "validation": {
-            "email-invalid": "Please enter a valid email address"
-         }
+   "features": {
+      "language-command": {
+         "empty": "No languages found.",
+         "search": "Search languages..."
       },
-      "update-password": {
+      "session-details": {
          "actions": {
-            "cancel": "Cancel",
-            "change": "Change Password"
-         },
-         "confirm": {
-            "cancel": "Cancel",
-            "confirm": "Yes, Change Password",
-            "description": "Are you sure you want to change your password?",
-            "title": "Confirm Password Change"
-         },
-         "fields": {
-            "current-password": {
-               "label": "Current Password",
-               "placeholder": "Enter current password"
+            "description": "Here you can manage your current session.",
+            "revoke-current": {
+               "description": "Revoke the current session and sign out from this device.",
+               "title": "Revoke current session"
             },
-            "new-password": {
-               "label": "New Password",
-               "placeholder": "Enter new password"
-            }
+            "title": "Manage your session"
          },
-         "messages": {
-            "error": "Failed to change password.",
-            "loading": "Changing password...",
-            "success": "Password changed successfully."
-         },
-         "title": "Change Password",
-         "validation": {
-            "current-required": "Current password is required",
-            "new-min-length": "Password must be at least 8 characters"
-         }
-      },
-      "update-profile": {
-         "actions": {
-            "cancel": "Cancel",
-            "save": "Save Changes"
-         },
-         "confirm": {
-            "cancel": "Cancel",
-            "confirm": "Yes, Update Profile",
-            "description": "Are you sure you want to update your profile information?",
-            "title": "Confirm Profile Update"
-         },
-         "fields": {
-            "image": {
-               "label": "Profile Image"
-            },
-            "name": {
-               "label": "Name",
-               "placeholder": "Enter your name"
-            }
-         },
-         "messages": {
-            "error": "Failed to update profile.",
-            "loading": "Updating profile...",
-            "success": "Profile updated successfully."
-         },
-         "title": "Update Name & Photo",
-         "validation": {
-            "name-required": "Name is required"
-         }
+         "description": "Information about the selected session.",
+         "title": "Session details"
       }
    },
    "information": {
       "actions": {
-         "update-email": "Update Email",
-         "update-password": "Update Password",
-         "update-profile": "Update Name & Photo"
+         "edit-email": "Edit email",
+         "edit-password": "Change password",
+         "edit-profile": "Edit profile",
+         "title": "Manage information"
       },
-      "description": "Update your personal information and account details.",
-      "fields": {
-         "anonymous": "Anonymous",
-         "email": "Email",
-         "name": "Name",
-         "no-email": "No email set"
+      "description": "Update your personal and account information.",
+      "state": {
+         "error": {
+            "description": "An error occurred while loading your profile information.",
+            "title": "Loading error"
+         }
       },
-      "more-options": "More options",
-      "title": "Profile Information"
+      "title": "Profile information"
    },
-   "mascot-message": "Welcome to your profile! Update your details, manage billing, and set your preferences below.",
+   "mascot-message": "Manage your profile information and account settings here.",
+   "notifications": {
+      "description": "Manage your notification preferences.",
+      "items": {
+         "missing-images": {
+            "description": "Notify me when my posts are missing images.",
+            "label": "Enable missing image notifications",
+            "title": "Missing images"
+         }
+      },
+      "state": {
+         "error": {
+            "description": "An error occurred while loading your notification preferences.",
+            "title": "Loading error"
+         }
+      },
+      "title": "Notifications"
+   },
    "preferences": {
-      "description": "Customize your experience.",
-      "title": "Preferences",
-      "workflow": {
-         "missing-urls-description": "Receive notifications when posts are missing image URLs.",
-         "missing-urls-title": "Notify on missing urls",
-         "notify-missing-images": "Notify about missing images",
-         "title": "Workflow Preferences",
-         "workflow-description": "Customize your content workflow settings.",
-         "workflow-title": "Content workflow Preferences"
+      "description": "Manage your account preferences.",
+      "items": {
+         "language": {
+            "description": "Select your preferred interface language.",
+            "title": "Language"
+         },
+         "theme": {
+            "description": "Choose between light mode, dark mode, or follow your system.",
+            "title": "Theme"
+         }
+      },
+      "title": "Preferences"
+   },
+   "quick-access": {
+      "api-keys": {
+         "description": "Manage your API keys for programmatic access.",
+         "title": "API keys"
+      },
+      "organization": {
+         "description": "View the organization associated with your account.",
+         "title": "Organization"
+      },
+      "state": {
+         "error": {
+            "description": "An error occurred while loading your quick access items.",
+            "title": "Loading error"
+         }
       }
    },
    "sessions": {
-      "created": "Created:",
-      "current": "Current",
-      "current-session": "Current Session",
-      "description": "Manage your active login sessions.",
-      "ip-address": "IP:",
-      "last-active": "Last Active:",
-      "manage-sessions": "Manage Sessions",
-      "no-sessions": "No active sessions found.",
-      "revoke": "Revoke",
-      "revoke-all": "Revoke All Other Sessions",
-      "revoke-all-loading": "Revoking All Sessions...",
-      "revoke-all-sessions": "Revoke All Sessions",
-      "revoke-confirm": "Are you sure you want to revoke this session?",
-      "revoke-other": "Revoke Other Sessions",
-      "revoke-other-loading": "Revoking Other Sessions...",
-      "revoke-session": "Revoke Session",
-      "revoke-session-loading": "Revoking...",
-      "session-actions": "Session Actions",
-      "sessions-description": "View and manage your active sessions. Revoke any session to log out from that device.",
-      "sessions-title": "Sessions",
-      "title": "Active Sessions",
-      "unknown-device": "Unknown Device"
-   },
-   "toast": {
-      "preference-failed": "Failed to update preference",
-      "preference-updated": "Preference updated successfully"
+      "actions": {
+         "revoke-all": "Revoke all sessions",
+         "revoke-others": "Revoke other sessions",
+         "title": "Manage sessions"
+      },
+      "description": "View and manage your active login sessions.",
+      "item": {
+         "created-at": "Started at",
+         "current": "Current session",
+         "details": "Session details",
+         "device": "Device",
+         "ip-address": "IP address",
+         "last-active": "Last activity",
+         "unknown-device": "Unknown device"
+      },
+      "state": {
+         "error": {
+            "description": "An error occurred while loading your active sessions.",
+            "title": "Loading error"
+         }
+      },
+      "title": "Active sessions"
    }
 }

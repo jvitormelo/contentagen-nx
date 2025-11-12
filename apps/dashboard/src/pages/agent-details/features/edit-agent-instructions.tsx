@@ -11,7 +11,7 @@ import {
    CardDescription,
    CardHeader,
 } from "@packages/ui/components/card";
-import { useAppForm } from "@packages/ui/components/form";
+import { Field, FieldError } from "@packages/ui/components/field";
 import {
    Tabs,
    TabsContent,
@@ -19,6 +19,7 @@ import {
    TabsTrigger,
 } from "@packages/ui/components/tabs";
 import { TiptapEditor } from "@packages/ui/components/tiptap-editor";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, X } from "lucide-react";
 import { useMemo } from "react";
@@ -95,7 +96,7 @@ export function EditAgentInstructions({
       }),
    );
 
-   const editForm = useAppForm({
+   const editForm = useForm({
       defaultValues: {
          audienceProfile: personaConfig.instructions?.audienceProfile ?? "",
          ragIntegration: personaConfig.instructions?.ragIntegration ?? "",
@@ -179,21 +180,30 @@ export function EditAgentInstructions({
                            <CardDescription>
                               {translate(card.descriptionKey)}
                            </CardDescription>
-                           <editForm.AppField name={card.fieldName}>
-                              {(field) => (
-                                 <field.FieldContainer>
-                                    <TiptapEditor
-                                       onBlur={field.handleBlur}
-                                       onChange={field.handleChange}
-                                       placeholder={translate(
-                                          card.placeholderKey,
+                           <editForm.Field name={card.fieldName}>
+                              {(field) => {
+                                 const isInvalid =
+                                    field.state.meta.isTouched &&
+                                    !field.state.meta.isValid;
+                                 return (
+                                    <Field data-invalid={isInvalid}>
+                                       <TiptapEditor
+                                          onBlur={field.handleBlur}
+                                          onChange={field.handleChange}
+                                          placeholder={translate(
+                                             card.placeholderKey,
+                                          )}
+                                          value={field.state.value}
+                                       />
+                                       {isInvalid && (
+                                          <FieldError
+                                             errors={field.state.meta.errors}
+                                          />
                                        )}
-                                       value={field.state.value}
-                                    />
-                                    <field.FieldMessage />
-                                 </field.FieldContainer>
-                              )}
-                           </editForm.AppField>
+                                    </Field>
+                                 );
+                              }}
+                           </editForm.Field>
                         </div>
                      </TabsContent>
                   ))}

@@ -15,9 +15,11 @@ import { competitorFileRouter } from "./router/competitor-file";
 import { contentRouter } from "./router/content";
 import { ideasRouter } from "./router/ideas";
 import { organizationRouter } from "./router/organization";
-import { organizationFileRouter } from "./router/organization-file";
+import { organizationInvitesRouter } from "./router/organization-invites";
 import { preferencesRouter } from "./router/preferences";
+import { sessionRouter } from "./router/session";
 import { statisticsRouter } from "./router/statistics";
+import { subscriptionRouter } from "./router/subscription";
 import { createTRPCContext as createTRPCContextInternal, router } from "./trpc";
 
 export const appRouter = router({
@@ -33,9 +35,11 @@ export const appRouter = router({
    content: contentRouter,
    ideas: ideasRouter,
    organization: organizationRouter,
-   organizationFile: organizationFileRouter,
+   organizationInvites: organizationInvitesRouter,
    preferences: preferencesRouter,
+   session: sessionRouter,
    statistics: statisticsRouter,
+   subscription: subscriptionRouter,
 });
 export const createApi = ({
    auth,

@@ -9,19 +9,25 @@
    "include": ["src", "__tests__/*.test.ts"],
    "references": [
       {
-         "path": "../agents"
+         "path": "../workers"
       },
       {
          "path": "../utils"
       },
       {
-         "path": "../payment"
+         "path": "../server-events"
+      },
+      {
+         "path": "../rag"
       },
       {
          "path": "../posthog"
       },
       {
-         "path": "../rag"
+         "path": "../payment"
+      },
+      {
+         "path": "../localization"
       },
       {
          "path": "../files"
@@ -30,19 +36,10 @@
          "path": "../database"
       },
       {
-         "path": "../authentication"
-      },
-      {
-         "path": "../workers"
-      },
-      {
-         "path": "../server-events"
-      },
-      {
          "path": "../contenta-sdk"
       },
       {
-         "path": "../localization"
+         "path": "../agents"
       }
    ]
 }

@@ -4,6 +4,7 @@
       "creating": "Criando...",
       "delete": "Excluir",
       "deleting": "Excluindo...",
+      "retry": "Tentar novamente",
       "update": "Atualizar",
       "updating": "Atualizando...",
       "view": "Visualizar"
@@ -13,6 +14,10 @@
          "authRequired": "Usuário precisa estar autenticado",
          "userReportRequired": "Descrição do bug é obrigatória"
       }
+   },
+   "delete-confirmation": {
+      "description": "Voce tem certeza que deseja fazer isso? Esta ação não pode ser desfeita.",
+      "title": "Confirmação Necessária"
    },
    "errorModal": {
       "backButton": "Voltar",
@@ -28,7 +33,13 @@
       "validationError": "Por favor, descreva o que aconteceu antes de enviar"
    },
    "form": {
+      "current-email": "Email Atual",
+      "email": "Email",
       "field-required": "Este campo é obrigatório"
+   },
+   "languages": {
+      "en": "Inglês",
+      "pt": "Português"
    },
    "messages": {
       "loading": "Carregando..."
@@ -40,6 +51,11 @@
       "active": "Ativo",
       "inactive": "Inativo",
       "loading": "Carregando..."
+   },
+   "themes": {
+      "dark": "Tema escuro",
+      "light": "Tema claro",
+      "system": "Seguir o sistema"
    },
    "time": {
       "last-modified": "Última Modificação",

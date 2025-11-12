@@ -1,5 +1,5 @@
 import { ContentaChat } from "@contentagen/assistant-widget";
-import i18n, { type SupportedLng } from "@packages/localization";
+import { getCurrentLanguage } from "@packages/localization";
 import { Button } from "@packages/ui/components/button";
 import {
    Popover,
@@ -74,7 +74,7 @@ function RouteComponent() {
       [mutation],
    );
    return (
-      <DashboardLayout session={session}>
+      <DashboardLayout>
          <div
             className="duration-700 animate-in slide-in-from-bottom-4 fade-in h-full w-full"
             key={location.pathname}
@@ -91,7 +91,7 @@ function RouteComponent() {
                </PopoverTrigger>
                <PopoverContent align="end" className="w-full p-0">
                   <ContentaChat
-                     locale={i18n.language as SupportedLng}
+                     locale={getCurrentLanguage()}
                      sendMessage={sendMessage}
                   />
                </PopoverContent>
