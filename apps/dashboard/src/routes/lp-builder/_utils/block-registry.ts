@@ -1,20 +1,8 @@
-import {
-   FeaturesOne,
-   defaultContent as featuresOneDefault,
-} from "@packages/ui/blocks/features-one";
-import {
-   FooterSection,
-   defaultContent as footerOneDefault,
-} from "@packages/ui/blocks/footer-one";
+import { FeaturesOne } from "@packages/ui/blocks/features-one";
+import { FooterSection } from "@packages/ui/blocks/footer-one";
 import { HeroParallax } from "@packages/ui/blocks/hero-parallax";
-import {
-   HeroSection1,
-   defaultContent as heroSection1Default,
-} from "@packages/ui/blocks/hero-section-one";
-import {
-   PricingTable,
-   defaultContent as pricingTableDefault,
-} from "@packages/ui/blocks/pricing-table";
+import { HeroSection1 } from "@packages/ui/blocks/hero-section-one";
+import { PricingTable } from "@packages/ui/blocks/pricing-table";
 import type React from "react";
 
 export type BlockCategory =
@@ -31,111 +19,14 @@ export interface BlockDefinition {
    category: BlockCategory;
    description: string;
    component: React.ComponentType<any>;
-   defaultContent: any;
    thumbnail?: string;
    propsConfig: any[];
 }
-
-const defaultHeroParallaxContent = {
-   products: [
-      {
-         link: "https://gomoonbeam.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/moonbeam.png",
-         title: "Moonbeam",
-      },
-      {
-         link: "https://cursor.so",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/cursor.png",
-         title: "Cursor",
-      },
-      {
-         link: "https://userogue.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/rogue.png",
-         title: "Rogue",
-      },
-      {
-         link: "https://editorially.org",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/editorially.png",
-         title: "Editorially",
-      },
-      {
-         link: "https://editrix.ai",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/editrix.png",
-         title: "Editrix AI",
-      },
-      {
-         link: "https://app.pixelperfect.quest",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/pixelperfect.png",
-         title: "Pixel Perfect",
-      },
-      {
-         link: "https://algochurn.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/algochurn.png",
-         title: "Algochurn",
-      },
-      {
-         link: "https://ui.aceternity.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/aceternityui.png",
-         title: "Aceternity UI",
-      },
-      {
-         link: "https://tailwindmasterkit.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/tailwindmasterkit.png",
-         title: "Tailwind Master Kit",
-      },
-      {
-         link: "https://smartbridgetech.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/smartbridge.png",
-         title: "SmartBridge",
-      },
-      {
-         link: "https://renderwork.studio",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/renderwork.png",
-         title: "Renderwork Studio",
-      },
-      {
-         link: "https://cremedigital.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/cremedigital.png",
-         title: "Creme Digital",
-      },
-      {
-         link: "https://goldenbellsacademy.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/goldenbellsacademy.png",
-         title: "Golden Bells Academy",
-      },
-      {
-         link: "https://invoker.lol",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/invoker.png",
-         title: "Invoker Labs",
-      },
-      {
-         link: "https://efreeinvoice.com",
-         thumbnail:
-            "https://aceternity.com/images/products/thumbnails/new/efreeinvoice.png",
-         title: "E Free Invoice",
-      },
-   ],
-};
 
 export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "features-one": {
       category: "features",
       component: FeaturesOne,
-      defaultContent: featuresOneDefault,
       description: "Features section with table, cards, and testimonial",
       id: "features-one",
       name: "Features Section 1",
@@ -208,7 +99,6 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "footer-one": {
       category: "footer",
       component: FooterSection,
-      defaultContent: footerOneDefault,
       description: "Simple footer with links and copyright",
       id: "footer-one",
       name: "Footer Section 1",
@@ -267,7 +157,6 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "hero-parallax": {
       category: "hero",
       component: HeroParallax,
-      defaultContent: defaultHeroParallaxContent,
       description: "Parallax scrolling hero with product cards",
       id: "hero-parallax",
       name: "Hero Parallax",
@@ -292,7 +181,6 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "hero-section-1": {
       category: "hero",
       component: HeroSection1,
-      defaultContent: heroSection1Default,
       description: "Modern hero section with image and CTA buttons",
       id: "hero-section-1",
       name: "Hero Section 1",
@@ -334,7 +222,6 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "pricing-table": {
       category: "pricing",
       component: PricingTable,
-      defaultContent: pricingTableDefault,
       description: "Interactive pricing table with plan comparison",
       id: "pricing-table",
       name: "Pricing Table",

@@ -36,17 +36,13 @@ export interface FeaturesOneContent {
    testimonial: Testimonial;
 }
 
-interface FeaturesOneProps {
-   content?: FeaturesOneContent;
-}
-
 const statusColorMap = {
    green: "bg-green-100 text-green-800",
    orange: "bg-orange-100 text-orange-800",
    red: "bg-red-100 text-red-800",
 };
 
-export const defaultContent: FeaturesOneContent = {
+const defaultContent: FeaturesOneContent = {
    description:
       "Automate your tasks and workflows by connecting your favorite tools like Notion, Todoist, and more. AI-powered scheduling helps you stay on track and adapt to changing priorities.",
    features: [
@@ -103,8 +99,8 @@ export const defaultContent: FeaturesOneContent = {
    title: "Effortless Task Management",
 };
 
-export function FeaturesOne({ content = defaultContent }: FeaturesOneProps) {
-   const mergedContent = { ...defaultContent, ...content };
+export function FeaturesOne() {
+   const mergedContent = { ...defaultContent };
 
    return (
       <section>

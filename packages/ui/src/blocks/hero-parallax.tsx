@@ -9,15 +9,101 @@ import {
 
 import React from "react";
 
-export const HeroParallax = ({
-   products,
-}: {
-   products: {
-      title: string;
-      link: string;
-      thumbnail: string;
-   }[];
-}) => {
+const defaultProducts = [
+   {
+      link: "https://gomoonbeam.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/moonbeam.png",
+      title: "Moonbeam",
+   },
+   {
+      link: "https://cursor.so",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/cursor.png",
+      title: "Cursor",
+   },
+   {
+      link: "https://userogue.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/rogue.png",
+      title: "Rogue",
+   },
+   {
+      link: "https://editorially.org",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/editorially.png",
+      title: "Editorially",
+   },
+   {
+      link: "https://editrix.ai",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/editrix.png",
+      title: "Editrix AI",
+   },
+   {
+      link: "https://app.pixelperfect.quest",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/pixelperfect.png",
+      title: "Pixel Perfect",
+   },
+   {
+      link: "https://algochurn.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/algochurn.png",
+      title: "Algochurn",
+   },
+   {
+      link: "https://ui.aceternity.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/aceternityui.png",
+      title: "Aceternity UI",
+   },
+   {
+      link: "https://tailwindmasterkit.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/tailwindmasterkit.png",
+      title: "Tailwind Master Kit",
+   },
+   {
+      link: "https://smartbridgetech.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/smartbridge.png",
+      title: "SmartBridge",
+   },
+   {
+      link: "https://renderwork.studio",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/renderwork.png",
+      title: "Renderwork Studio",
+   },
+   {
+      link: "https://cremedigital.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/cremedigital.png",
+      title: "Creme Digital",
+   },
+   {
+      link: "https://goldenbellsacademy.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/goldenbellsacademy.png",
+      title: "Golden Bells Academy",
+   },
+   {
+      link: "https://invoker.lol",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/invoker.png",
+      title: "Invoker Labs",
+   },
+   {
+      link: "https://efreeinvoice.com",
+      thumbnail:
+         "https://aceternity.com/images/products/thumbnails/new/efreeinvoice.png",
+      title: "E Free Invoice",
+   },
+];
+
+export const HeroParallax = () => {
+   const products = defaultProducts;
    const firstRow = products.slice(0, 5);
    const secondRow = products.slice(5, 10);
    const thirdRow = products.slice(10, 15);

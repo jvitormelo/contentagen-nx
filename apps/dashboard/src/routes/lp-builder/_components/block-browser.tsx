@@ -66,11 +66,7 @@ function BlockCarousel({ blocks, onAdd }: BlockCarouselProps) {
             {blocks.map((block) => (
                <CarouselItem key={block.id}>
                   <div className=" h-full w-full flex my-auto border rounded-lg flex flex-col">
-                     {
-                        <block.component
-                           content={block.defaultContent}
-                        ></block.component>
-                     }
+                     {<block.component></block.component>}
 
                      <Button
                         className="fixed top-4 right-4"

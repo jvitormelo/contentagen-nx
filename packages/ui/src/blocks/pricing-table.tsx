@@ -31,28 +31,13 @@ export interface PricingPlan {
    popular?: boolean;
 }
 
-export interface PricingTableContent {
-   features: PricingFeature[];
-   plans: PricingPlan[];
-   defaultPlan?: PlanLevel;
-   defaultInterval?: "monthly" | "yearly";
-   monthlyLabel: string;
-   yearlyLabel: string;
-   monthLabel: string;
-   yearLabel: string;
-   popularLabel: string;
-   featuresHeaderLabel: string;
-   buttonText: string;
-}
-
 export interface PricingTableProps {
-   content: PricingTableContent;
    onPlanSelect?: (plan: PlanLevel) => void;
    containerClassName?: string;
    buttonClassName?: string;
 }
 
-export const defaultContent: PricingTableContent = {
+const defaultContent = {
    buttonText: "Get started with",
    defaultInterval: "monthly",
    defaultPlan: "pro",
@@ -99,12 +84,11 @@ export const defaultContent: PricingTableContent = {
 };
 
 export function PricingTable({
-   content = defaultContent,
    onPlanSelect,
    containerClassName,
    buttonClassName,
 }: PricingTableProps) {
-   const mergedContent = { ...defaultContent, ...content };
+   const mergedContent = { ...defaultContent };
    const [isYearly, setIsYearly] = React.useState(
       mergedContent.defaultInterval === "yearly",
    );
@@ -183,7 +167,6 @@ export function PricingTable({
                            format={{
                               currency: "USD",
                               style: "currency",
-                              trailingZeroDisplay: "stripIfInteger",
                            }}
                            value={
                               isYearly ? plan.price.yearly : plan.price.monthly

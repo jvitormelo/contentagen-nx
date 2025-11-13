@@ -17,11 +17,7 @@ export interface HeroSection1Content {
    imgUrl: string;
 }
 
-interface HeroSection1Props {
-   content: HeroSection1Content;
-}
-
-export const defaultContent: HeroSection1Content = {
+const defaultContent: HeroSection1Content = {
    description:
       "One tool that does it all. Search, generate, analyze, and chat—right inside Tailark.",
    imgUrl: "",
@@ -50,8 +46,8 @@ export const defaultContent: HeroSection1Content = {
    trustedByText: "Trusted by teams at :",
 };
 
-export function HeroSection1({ content = defaultContent }: HeroSection1Props) {
-   const mergedContent = { ...defaultContent, ...content };
+export function HeroSection1() {
+   const mergedContent = { ...defaultContent };
 
    return (
       <section className="bg-background">

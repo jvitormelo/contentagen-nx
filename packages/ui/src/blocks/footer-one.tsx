@@ -19,11 +19,7 @@ export interface FooterOneContent {
    copyrightText: string;
 }
 
-interface FooterOneProps {
-   content: FooterOneContent;
-}
-
-export const defaultContent: FooterOneContent = {
+const defaultContent: FooterOneContent = {
    copyrightText: "© 2025 Tailark Mist, All rights reserved",
    homeLink: "/",
    links: [
@@ -106,8 +102,8 @@ export const defaultContent: FooterOneContent = {
    ],
 };
 
-export function FooterSection({ content = defaultContent }: FooterOneProps) {
-   const mergedContent = { ...content };
+export function FooterSection() {
+   const mergedContent = { ...defaultContent };
 
    return (
       <footer className="bg-muted py-16">

@@ -1,26 +1,18 @@
-import {
-   FeaturesOne,
-   defaultContent as featureOneAutocomplete,
-} from "@packages/ui/blocks/features-one";
-import {
-   FooterSection,
-   defaultContent as footerOneDefault,
-} from "@packages/ui/blocks/footer-one";
+import { FeaturesOne } from "@packages/ui/blocks/features-one";
+import { FooterSection } from "@packages/ui/blocks/footer-one";
 import { HeroParallax } from "@packages/ui/blocks/hero-parallax";
-import {
-   defaultContent,
-   HeroSection1,
-} from "@packages/ui/blocks/hero-section-one";
+import { HeroSection1 } from "@packages/ui/blocks/hero-section-one";
 import { PricingTable } from "@packages/ui/blocks/pricing-table";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { BlockBrowser } from "./_components/block-browser";
 import { BlockSelectorSheet } from "./_components/block-selector-sheet";
 import {
-   BLOCK_REGISTRY,
    type BlockCategory,
    getBlockDefinition,
 } from "./_utils/block-registry";
+
+type BlockOption = any;
 
 export const Route = createFileRoute("/lp-builder/")({
    component: RouteComponent,
@@ -30,7 +22,6 @@ interface BlockInstance {
    id: string;
    blockDefId: string;
    name: string;
-   content: any;
 }
 
 function RouteComponent() {
@@ -43,25 +34,21 @@ function RouteComponent() {
    const [blocks, setBlocks] = useState<BlockInstance[]>([
       {
          blockDefId: "hero-parallax",
-         content: BLOCK_REGISTRY["hero-parallax"].defaultContent,
          id: "block-1",
          name: "Hero Parallax",
       },
       {
          blockDefId: "hero-section-1",
-         content: defaultContent,
          id: "block-2",
          name: "Hero Section 1",
       },
       {
          blockDefId: "features-one",
-         content: featureOneAutocomplete,
          id: "block-3",
          name: "Features Section 1",
       },
       {
          blockDefId: "footer-one",
-         content: footerOneDefault,
          id: "block-4",
          name: "Footer Section 1",
       },
@@ -78,7 +65,6 @@ function RouteComponent() {
 
       const newBlock: BlockInstance = {
          blockDefId: blockDefId,
-         content: blockDef.defaultContent,
          id: `block-${Date.now()}`,
          name: blockDef.name,
       };
@@ -133,30 +119,19 @@ function RouteComponent() {
          <div>
             {blocks.map((block) => {
                if (block.blockDefId === "hero-parallax") {
-                  return (
-                     <HeroParallax
-                        key={block.id}
-                        products={block.content.products}
-                     />
-                  );
+                  return <HeroParallax key={block.id} />;
                }
                if (block.blockDefId === "hero-section-1") {
-                  return (
-                     <HeroSection1 content={block.content} key={block.id} />
-                  );
+                  return <HeroSection1 key={block.id} />;
                }
                if (block.blockDefId === "features-one") {
-                  return <FeaturesOne content={block.content} key={block.id} />;
+                  return <FeaturesOne key={block.id} />;
                }
                if (block.blockDefId === "footer-one") {
-                  return (
-                     <FooterSection content={block.content} key={block.id} />
-                  );
+                  return <FooterSection key={block.id} />;
                }
                if (block.blockDefId === "pricing-table") {
-                  return (
-                     <PricingTable content={block.content} key={block.id} />
-                  );
+                  return <PricingTable key={block.id} />;
                }
                return null;
             })}
