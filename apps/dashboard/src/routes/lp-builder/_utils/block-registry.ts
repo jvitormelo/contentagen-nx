@@ -6,6 +6,7 @@ import {
    FooterSection,
    defaultContent as footerOneDefault,
 } from "@packages/ui/blocks/footer-one";
+import { HeroParallax } from "@packages/ui/blocks/hero-parallax";
 import {
    HeroSection1,
    defaultContent as heroSection1Default,
@@ -34,6 +35,101 @@ export interface BlockDefinition {
    thumbnail?: string;
    propsConfig: any[];
 }
+
+const defaultHeroParallaxContent = {
+   products: [
+      {
+         link: "https://gomoonbeam.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/moonbeam.png",
+         title: "Moonbeam",
+      },
+      {
+         link: "https://cursor.so",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/cursor.png",
+         title: "Cursor",
+      },
+      {
+         link: "https://userogue.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/rogue.png",
+         title: "Rogue",
+      },
+      {
+         link: "https://editorially.org",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/editorially.png",
+         title: "Editorially",
+      },
+      {
+         link: "https://editrix.ai",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/editrix.png",
+         title: "Editrix AI",
+      },
+      {
+         link: "https://app.pixelperfect.quest",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/pixelperfect.png",
+         title: "Pixel Perfect",
+      },
+      {
+         link: "https://algochurn.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/algochurn.png",
+         title: "Algochurn",
+      },
+      {
+         link: "https://ui.aceternity.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/aceternityui.png",
+         title: "Aceternity UI",
+      },
+      {
+         link: "https://tailwindmasterkit.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/tailwindmasterkit.png",
+         title: "Tailwind Master Kit",
+      },
+      {
+         link: "https://smartbridgetech.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/smartbridge.png",
+         title: "SmartBridge",
+      },
+      {
+         link: "https://renderwork.studio",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/renderwork.png",
+         title: "Renderwork Studio",
+      },
+      {
+         link: "https://cremedigital.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/cremedigital.png",
+         title: "Creme Digital",
+      },
+      {
+         link: "https://goldenbellsacademy.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/goldenbellsacademy.png",
+         title: "Golden Bells Academy",
+      },
+      {
+         link: "https://invoker.lol",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/invoker.png",
+         title: "Invoker Labs",
+      },
+      {
+         link: "https://efreeinvoice.com",
+         thumbnail:
+            "https://aceternity.com/images/products/thumbnails/new/efreeinvoice.png",
+         title: "E Free Invoice",
+      },
+   ],
+};
 
 export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
    "features-one": {
@@ -164,6 +260,31 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
             group: "Social Media",
             key: "socialLinks",
             label: "Social Links",
+            type: "array" as const,
+         },
+      ],
+   },
+   "hero-parallax": {
+      category: "hero",
+      component: HeroParallax,
+      defaultContent: defaultHeroParallaxContent,
+      description: "Parallax scrolling hero with product cards",
+      id: "hero-parallax",
+      name: "Hero Parallax",
+      propsConfig: [
+         {
+            arrayItemSchema: [
+               { key: "title", label: "Title", type: "text" as const },
+               { key: "link", label: "Link", type: "url" as const },
+               {
+                  key: "thumbnail",
+                  label: "Thumbnail URL",
+                  type: "url" as const,
+               },
+            ],
+            group: "Products",
+            key: "products",
+            label: "Product List",
             type: "array" as const,
          },
       ],

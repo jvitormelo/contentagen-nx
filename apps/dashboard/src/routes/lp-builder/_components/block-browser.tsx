@@ -62,10 +62,7 @@ function BlockCarousel({ blocks, onAdd }: BlockCarouselProps) {
 
    return (
       <Carousel className="h-full">
-         <CarouselContent
-            className="h-full flex flex-com items-center relative"
-            containerClassName="h-full"
-         >
+         <CarouselContent className="h-full flex flex-com items-center relative">
             {blocks.map((block) => (
                <CarouselItem key={block.id}>
                   <div className=" h-full w-full flex my-auto border rounded-lg flex flex-col">
