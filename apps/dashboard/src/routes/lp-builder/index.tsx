@@ -104,8 +104,8 @@ function RouteComponent() {
         onOpenChange={setExportDialogOpen}
         open={exportDialogOpen}
       />
-
-      <div className="fixed top-4 right-4 z-50">
+      {/* TODO> Move isso aqui para outro lugar  */}
+      <div className="fixed top-4 right-20 z-50">
         <Button
           disabled={blocks.length === 0}
           onClick={() => setExportDialogOpen(true)}
